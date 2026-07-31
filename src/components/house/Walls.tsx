@@ -22,7 +22,7 @@ type SolidPiece = {
 
 /**
  * Split one wall segment into solid boxes, cutting openings
- * (full-height gap + lintel above the door).
+ * (optional sill + clear opening + lintel above).
  */
 function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
   const wallHeight = BUILDING.wallHeight;
@@ -44,7 +44,6 @@ function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
     ];
   }
 
-  // Sort openings along the wall
   const sorted = [...openings].sort((a, b) => a.fromStart - b.fromStart);
   const length = alongX ? wall.lengthX : wall.lengthZ;
   const thickness = alongX ? wall.lengthZ : wall.lengthX;
@@ -55,7 +54,7 @@ function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
   const pieces: SolidPiece[] = [];
   let cursor = 0;
 
-  const pushFull = (from: number, to: number, key: string) => {
+  const pushFullHeight = (from: number, to: number, key: string) => {
     const segLen = to - from;
     if (segLen < 0.01) return;
     const mid = startCoord + (from + to) / 2;
@@ -70,18 +69,22 @@ function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
     });
   };
 
-  const pushLintel = (opening: Opening, key: string) => {
-    const lintelH = wallHeight - opening.height;
-    if (lintelH < 0.01) return;
+  const pushBand = (
+    opening: Opening,
+    y0: number,
+    y1: number,
+    key: string,
+  ) => {
+    const h = y1 - y0;
+    if (h < 0.01) return;
     const mid = startCoord + opening.fromStart + opening.width / 2;
-    const y = baseY + opening.height + lintelH / 2;
     pieces.push({
       key,
       x: alongX ? mid : wall.x,
-      y,
+      y: baseY + (y0 + y1) / 2,
       z: alongX ? wall.z : mid,
       sizeX: alongX ? opening.width : thickness,
-      sizeY: lintelH,
+      sizeY: h,
       sizeZ: alongX ? thickness : opening.width,
     });
   };
@@ -89,19 +92,29 @@ function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
   sorted.forEach((opening, i) => {
     const openStart = opening.fromStart;
     const openEnd = opening.fromStart + opening.width;
-    // Clamp to wall
     const a = Math.max(0, Math.min(length, openStart));
     const b = Math.max(0, Math.min(length, openEnd));
-    pushFull(cursor, a, `${wall.id}-solid-${i}`);
-    pushLintel(opening, `${wall.id}-lintel-${i}`);
+    pushFullHeight(cursor, a, `${wall.id}-solid-${i}`);
+
+    const sill = opening.sill ?? 0;
+    const openTop = sill + opening.height;
+    pushBand(opening, 0, sill, `${wall.id}-sill-${i}`);
+    pushBand(opening, openTop, wallHeight, `${wall.id}-lintel-${i}`);
+
     cursor = Math.max(cursor, b);
   });
-  pushFull(cursor, length, `${wall.id}-solid-end`);
+  pushFullHeight(cursor, length, `${wall.id}-solid-end`);
 
   return pieces;
 }
 
-function WallMesh({ piece, exterior }: { piece: SolidPiece; exterior: boolean }) {
+function WallMesh({
+  piece,
+  exterior,
+}: {
+  piece: SolidPiece;
+  exterior: boolean;
+}) {
   return (
     <mesh position={[piece.x, piece.y, piece.z]} castShadow receiveShadow>
       <boxGeometry args={[piece.sizeX, piece.sizeY, piece.sizeZ]} />
@@ -118,7 +131,14 @@ export function Walls() {
   return (
     <group name="walls">
       {WALLS.map((wall) => {
-        const exterior = wall.id.includes("ext") || wall.id.includes("parapet");
+        const exterior =
+          wall.id.includes("ext") ||
+          wall.id.includes("parapet") ||
+          wall.id.includes("south") ||
+          wall.id.includes("east") ||
+          wall.id.includes("west") ||
+          wall.id.includes("north") ||
+          wall.id.includes("jog");
         const pieces = solidPiecesForWall(wall);
         return (
           <Fragment key={wall.id}>

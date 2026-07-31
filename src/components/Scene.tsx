@@ -7,11 +7,9 @@ import * as THREE from "three";
 import { House } from "@/components/house";
 import { Player } from "@/components/Player";
 import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
-import { TopDownCamera } from "@/components/cameras/TopDownCamera";
-import { ModeSwitcher } from "@/components/ui/ModeSwitcher";
+import { PositionHud } from "@/components/ui/PositionHud";
 import { BUILDING, PLAYER, SOUTH_FACADE, SZ } from "@/data/dimensions";
 import { planToWorldX } from "@/lib/coords";
-import { useViewerStore } from "@/store/useViewerStore";
 
 function Lights() {
   return (
@@ -35,13 +33,7 @@ function Lights() {
 }
 
 function SceneContent() {
-  const mode = useViewerStore((s) => s.mode);
-
-  // Player / free camera live in world space (outside mirror group)
-  const spawnWorldX = useMemo(
-    () => planToWorldX(PLAYER.spawn.x),
-    [],
-  );
+  const spawnWorldX = useMemo(() => planToWorldX(PLAYER.spawn.x), []);
 
   return (
     <>
@@ -50,7 +42,7 @@ function SceneContent() {
       <Lights />
 
       <PerspectiveCamera
-        makeDefault={mode === "first-person"}
+        makeDefault
         fov={70}
         near={0.05}
         far={200}
@@ -61,14 +53,12 @@ function SceneContent() {
         ]}
       />
 
-      <TopDownCamera />
       <FirstPersonCamera />
       <Player />
 
       {/*
-        Mirror house in X so Three.js north-facing views match the plan:
-        looking at the south façade → left=LDK, right=genkan.
-        Data in dimensions.ts stays in plan space (LDK = west = small plan X).
+        Mirror house in X so north-facing views match the plan:
+        left=LDK, right=genkan. Data stays in plan space.
       */}
       <group
         name="plan-mirror"
@@ -76,7 +66,6 @@ function SceneContent() {
         position={[BUILDING.width, 0, 0]}
       >
         <House />
-        {/* Plan SW origin axes (inside mirror = correct plan corner) */}
         <axesHelper args={[2.5]} position={[0, 0.02, 0]} />
       </group>
     </>
@@ -84,8 +73,6 @@ function SceneContent() {
 }
 
 function HelpOverlay() {
-  const mode = useViewerStore((s) => s.mode);
-
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-4">
       <header className="flex items-start justify-between gap-4">
@@ -94,44 +81,35 @@ function HelpOverlay() {
             日本住宅 3D · 1F 外牆校正
           </h1>
           <p className="mt-1 max-w-md text-xs leading-relaxed text-white/75">
-            僅 1 樓外殼 + 玄関大门。南面：
+            第一人稱走動。南面：
             {SOUTH_FACADE.ldkA}+{SOUTH_FACADE.ldkB} LDK → 内縮 {SZ.recess} →
             门 {SOUTH_FACADE.genkanDoor} → SCL {SOUTH_FACADE.sclSouth} → UB{" "}
             {SOUTH_FACADE.ubSouth}
           </p>
           <p className="mt-1 text-[11px] text-white/50">
-            {BUILDING.width}m × {BUILDING.depth}m · 滾輪可再縮小看全貌
+            {BUILDING.width}m × {BUILDING.depth}m · 單位公尺
           </p>
         </div>
-        <ModeSwitcher />
+        <PositionHud />
       </header>
 
       <div className="flex items-end justify-between gap-3">
         <div className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/80 backdrop-blur-md">
-          {mode === "first-person" ? (
-            <ul className="space-y-0.5">
-              <li>駐車區面朝大门（北）</li>
-              <li>
-                <strong>左 = LDK 南牆 · 右 = 玄関门 / SCL / UB</strong>
-              </li>
-              <li>
-                <kbd className="rounded bg-white/15 px-1">點擊</kbd> 鎖定 ·{" "}
-                <kbd className="rounded bg-white/15 px-1">WASD</kbd> ·{" "}
-                <kbd className="rounded bg-white/15 px-1">Esc</kbd>
-              </li>
-            </ul>
-          ) : (
-            <ul className="space-y-0.5">
-              <li>
-                <strong>上北 · 下南 · 左 LDK · 右 玄関/UB</strong>
-              </li>
-              <li>滾輪縮小可看全貌 · 拖曳平移</li>
-              <li>紅/橘線 = LDK 南 2.175+4.195</li>
-            </ul>
-          )}
+          <ul className="space-y-0.5">
+            <li>
+              <kbd className="rounded bg-white/15 px-1">W S</kbd> 前進/後退 ·{" "}
+              <kbd className="rounded bg-white/15 px-1">A D</kbd> 左轉/右轉 10°
+            </li>
+            <li>
+              <strong>點擊玄関大门</strong>：開門 / 關門
+            </li>
+            <li className="text-white/50">
+              已關閉滑鼠鎖定視角（避免與點门衝突）
+            </li>
+          </ul>
         </div>
         <p className="rounded-lg bg-black/40 px-2 py-1 text-[10px] text-white/50 backdrop-blur">
-          與平面圖同向：玄関在 LDK 右側（東）
+          HUD 座標為平面圖空間（X 西→東）
         </p>
       </div>
     </div>
@@ -143,7 +121,6 @@ export function Scene() {
     <div className="relative h-full w-full min-h-0 flex-1">
       <HelpOverlay />
       <Canvas
-        // PCFSoftShadowMap is deprecated in current three — use PCF explicitly
         shadows={{ type: THREE.PCFShadowMap }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: false }}

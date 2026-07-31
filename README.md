@@ -4,13 +4,12 @@ Interactive 3D interior walkthrough of a Japanese residential house based on thr
 
 ## Phase 1 (current)
 
-- Walls, floor slabs, stairs, door openings
-- First-person walk (PointerLock + WASD)
-- Top-down orthographic view (pan + zoom)
-- Mode switch UI
-- Multi-floor stacking on Y (2.7 m floor-to-floor)
+- Walls, floor slabs, door openings (1F exterior focus)
+- First-person walk only (PointerLock + WASD)
+- HUD: live X / Z / Y coordinates (plan space, meters)
+- Multi-floor stacking on Y prepared (2.7 m floor-to-floor)
 
-**Not yet:** furniture, textures, physics, door animations, mobile touch, GitHub Pages deploy.
+**Not yet:** top-down mode, furniture, textures, physics, door animations, mobile touch, GitHub Pages deploy.
 
 ## Stack
 
@@ -29,10 +28,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Controls
 
-| Mode | Controls |
-|------|----------|
-| Top-down | Drag to pan, wheel to zoom |
-| First-person | Click canvas to lock pointer, WASD move, Esc unlock |
+| Action | Control |
+|--------|---------|
+| Move | W / S (forward / back) |
+| Turn | A / D (±10° per key) |
+| Genkan door | Click door leaf to open / close |
+| Position | Top-right HUD (X east, Z north, Y eye height, meters) |
 
 ## Project layout
 

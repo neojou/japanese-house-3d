@@ -40,7 +40,13 @@ export type Opening = {
   /** From lower-coordinate end of wall (smaller X for EW, smaller Z for NS). */
   fromStart: number;
   width: number;
+  /** Clear opening height (above sill). */
   height: number;
+  /**
+   * Raised sill under the opening (m). Genkan door sits above exterior steps.
+   * Wall solid fills 0 → sill; opening is sill → sill+height.
+   */
+  sill?: number;
   type: OpeningType;
 };
 
@@ -93,8 +99,8 @@ export const BUILDING = {
   wallHeight: 2.5,
   doorWidth: 0.8,
   doorHeight: 2.0,
-  genkanDoorWidth: 1.2,
-  genkanDoorHeight: 2.2,
+  genkanDoorWidth: 1.52,
+  genkanDoorHeight: 2.15,
 } as const;
 
 export const FLOOR_LEVELS: Record<FloorId, number> = {
@@ -198,18 +204,41 @@ export const PARKING_1F = {
   depth: SZ.recess,
 } as const;
 
+/**
+ * 玄関大门 + exterior steps + raised interior floor.
+ *
+ * Steps (south of door, each 0.25 m):
+ *   step 1 (outer) top = 0.25 · step 2 (inner) top = 0.50
+ * Door sill & genkan interior floor = 0.50 m
+ * Eye height 1.5 → Y: outside 1.50 · step1 1.75 · step2/inside 2.00
+ */
 export const GENKAN_ENTRY = {
   z: SZ.recess,
   x0: SX.xLdkE,
   x1: SX.xGenkanE,
-  roomX1: SX.xGenkanE + SOUTH_FACADE.sclSouth, // to SCL east
-  doorWidth: SOUTH_FACADE.genkanDoor * 0.85, // leaf slightly inside 1520 bay
-  doorHeight: BUILDING.genkanDoorHeight,
+  roomX1: SX.xGenkanE + SOUTH_FACADE.sclSouth,
+  /** Wall cut = full bay width */
+  openingWidth: SOUTH_FACADE.genkanDoor, // 1.52
+  /**
+   * Clear opening above sill. sill(0.5)+height ≤ wallHeight(2.5).
+   * 0.5 + 1.95 = 2.45 → 0.05 m lintel.
+   */
+  openingHeight: 1.95,
+  /** Door bottom / interior platform height (= 2 × stepHeight) */
+  sill: 0.5,
+  frameThickness: 0.055,
+  frameDepth: BUILDING.wallThickness,
+  leafThickness: 0.04,
+  leafClearance: 0.006,
+  openAngleDeg: 100,
   stepCount: 2,
   stepDepth: 0.32,
-  stepHeight: 0.15,
+  stepHeight: 0.25,
   stepWidth: SOUTH_FACADE.genkanDoor * 0.95,
 } as const;
+
+/** Genkan interior finished-floor height (same as sill / top of steps). */
+export const GENKAN_FLOOR_Y = GENKAN_ENTRY.sill;
 
 // Keep GRID aliases for any remaining refs
 export const GRID_X_1F = {
@@ -270,7 +299,8 @@ export const FLOORS: FloorSlab[] = [
   {
     id: "1f-genkan-scl",
     floor: "1f",
-    y: FLOOR_LEVELS["1f"],
+    /** Raised genkan platform (= exterior step top / door sill) */
+    y: GENKAN_FLOOR_Y,
     // 玄関 + SCL above parking recess
     rect: {
       x: SX.xLdkE,
@@ -278,7 +308,8 @@ export const FLOORS: FloorSlab[] = [
       width: SX.xSclE - SX.xLdkE,
       depth: SZ.mid - SZ.recess,
     },
-    thickness: BUILDING.slabThickness,
+    /** Thick fill down toward grade so the platform reads as solid */
+    thickness: GENKAN_FLOOR_Y,
     label: "玄関/SCL",
     color: "#b8b2a8",
   },
@@ -318,8 +349,6 @@ export const FLOORS: FloorSlab[] = [
 // Walls — 1F EXTERIOR shell only (Phase 1 focus)
 // ─────────────────────────────────────────────────────────────
 
-const DH = BUILDING.genkanDoorHeight;
-
 /**
  * 1F exterior walls only.
  * South façade follows user chain exactly; no 2F/PH.
@@ -350,7 +379,7 @@ export const WALLS_1F: WallSegment[] = [
     label: "内縮西壁 2.755",
   },
 
-  // 玄関大门牆 1.520 at z=2.755
+  // 玄関大门牆 1.520 at z=2.755 — full-bay opening; frame/leaf in GenkanEntry
   {
     id: "1f-south-genkan-door",
     ...wallEW(SX.xLdkE, SX.xGenkanE, SZ.recess),
@@ -359,9 +388,10 @@ export const WALLS_1F: WallSegment[] = [
     openings: [
       {
         id: "1f-door-genkan-main",
-        fromStart: (SOUTH_FACADE.genkanDoor - GENKAN_ENTRY.doorWidth) / 2,
-        width: GENKAN_ENTRY.doorWidth,
-        height: DH,
+        fromStart: 0,
+        width: GENKAN_ENTRY.openingWidth,
+        height: GENKAN_ENTRY.openingHeight,
+        sill: GENKAN_ENTRY.sill,
         type: "door",
       },
     ],
@@ -446,18 +476,19 @@ export const STAIRS: StairFlight[] = [];
 // ─────────────────────────────────────────────────────────────
 
 export const PLAYER = {
-  eyeHeight: 1.6,
-  moveSpeed: 3.0,
+  eyeHeight: 1.5,
+  moveSpeed: 2.0,
+  /** A / D discrete yaw step (degrees). A = left, D = right. */
+  turnDegrees: 10,
   /**
-   * Spawn in parking, facing north at the genkan door.
-   * When looking at the south façade from parking:
-   *   screen left  = west = LDK (2.175+4.195 wall)
-   *   screen right = east = SCL / UB
+   * Spawn at z = -2.8 m (south of building), centered on genkan door bay X.
+   * Facing north toward the door: left = LDK, right = SCL / UB.
    */
   spawn: {
     x: (SX.xLdkE + SX.xGenkanE) / 2,
     y: FLOOR_LEVELS["1f"],
-    z: 1.0,
+    /** Start south of the building, facing genkan */
+    z: -2.8,
     /** Face north (+Z) toward genkan door — Three.js: yaw = π */
     yaw: Math.PI,
   },
