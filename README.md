@@ -1,21 +1,19 @@
 # 日本住宅 3D 導覽 (Japanese House 3D)
 
-Interactive 3D interior walkthrough of a Japanese residential house based on three floor plans (1F / 2F / PH).
+Interactive **first-person** 3D walkthrough of a Japanese residential house, built from three floor plans (1F / 2F / PH).
 
-## Phase 1 (current)
+**Tasks, milestones, DoD, and Grok prompts:** see **[`TASKS.md`](./TASKS.md)**  
+**Agent coding rules:** see **[`AGENTS.md`](./AGENTS.md)**
 
-- Walls, floor slabs, door openings (1F exterior focus)
-- First-person walk only (PointerLock + WASD)
-- HUD: live X / Z / Y coordinates (plan space, meters)
-- Multi-floor stacking on Y prepared (2.7 m floor-to-floor)
+---
 
-**Not yet:** top-down mode, furniture, textures, physics, door animations, mobile touch, GitHub Pages deploy.
+## What it is
 
-## Stack
+Walk the house at eye height: walls, floors, stairs, and clickable doors match the plan (meters). Start outdoors at the genkan, climb the U-stair to 2F, and enter the northeast 洋室 through the stair-hall door.
 
-- Next.js (App Router) + TypeScript + Tailwind CSS
-- three / @react-three/fiber / @react-three/drei
-- zustand (viewer mode)
+**Not a dual-mode viewer** — there is no top-down / map camera. Position is shown on the HUD.
+
+---
 
 ## Run
 
@@ -26,52 +24,82 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+---
+
 ## Controls
 
 | Action | Control |
 |--------|---------|
-| Move | W / S (forward / back) |
+| Move | W / S |
 | Turn | A / D (±10° per key) |
-| Genkan door | Click door leaf to open / close |
-| Position | Top-right HUD (X east, Z north, Y eye height, meters) |
+| Doors | Click leaf to open / close |
+| Position | Top-right HUD (plan X east, Z north, Y eye height, m) |
+
+---
+
+## Design snapshot (current build)
+
+High-level geometry locked with the owner; full decision log and acceptance criteria live in `TASKS.md`.
+
+| Area | Behavior |
+|------|----------|
+| Units / axes | Meters; plan origin SW; +X east, +Z north, +Y up |
+| Display | House X-mirrored so north view matches the PDF (LDK left) |
+| 1F floor | Raised interior **0.5 m**; genkan steps 0.25 × 2 |
+| Stairs | U-stair 1F→2F, north mid-landing Y=1.7; well NS **1.82** |
+| 2F NE 洋室 | West door @ x=6.37 (0.91 hall band); N/E solid; south G2 glass **4.55 m** (2.73+1.82) to east wall |
+| Balcony | Slab visible; no parapet; access door deferred |
+| 1F ceiling | Soffit Y=2.5; open over stair well |
+| Height | Multi-level sampling; ignore 2F slabs while feetY &lt; 2.0 |
+
+**Edit sizes in** `src/data/dimensions.ts` first.
+
+---
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- three / @react-three/fiber / @react-three/drei
+- zustand (position / floor HUD state)
+
+---
 
 ## Project layout
 
 ```
 src/
-├── app/                  # Next.js App Router
+├── app/                     # Next.js App Router
 ├── components/
 │   ├── Scene.tsx
 │   ├── Player.tsx
-│   ├── cameras/
-│   ├── house/
+│   ├── cameras/             # First-person only
+│   ├── house/               # Floors, walls, stairs, doors, ceilings…
 │   └── ui/
-├── data/dimensions.ts    # All sizes in meters
+├── data/dimensions.ts       # All sizes (m)
 ├── store/useViewerStore.ts
-└── lib/units.ts
+└── lib/                     # coords, height sampling, units
+TASKS.md                     # Goals, milestones, DoD, Grok prompts
+AGENTS.md                    # Rules for AI / agents
 ```
 
-## Units & coordinates
-
-- World unit = **meter**
-- Origin = SW corner of footprint
-- X east, Z north, Y up
-- Floor tops: 1F = 0, 2F = 2.7, PH = 5.4
-
-Edit geometry in `src/data/dimensions.ts` first.
+---
 
 ## Plans
 
-Source drawings: `docs/2d-floors/FirstFloor.jpeg`, `SecondFloor.jpeg`, `ThirdFloor.jpeg`.
+Source drawings (often private / gitignored):
 
-## Deploy (later)
+- `docs/2d-floors/FirstFloor.jpeg`
+- `docs/2d-floors/SecondFloor.jpeg`
+- `docs/2d-floors/ThirdFloor.jpeg`
 
-For GitHub Pages, set in `next.config.ts`:
+---
 
-```ts
-output: "export",
-basePath: "/<repo-name>",
-images: { unoptimized: true },
-```
+## Deploy
 
-Then `npm run build` and publish the `out/` folder.
+Deferred until the ship milestone in `TASKS.md` (T-501). Intended approach: Next.js static export for GitHub Pages (`output: "export"`, `basePath`, unoptimized images).
+
+---
+
+## Status
+
+See **[`TASKS.md`](./TASKS.md)** — current milestone, backlog, and definition of done.

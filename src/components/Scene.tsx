@@ -78,13 +78,10 @@ function HelpOverlay() {
       <header className="flex items-start justify-between gap-4">
         <div className="rounded-xl border border-white/15 bg-black/50 px-4 py-3 text-white shadow-lg backdrop-blur-md">
           <h1 className="text-base font-semibold tracking-tight">
-            日本住宅 3D · 1F 外牆校正
+            日本住宅 3D · 1F / 2F
           </h1>
           <p className="mt-1 max-w-md text-xs leading-relaxed text-white/75">
-            第一人稱走動。南面：
-            {SOUTH_FACADE.ldkA}+{SOUTH_FACADE.ldkB} LDK → 内縮 {SZ.recess} →
-            门 {SOUTH_FACADE.genkanDoor} → SCL {SOUTH_FACADE.sclSouth} → UB{" "}
-            {SOUTH_FACADE.ubSouth}
+            U 形樓梯 → 2F。東北洋室門（梯廳）· 南 G2 落地窗 4.55 m 接東牆。
           </p>
           <p className="mt-1 text-[11px] text-white/50">
             {BUILDING.width}m × {BUILDING.depth}m · 單位公尺
@@ -101,7 +98,7 @@ function HelpOverlay() {
               <kbd className="rounded bg-white/15 px-1">A D</kbd> 左轉/右轉 10°
             </li>
             <li>
-              <strong>點擊玄関大门</strong>：開門 / 關門
+              <strong>點擊大门 / 室内门</strong>：四分之一圆弧开关
             </li>
             <li className="text-white/50">
               已關閉滑鼠鎖定視角（避免與點门衝突）

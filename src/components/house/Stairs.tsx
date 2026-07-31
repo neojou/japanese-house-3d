@@ -2,7 +2,6 @@
 
 import {
   COLORS,
-  FLOOR_LEVELS,
   STAIRS,
   type Cardinal,
   type StairFlight,
@@ -25,26 +24,34 @@ function directionOffset(
 }
 
 function StairFlightMesh({ flight }: { flight: StairFlight }) {
-  const baseY = FLOOR_LEVELS[flight.fromFloor];
   const steps = [];
+  const alongX =
+    flight.direction === "east" || flight.direction === "west";
 
   for (let i = 0; i < flight.stepCount; i++) {
+    // flight.z = south edge of lowest tread (for direction north)
     const along = (i + 0.5) * flight.treadDepth;
     const [dx, dz] = directionOffset(flight.direction, along);
-    const y = baseY + (i + 0.5) * flight.riserHeight;
+    const y = flight.baseY + (i + 0.5) * flight.riserHeight;
     const x = flight.x + dx;
     const z = flight.z + dz;
 
-    // Tread box: thin top; size oriented by travel direction
-    const alongX =
-      flight.direction === "east" || flight.direction === "west";
     const sizeX = alongX ? flight.treadDepth : flight.width;
     const sizeZ = alongX ? flight.width : flight.treadDepth;
 
     steps.push(
-      <mesh key={`${flight.id}-step-${i}`} position={[x, y, z]} castShadow receiveShadow>
+      <mesh
+        key={`${flight.id}-step-${i}`}
+        position={[x, y, z]}
+        castShadow
+        receiveShadow
+      >
         <boxGeometry args={[sizeX, flight.riserHeight, sizeZ]} />
-        <meshStandardMaterial color={COLORS.stair} roughness={0.9} metalness={0} />
+        <meshStandardMaterial
+          color={COLORS.stair}
+          roughness={0.9}
+          metalness={0}
+        />
       </mesh>,
     );
   }

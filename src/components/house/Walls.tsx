@@ -25,7 +25,7 @@ type SolidPiece = {
  * (optional sill + clear opening + lintel above).
  */
 function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
-  const wallHeight = BUILDING.wallHeight;
+  const wallHeight = wall.height ?? BUILDING.wallHeight;
   const baseY = FLOOR_LEVELS[wall.floor];
   const openings = wall.openings ?? [];
   const alongX = wall.lengthX >= wall.lengthZ;
@@ -134,11 +134,13 @@ export function Walls() {
         const exterior =
           wall.id.includes("ext") ||
           wall.id.includes("parapet") ||
+          wall.id.includes("balc") ||
           wall.id.includes("south") ||
           wall.id.includes("east") ||
           wall.id.includes("west") ||
           wall.id.includes("north") ||
-          wall.id.includes("jog");
+          wall.id.includes("jog") ||
+          wall.id.startsWith("2f-");
         const pieces = solidPiecesForWall(wall);
         return (
           <Fragment key={wall.id}>

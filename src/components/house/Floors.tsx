@@ -1,6 +1,6 @@
 "use client";
 
-import { FLOORS, COLORS } from "@/data/dimensions";
+import { ALL_FLOOR_SLABS, COLORS } from "@/data/dimensions";
 
 /**
  * Renders each floor slab as a thin box.
@@ -9,11 +9,10 @@ import { FLOORS, COLORS } from "@/data/dimensions";
 export function Floors() {
   return (
     <group name="floors">
-      {FLOORS.map((slab) => {
+      {ALL_FLOOR_SLABS.map((slab) => {
         const { rect, thickness, y, id, color } = slab;
         const centerX = rect.x + rect.width / 2;
         const centerZ = rect.z + rect.depth / 2;
-        // Box centered; shift down by half thickness so top face is at y
         const centerY = y - thickness / 2;
 
         return (

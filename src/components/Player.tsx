@@ -67,9 +67,10 @@ export function Player() {
       }
     }
 
-    // Stand on ground / steps / raised genkan (no clipping into solids)
+    // Multi-level ground: filter by current feet Y so 2F slabs don't steal 1F
     const planX = worldToPlanX(camera.position.x);
-    const groundY = getGroundHeight(planX, camera.position.z);
+    const feetY = camera.position.y - PLAYER.eyeHeight;
+    const groundY = getGroundHeight(planX, camera.position.z, feetY);
     camera.position.y = groundY + PLAYER.eyeHeight;
 
     setPosition({

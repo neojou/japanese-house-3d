@@ -5,13 +5,13 @@ import { Walls } from "./Walls";
 import { Stairs } from "./Stairs";
 import { Doors } from "./Doors";
 import { GenkanEntry } from "./GenkanEntry";
+import { Ceilings } from "./Ceilings";
 import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
 import { BUILDING, COLORS } from "@/data/dimensions";
 
 /**
- * Phase 1 — 1F exterior shell + genkan door + parking.
- * 2F / PH intentionally omitted for plan calibration.
+ * Phase 1 — 1F/2F shell, interior, stairs, genkan, 1F ceilings.
  */
 export function House() {
   return (
@@ -26,6 +26,7 @@ export function House() {
       </mesh>
 
       <Floors />
+      <Ceilings />
       <Walls />
       <Stairs />
       <Doors />
@@ -36,4 +37,13 @@ export function House() {
   );
 }
 
-export { Floors, Walls, Stairs, Doors, GenkanEntry, PlanLabels, Compass };
+export {
+  Floors,
+  Ceilings,
+  Walls,
+  Stairs,
+  Doors,
+  GenkanEntry,
+  PlanLabels,
+  Compass,
+};

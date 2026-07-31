@@ -6,72 +6,102 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # AGENTS.md – Japanese House 3D Viewer
 
-## Project Goal
-Build an interactive 3D interior walkthrough of a Japanese residential house based on three floor plans (1F, 2F, PH/roof balcony).
+Coding rules and conventions for AI agents working in this repo.
 
-Support:
-- First-person walkthrough (WASD + mouse)
-- Top-down overview mode
-- Smooth switching between the two modes
-- Later deployment to GitHub Pages
+**Tasks / phases / DoD / milestones / Grok prompts:** **[`TASKS.md`](./TASKS.md)** (source of truth)  
+**Human product overview:** **[`README.md`](./README.md)**
 
-## Current Phase: Phase 1 Only
-Focus exclusively on:
-- Accurate walls, floors, stairs, and door openings
-- Basic first-person controls
-- Top-down camera with pan & zoom
-- Mode switching UI
-- Multi-floor positioning using Y-axis (floor height ≈ 2.7m)
+---
 
-**Do NOT implement yet:**
-- Furniture
-- Detailed materials / textures
-- Complex lighting or post-processing
+## Before you code
+
+1. Read **`TASKS.md`**: current milestone, next task, DoD, out-of-scope.
+2. Obey **cancelled** items there (notably: **no top-down camera / mode switch**).
+3. If geometry is ambiguous, **plan first** and wait for owner confirmation when the task says so.
+4. Prefer `@TASKS.md` + task id in Grok prompts so status stays aligned.
+
+---
+
+## Product context (short)
+
+Interactive **first-person** walkthrough of a Japanese house (1F / 2F / PH plans).  
+Phase work is tracked only in `TASKS.md` — do not invent a parallel roadmap here.
+
+**Controls today:** W/S move, A/D turn 10°, click doors (no pointer lock).
+
+---
+
+## Tech stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS
+- three, @react-three/fiber, @react-three/drei
+- zustand (viewer position / floor HUD)
+
+Do **not** add major dependencies unless the owner explicitly requests them.
+
+---
+
+## Key conventions
+
+| Topic | Rule |
+|-------|------|
+| Units | Meters everywhere |
+| Dimensions | Centralize in `src/data/dimensions.ts`; change data before hardcoding mesh sizes |
+| Coordinates | Plan: +X east, +Z north, +Y up; origin SW. Display may X-mirror the house (`src/lib/coords.ts`) |
+| Geometry (Phase 1 style) | Simple `Box` walls/floors; `MeshStandardMaterial` flat colors |
+| Components | Small, single-responsibility under `src/components/house/` |
+| Height / walk | Use `src/lib/height.ts` + slabs/stairs in dimensions; respect stair-well voids |
+| Run | Must stay runnable with `npm install && npm run dev` |
+| Types | `npx tsc --noEmit` clean before claiming done |
+| Deploy | Stay static-export friendly (GitHub Pages later) |
+
+### Do not implement unless `TASKS.md` says so
+
+- Top-down / orthographic map mode or mode-switch UI (**cancelled**)
 - Physics / collision (rapier)
-- Door opening animations
-- Mobile touch controls (can be added later)
+- Heavy materials, post-processing, mobile touch (later milestones)
+- Re-adding balcony parapets or shortening NE south G2 (**4.55 m** locked)
 
-## Tech Stack
-- Next.js 15 (App Router)
-- TypeScript
-- Tailwind CSS
-- three
-- @react-three/fiber
-- @react-three/drei
-- zustand (recommended for viewer state)
+### Design locks worth re-checking
 
-## Key Conventions
-- All units in meters
-- All dimensions centralized in `src/data/dimensions.ts`
-- Keep components small and single-responsibility
-- Prefer simple Box-based geometry for walls in Phase 1
-- Use MeshStandardMaterial with simple colors only
-- Code must be runnable with `npm install && npm run dev`
+Full table in `TASKS.md` → **Design direction**. Highlights:
 
-## Recommended File Structure
+- Stair well NS **1.82** (option A: lower spur may enter LDK)
+- NE 洋室 west @ **x=6.37**; south G2 **6.37→10.92**
+- Balcony: slab OK; **no door** until T-202
+- No 2F slab over rising upper stair treads
+
+---
+
+## Recommended layout
+
+```
 src/
 ├── app/
 ├── components/
 │   ├── Scene.tsx
 │   ├── Player.tsx
-│   ├── cameras/
+│   ├── cameras/          # First-person only
 │   ├── house/
 │   └── ui/
-├── data/
-│   └── dimensions.ts
+├── data/dimensions.ts
 ├── store/
-└── lib/
+└── lib/                  # coords, height, units
+```
 
-## Development Rules for AI Agents
-1. Always check current phase before adding features.
-2. When modifying geometry, prefer updating `dimensions.ts` first.
-3. Do not introduce new major dependencies unless explicitly requested.
-4. When generating code, explain what was changed and what the next logical step is.
-5. Keep GitHub Pages compatibility in mind (static export friendly).
+---
 
-## Future Phases (for reference only)
-- Phase 2: Multi-floor natural navigation via stairs
-- Phase 3: Basic materials + lighting
-- Phase 4: Furniture placement
-- Phase 5: UI polish + mobile support + GitHub Pages deployment
+## Development rules
 
+1. Always check **`TASKS.md` current phase / next task** before adding features.
+2. Geometry edits: update **`dimensions.ts` first**.
+3. No new major dependencies unless requested.
+4. When finishing work: explain what changed, mark task status in **`TASKS.md`**, point to the next logical task id.
+5. Prefer plan → implement when the owner or task asks for planning.
+6. Keep GitHub Pages / static export in mind for app config.
+
+---
+
+## GROK.md
+
+Repo root `GROK.md` points at this file (`@AGENTS.md`). Agents should still open **`TASKS.md`** for what to build next.
