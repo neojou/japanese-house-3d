@@ -779,3 +779,84 @@ export function createTrenchCoatRoughnessMap(size = 512): THREE.CanvasTexture {
   return tex;
 }
 
+// ─────────────────────────────────────────────────────────────
+// Hero prop: ivory lacquer getabako (subtle palace karakusa)
+// ─────────────────────────────────────────────────────────────
+
+/** Soft ivory lacquer with near-invisible cream karakusa tint. */
+export function createIvoryLacquerAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0x1ac);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const n = fbm(u * 6, v * 8, 4, cache, rand);
+      // Very subtle vine rhythm (karakusa-ish), low contrast
+      const vine =
+        Math.sin(u * Math.PI * 6 + Math.sin(v * Math.PI * 4) * 1.2) *
+        Math.cos(v * Math.PI * 5 + Math.sin(u * Math.PI * 3) * 0.8);
+      const tone = 0.9 + n * 0.06 + vine * 0.018;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(Math.min(1, tone) * 255);
+      img.data[i + 1] = Math.round(Math.min(1, tone * 0.98) * 250);
+      img.data[i + 2] = Math.round(Math.min(1, tone * 0.94) * 240);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+/** Low-relief karakusa / palace scroll normal — readable only under raking light. */
+export function createIvoryLacquerNormalMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0x1ad);
+  const strength = 0.55;
+
+  const heightAt = (u: number, v: number) => {
+    const n = fbm(u * 8, v * 10, 3, cache, rand) * 0.35;
+    const vine =
+      Math.sin(u * Math.PI * 7 + Math.sin(v * 12) * 0.9) *
+      Math.cos(v * Math.PI * 6 + Math.cos(u * 10) * 0.7);
+    const vine2 =
+      Math.sin((u + v) * Math.PI * 9) * Math.cos((u - v) * Math.PI * 5) * 0.5;
+    // Thin scroll lines
+    const line = Math.pow(
+      Math.abs(Math.sin(u * Math.PI * 14 + v * 3)),
+      12,
+    );
+    return n + vine * 0.4 + vine2 * 0.25 + line * 0.35;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 3;
+      const dy = (hy - h0) * strength * 3;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+

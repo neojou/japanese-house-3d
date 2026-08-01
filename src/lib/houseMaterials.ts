@@ -14,6 +14,8 @@ import {
   createStuccoAlbedoMap,
   createStuccoNormalMap,
   createStuccoRoughnessMap,
+  createIvoryLacquerAlbedoMap,
+  createIvoryLacquerNormalMap,
   createTrenchCoatAlbedoMap,
   createTrenchCoatNormalMap,
   createTrenchCoatRoughnessMap,
@@ -131,6 +133,8 @@ let slateNormal: THREE.Texture;
 let trenchAlbedo: THREE.Texture;
 let trenchNormal: THREE.Texture;
 let trenchRough: THREE.Texture;
+let ivoryLacquerAlbedo: THREE.Texture;
+let ivoryLacquerNormal: THREE.Texture;
 
 export type TextureLoadProgress = {
   /** 0–1 */
@@ -265,6 +269,20 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
       step: "SCL 風衣（roughness）…",
       run: () => {
         trenchRough = createTrenchCoatRoughnessMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "SCL 鞋罐（象牙白漆）…",
+      run: () => {
+        ivoryLacquerAlbedo = createIvoryLacquerAlbedoMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "SCL 鞋罐（宮廷紋法線）…",
+      run: () => {
+        ivoryLacquerNormal = createIvoryLacquerNormalMap(512);
       },
     },
   ];
@@ -483,6 +501,41 @@ export function createTrenchCoatMaterial(): THREE.MeshStandardMaterial {
     transparent: true,
     alphaTest: 0.4,
     depthWrite: true,
+  });
+}
+
+/**
+ * Ivory lacquer getabako — soft sheen + subtle palace relief (tokonoma-card).
+ */
+export function createIvoryLacquerMaterial(
+  alongM: number,
+  upM: number,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !ivoryLacquerAlbedo) {
+    return new THREE.MeshStandardMaterial({
+      color: "#f4efe6",
+      roughness: 0.42,
+      metalness: 0.04,
+    });
+  }
+  const repU = Math.max(alongM / 0.55, 0.6);
+  const repV = Math.max(upM / 0.55, 0.6);
+  const maps = cloneMaps(
+    ivoryLacquerAlbedo,
+    ivoryLacquerNormal,
+    null,
+    repU,
+    repV,
+  );
+  return new THREE.MeshStandardMaterial({
+    color: "#f7f2ea",
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.35, 0.35),
+    roughness: 0.38,
+    metalness: 0.06,
+    envMapIntensity: 0.4,
   });
 }
 

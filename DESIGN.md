@@ -120,42 +120,84 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 
 > **Prompt keyword (use this name):**  
 > `tokonoma-card` · 中文可寫 **「床の間卡」** 或 **「Tokonoma Card 風格」**  
-> Example: *「在 2F 廊道掛一幅畫，照 tokonoma-card 呈現」*
+> Example: *「在 2F 廊道掛一幅畫，照 tokonoma-card 呈現」*  
+> Implies: **高貴典雅 + 細節優先** — not a crude box prop.
 
-Not full furniture. A **hero prop** is a single intentional object that rewards close first-person viewing. Placeholder boxes (toilet, sink) stay crude; **Tokonoma Card** items get the full stack below.
+Not full-room furniture. A **hero prop** is a single intentional object (or deliberate paired vignette) that rewards close first-person viewing. Utility placeholders (toilet, sink, curtains) stay crude; **Tokonoma Card** items must feel **designed**, not assembled from stock lumber.
+
+### Aesthetic ethos（精神 — 必讀）
+
+| 原則 | 含義 |
+|------|------|
+| **高貴典雅 (noble · elegant)** | Calm luxury: ivory, honey wood, soft gold hairlines, refined proportion. Never loud, gamey, or “IKEA flat-pack.” |
+| **細節優先 (detail-first)** | Silhouette, moldings, legs, seams, and contents must read **before** relying on a texture slap. Near view in FP should reveal craft. |
+| **低調奢華 (quiet luxury)** | Ornament is sparse and intentional (corner leaves, frame-and-panel, karakusa normals) — not full gilding or brand logos. |
+| **可讀輪廓 (readable form)** | From 0.5–2 m: know *what it is* (coat, getabako, stiletto). Axis-aligned brick stacks are **failure**. |
+| **減法中的焦點** | One object (or one paired vignette) per zone; silence around it; still subtractive vs whole-house clutter. |
+
+**Quality bar (acceptance):** If the owner would describe it as “組合木板／紅色長方形,” it is **not** shipped as tokonoma-card — refine form first.
 
 ### Why this name
 
 Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one** object with restraint: wood backplane, quiet light, no brand noise.  
-**Card** = curved / low-poly display surface (not a full retail mannequin or game loot drop).
+**Card** = crafted display piece (curved card, molded furniture, or small composed mesh group) — **not** a retail mannequin, loot drop, or DIY shelf.
 
-Reference implementation: SCL 蜜金 trench → `CoatDisplay.tsx` + `PROP_1F_SCL_COAT`.
+**References**
+
+| Role | Code |
+|------|------|
+| Wall-hung / curved card | `CoatDisplay.tsx` + `PROP_1F_SCL_COAT` |
+| Floor furniture + contents | `GetabakoDisplay.tsx` + `PROP_1F_SCL_GETABAKO` |
 
 ### Recipe (must follow when prompt says `tokonoma-card`)
 
 | Layer | Spec |
 |-------|------|
-| **1. Intent** | One focal object per zone; subtractive — silence around it |
+| **0. Ethos** | **Noble, elegant, detail-first** — see table above; reject crude box assemblies |
+| **1. Intent** | One focal object per zone **or** a deliberate **paired vignette** (e.g. SCL 落塵: east coat + north getabako); subtractive silence around the pair |
 | **2. Endscape** | Small **wood backboard / shallow niche** (5% wood accent), optional thin charcoal reveal — **not** full-wall cladding |
 | **3. Standoff** | Object **3–5 cm** off wall (or off board) so shadow / depth reads |
-| **4. Form** | Prefer **curved card** or light low-poly over flat billboard if player can walk **beside** it; soft silhouette taper OK |
-| **5. Surface** | Albedo (+ normal / roughness when it helps); 1–2k enough; alpha cutout OK; procedural or `public/props/<id>/` |
-| **6. Light** | **One** short-range warm key; weak residential; **must not** wash genkan yaki or whole room |
+| **4. Form** | Prefer **curved card**, **Lathe / Extrude / moldings**, or composed low-poly with **readable silhouette** over flat billboard. Soft taper, legs, rounded corners, frame-and-panel as needed. Side-walk in room must not collapse to a paper plane or “lumber stack.” |
+| **5. Surface** | Albedo + normal / roughness when it sells lacquer, fabric, grain; 1–2k enough; alpha cutout OK; procedural or `public/props/<id>/`. **Maps support form — they never replace missing form.** |
+| **6. Light** | **One** short-range warm key; weak residential; **must not** wash genkan yaki or whole room; raking light should reveal micro-detail |
 | **7. Brands** | **No trademarks / logos** — generic or “inspired” only |
-| **8. Data / code** | Placement in `dimensions.ts` (`PROP_*`, hero id); mesh under `src/components/house/`; join preload if new procedural maps |
+| **8. Data / code** | Placement in `dimensions.ts` (`PROP_*`, `style: "tokonoma-card"`); mesh under `src/components/house/`; join preload if new procedural maps; **no new major deps** |
 | **9. Plan lock** | Never move plan walls; finishes + additive meshes only |
+| **10. Contents** | If the story needs “something inside / on top,” those pieces must also be **recognizable** and **neatly composed** (tight alignment, intentional spacing) |
 
 ### Not Tokonoma Card (use crude props or different style)
 
-- Utility placeholders (toilet bowl, curtain panels, sink boxes)
-- Whole-room furniture sets, physics toys, neon/game pickups
-- Flat photo posters with no standoff / no light when viewed in-room from the side
+- Utility placeholders (toilet bowl, curtain panels, sink boxes)  
+- Whole-room furniture sets, physics toys, neon/game pickups  
+- Flat photo posters with no standoff / no light when viewed from the side  
+- **Bare multi-box carcasses** that read as “組合木板” without legs, moldings, or proportion  
+- **Abstract content blobs** (e.g. “red bricks” instead of shoes) or sloppy spacing  
+
+### Floor-furniture variant (落地端景)
+
+When the object is a **chest / getabako / console** (not wall-hung art):
+
+- **Readable silhouette first** — not axis-aligned board boxes only  
+- Prefer **Lathe** legs (e.g. soft cabriole), **Extrude** rounded tops / sole outlines, **frame-and-panel** doors, thin aprons / beads  
+- Optional **quiet gold** corner leaves or hairline accents (still restrained)  
+- **Open bay or dual doors** if contents matter; contents = recognizable meshes  
+- Contents layout: tight, aligned, intentional (e.g. shoe pair span ~10–12 cm)  
+- Same ethos + endscape / standoff / one weak key / no brands  
+- Reference: `GetabakoDisplay.tsx` + `PROP_1F_SCL_GETABAKO`
+
+### Wall-hung / soft-goods variant (掛飾／衣物)
+
+- Curved or tapered card; fabric/grain normals; hanger / hardware as thin metal-wood language  
+- Reference: `CoatDisplay.tsx` + `PROP_1F_SCL_COAT`
 
 ### Current hang-points
 
 | Id | Location | Style | Status |
 |----|----------|-------|--------|
 | `hero-1f-scl-trench` | 1F SCL 東牆 — 蜜金 trench | `tokonoma-card` | **Done** |
+| `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
+
+**SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
 Future art / lamp / ceramic: same style name + this table row + owner OK.
 
@@ -237,8 +279,8 @@ When changing look, verify in first-person:
 2. Geometry / walkability / tasks → still **`TASKS.md`**.  
 3. Prefer plan → owner confirm when adding new wood hang-points or L2 features.  
 4. After look changes: update this file if the **principle or hang-point list** changes; update `TASKS.md` changelog for ship status; keep code constants in sync with §2–3.  
-5. Cite principles in PR / task notes when relevant (e.g. “70/25/5”, “texture over swatch”, **`tokonoma-card`**).  
-6. When the owner says **tokonoma-card** / 床の間卡 → implement §2.7 recipe; do not invent a parallel hero style.
+5. Cite principles in PR / task notes when relevant (e.g. “70/25/5”, “texture over swatch”, **`tokonoma-card`**, “detail-first / noble elegant”).  
+6. When the owner says **tokonoma-card** / 床の間卡 → implement §2.7 **including aesthetic ethos** (高貴典雅、細節優先); do not invent a parallel hero style; do not ship crude box stacks as hero props.
 
 ---
 
@@ -256,6 +298,9 @@ When changing look, verify in first-person:
 | 2026-08-01 | Loading: real texture-step progress bar + step names; show scene when ready |
 | 2026-08-01 | §2.7 Hero props; SCL honey-gold trench (curved card + wood endscape + weak key) |
 | 2026-08-02 | Named style **Tokonoma Card** / `tokonoma-card` (床の間卡); prompt keyword + recipe |
+| 2026-08-02 | SCL getabako: ivory lacquer + subtle karakusa; red heels; paired vignette with trench |
+| 2026-08-02 | Getabako refine: cabriole legs, rounded top + gold corners, dual frame-panel doors, stiletto mesh pair |
+| 2026-08-02 | tokonoma-card ethos: 高貴典雅 + 細節優先 (noble elegant, detail-first); quality bar vs 組合木板 |
 
 ---
 

@@ -59,8 +59,8 @@ function buildCoatGeometry(
 
 /**
  * SCL east-wall hero prop in **tokonoma-card** style (DESIGN.md §2.7 / 床の間卡):
- * wood endscape + standoff + curved card trench + one weak warm key.
- * Plan walls unchanged. Reference implementation for future hero props.
+ * 高貴典雅 + 細節優先 — wood endscape + standoff + curved card trench + weak key.
+ * Plan walls unchanged. Wall-hung reference for future hero props.
  */
 export function CoatDisplay() {
   const p = PROP_1F_SCL_COAT;

@@ -10,10 +10,12 @@ import {
 } from "@/data/dimensions";
 import * as THREE from "three";
 import { CoatDisplay } from "./CoatDisplay";
+import { GetabakoDisplay } from "./GetabakoDisplay";
 
 /**
  * Sparse props + M8 hero displays (not full furniture set).
- * Hero style name: **tokonoma-card** (床の間卡) — DESIGN.md §2.7.
+ * Hero: **tokonoma-card** (床の間卡) — 高貴典雅 · 細節優先 — DESIGN.md §2.7.
+ * SCL 落塵 vignette: east trench + north getabako.
  */
 export function Props() {
   return (
@@ -22,6 +24,7 @@ export function Props() {
       <Toilet1F />
       <ToiletCurtain1F />
       <CoatDisplay />
+      <GetabakoDisplay />
     </group>
   );
 }

@@ -243,16 +243,18 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 **DoD:** Key rooms have simple placeholder furniture aligned to plan; no collision required.
 
-**Hero style name:** **`tokonoma-card`** / 床の間卡 — full recipe in **DESIGN.md §2.7** (curved card, wood endscape, standoff, one weak key, no brands).
+**Hero style name:** **`tokonoma-card`** / 床の間卡 — full recipe in **DESIGN.md §2.7**.  
+**Ethos:** **高貴典雅 + 細節優先** (noble elegant, detail-first) — readable silhouette, quiet luxury, not crude box assemblies; form before texture.
 
 **Done so far**
 - [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
+- [x] `hero-1f-scl-getabako` — SCL 北牆象牙白鞋罐（車腳／圓角頂／雙扇框心門／尖頭細跟並攏；落地 tokonoma-card）
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
 
 ```text
-@TASKS.md @DESIGN.md continue T-401. New close-up object: use tokonoma-card (床の間卡) style. No brand trademarks. No new major deps.
+@TASKS.md @DESIGN.md continue T-401. New close-up object: tokonoma-card (床の間卡) — 高貴典雅、細節優先. No brand trademarks. No new major deps. No crude lumber-box heroes.
 ```
 
 ---
@@ -354,3 +356,6 @@ Every task also satisfies:
 | 2026-08-01 | NE south = clN 2.73 (align corridor/south rooms); corridor east → NE door not balcony |
 | 2026-08-01 | M8 hero props: SCL east honey-gold trench (curved card, wood endscape, weak key); DESIGN §2.7 |
 | 2026-08-02 | Style named **tokonoma-card** / 床の間卡; AGENTS + DESIGN prompt keyword |
+| 2026-08-02 | SCL north getabako (ivory + karakusa, red heels, weak key); paired vignette with trench |
+| 2026-08-02 | Getabako quality pass: cabriole legs, dual panel doors, rounded top ornaments, stiletto Extrude+Lathe |
+| 2026-08-02 | Docs: tokonoma-card ethos 高貴典雅 + 細節優先 in DESIGN/AGENTS/TASKS/README |

@@ -748,7 +748,8 @@ export const PROP_1F_TOILET_CURTAIN = {
 
 /**
  * M8 hero prop — style **tokonoma-card** (床の間卡). Full recipe: DESIGN.md §2.7.
- * - Curved card / low-poly + wood endscape + 3–5 cm standoff + one weak warm key
+ * Ethos: 高貴典雅 + 細節優先 (noble elegant, detail-first) — not crude box stacks.
+ * - Curved card / crafted form + wood endscape + 3–5 cm standoff + one weak warm key
  * - No brand marks; data here; mesh under house/; plan walls unchanged
  *
  * 1F SCL east wall: honey-gold trench (Chelsea-inspired silhouette).
@@ -800,6 +801,80 @@ export const PROP_1F_SCL_COAT = {
     metal: "#2a2826",
     barW: 0.42,
     barT: 0.012,
+  },
+} as const;
+
+/**
+ * 1F SCL north wall — ivory getabako (tokonoma-card floor furniture).
+ * Ethos: 高貴典雅 + 細節優先 — cabriole legs, rounded top + gold corners,
+ * dual frame-panel doors, readable stiletto pair (tight).
+ * Paired with east trench as 落塵 vignette. See DESIGN.md §2.7.
+ */
+export const PROP_1F_SCL_GETABAKO = {
+  id: "hero-1f-scl-getabako",
+  style: "tokonoma-card" as const,
+  floor: "1f" as FloorId,
+  label: "SCL象牙白鞋罐",
+  x: (SX.xGenkanE + SX.xSclE) / 2, // ≈ 8.495
+  wallZ: SENMEN_SOUTH_Z, // 4.55
+  wallFaceZ: SENMEN_SOUTH_Z - BUILDING.wallThickness / 2,
+  standoff: 0.04,
+  /** Carcass width / depth (top overhangs slightly) */
+  width: 0.76,
+  depth: 0.32,
+  /** Body height above legs (excludes legs + top slab) */
+  bodyH: 0.72,
+  /** Open upper bay as fraction of bodyH */
+  openBayFrac: 0.4,
+  shell: 0.024,
+  doorInset: 0.01,
+  /** Soft cabriole-style legs */
+  leg: {
+    height: 0.078,
+    /** Outward splay at foot (m from body corner inward inset) */
+    cornerInset: 0.028,
+    splay: 0.012,
+  },
+  /** Molded top slab */
+  top: {
+    overhang: 0.014,
+    thickness: 0.02,
+    cornerR: 0.038,
+  },
+  /** Thin gold corner ornaments on top */
+  cornerOrnament: {
+    size: 0.042,
+    thickness: 0.004,
+    color: "#b8975a",
+  },
+  board: {
+    width: 0.9,
+    height: 1.05,
+    thickness: 0.02,
+    standoff: 0.005,
+  },
+  light: {
+    dx: -0.1,
+    dy: 0.22,
+    dz: -0.42,
+    intensity: 0.3,
+    distance: 1.75,
+    color: "#fff2e0",
+  },
+  heels: {
+    color: "#b01630",
+    sole: "#1a0c10",
+    /** Center-to-center span — tight pair */
+    span: 0.11,
+    heelH: 0.085,
+    length: 0.21,
+    width: 0.072,
+    /** Outward toe yaw (rad), nearly parallel */
+    yaw: 0.04,
+  },
+  handle: {
+    color: "#9a7d4a",
+    metalness: 0.6,
   },
 } as const;
 

@@ -12,6 +12,7 @@ import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
 import { Props } from "./Props";
 import { CoatDisplay } from "./CoatDisplay";
+import { GetabakoDisplay } from "./GetabakoDisplay";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
 /**
@@ -61,6 +62,7 @@ export {
   InteriorFinishes,
   Props,
   CoatDisplay,
+  GetabakoDisplay,
   PlanLabels,
   Compass,
 };
