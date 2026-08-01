@@ -716,20 +716,57 @@ export const TOILET_1F = {
   solidW: 1.82 - 0.7, // 1.12
 } as const;
 
-/** Sit toilet placeholder (west half, facing +X east) */
+/**
+ * 1F sit toilet — tokonoma-card wet fixture (DESIGN.md §2.7).
+ * Placement locked: west half of トイレ, face +X east (tank west, bowl east).
+ * Ethos: 高貴典雅 + 細節優先 — boutique rounded porcelain, not two boxes.
+ */
 export const PROP_1F_TOILET = {
+  id: "hero-1f-toilet",
+  style: "tokonoma-card" as const,
   floor: "1f" as FloorId,
-  /** Bowl/tank group center */
-  x: TOILET_1F.x0 + 0.91 * 0.45, // west half
+  label: "1Fトイレ便器",
+  /** Anchor center (locked) — west half, NS mid */
+  x: TOILET_1F.x0 + 0.91 * 0.45,
   z: (TOILET_1F.z0 + TOILET_1F.z1) / 2,
   y: INTERIOR_FLOOR_Y,
-  /** Local size: depth along face direction (east), width N-S */
+  /** Overall envelope NS width / EW depth (approx, refined mesh inside) */
   width: 0.4,
   depth: 0.65,
-  seatH: 0.4,
-  tankH: 0.75,
-  tankD: 0.2,
-  label: "1Fトイレ便器",
+  /** Tank (west) */
+  tank: {
+    w: 0.36,
+    d: 0.18,
+    h: 0.42,
+    /** Top of tank above finished floor */
+    topY: 0.78,
+  },
+  /** Bowl / seat (east of tank) */
+  bowl: {
+    seatH: 0.4,
+    rimR: 0.17,
+    length: 0.42,
+  },
+  /** Lid open angle (rad) — slight lift toward room east */
+  lidOpenRad: 0.22, // ~12.5°
+  /** Thin wood endscape behind tank on west wall */
+  board: {
+    width: 0.42,
+    height: 0.95,
+    thickness: 0.016,
+    standoff: 0.025,
+  },
+  light: {
+    dx: 0.22,
+    dy: 0.55,
+    dz: 0.08,
+    intensity: 0.26,
+    distance: 1.4,
+    color: "#fff4e8",
+  },
+  porcelain: "#f5f0e8",
+  porcelainInner: "#c8c2ba",
+  button: "#4a4642",
 } as const;
 
 /** Double center-split curtains in south passage (no swing door) */

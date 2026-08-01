@@ -148,6 +148,7 @@ Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one**
 |------|------|
 | Wall-hung / curved card | `CoatDisplay.tsx` + `PROP_1F_SCL_COAT` |
 | Floor furniture + contents | `GetabakoDisplay.tsx` + `PROP_1F_SCL_GETABAKO` |
+| Wet fixture (porcelain) | `ToiletDisplay.tsx` + `PROP_1F_TOILET` |
 
 ### Recipe (must follow when prompt says `tokonoma-card`)
 
@@ -167,7 +168,8 @@ Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one**
 
 ### Not Tokonoma Card (use crude props or different style)
 
-- Utility placeholders (toilet bowl, curtain panels, sink boxes)  
+- Utility placeholders still OK for **curtains / crude sinks** until upgraded; **toilet is no longer a two-box placeholder** once listed as hang-point  
+- Remaining crude: curtain panels, simple sink boxes until tasked  
 - Whole-room furniture sets, physics toys, neon/game pickups  
 - Flat photo posters with no standoff / no light when viewed from the side  
 - **Bare multi-box carcasses** that read as “組合木板” without legs, moldings, or proportion  
@@ -190,12 +192,23 @@ When the object is a **chest / getabako / console** (not wall-hung art):
 - Curved or tapered card; fabric/grain normals; hanger / hardware as thin metal-wood language  
 - Reference: `CoatDisplay.tsx` + `PROP_1F_SCL_COAT`
 
+### Wet-fixture variant (潔具)
+
+When the object is a **toilet / basin** (fixed wet room fixture):
+
+- **Placement / orientation locked** by plan unless owner says otherwise  
+- **Readable porcelain form** — Lathe bowl, rounded tank, seat ring, lid, base skirt; **never** two bare boxes  
+- Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
+- Lid ajar optional for life; single flush button; one weak warm key  
+- Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`
+
 ### Current hang-points
 
 | Id | Location | Style | Status |
 |----|----------|-------|--------|
 | `hero-1f-scl-trench` | 1F SCL 東牆 — 蜜金 trench | `tokonoma-card` | **Done** |
 | `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
+| `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -301,6 +314,7 @@ When changing look, verify in first-person:
 | 2026-08-02 | SCL getabako: ivory lacquer + subtle karakusa; red heels; paired vignette with trench |
 | 2026-08-02 | Getabako refine: cabriole legs, rounded top + gold corners, dual frame-panel doors, stiletto mesh pair |
 | 2026-08-02 | tokonoma-card ethos: 高貴典雅 + 細節優先 (noble elegant, detail-first); quality bar vs 組合木板 |
+| 2026-08-02 | 1F toilet tokonoma-card: boutique lathe bowl, wood endscape, lid ajar; wet-fixture variant |
 
 ---
 

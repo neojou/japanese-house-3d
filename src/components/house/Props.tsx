@@ -4,24 +4,23 @@ import {
   COLORS,
   FLOOR_LEVELS,
   INTERIOR_FLOOR_Y,
-  PROP_1F_TOILET,
   PROP_1F_TOILET_CURTAIN,
   PROP_2F_SINK,
 } from "@/data/dimensions";
 import * as THREE from "three";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
+import { ToiletDisplay } from "./ToiletDisplay";
 
 /**
  * Sparse props + M8 hero displays (not full furniture set).
  * Hero: **tokonoma-card** (床の間卡) — 高貴典雅 · 細節優先 — DESIGN.md §2.7.
- * SCL 落塵 vignette: east trench + north getabako.
  */
 export function Props() {
   return (
     <group name="props">
       <Sink2F />
-      <Toilet1F />
+      <ToiletDisplay />
       <ToiletCurtain1F />
       <CoatDisplay />
       <GetabakoDisplay />
@@ -54,43 +53,6 @@ function Sink2F() {
           roughness={0.25}
           metalness={0.05}
         />
-      </mesh>
-    </group>
-  );
-}
-
-/** Sit toilet facing east (+X): tank on west, bowl extending east. */
-function Toilet1F() {
-  const t = PROP_1F_TOILET;
-  const baseY = t.y;
-  const tankW = t.width;
-  const tankH = t.tankH;
-  const tankD = t.tankD;
-  const seatH = t.seatH;
-  const bowlD = t.depth - tankD;
-  // Tank center (west), bowl center (east of tank)
-  const tankX = t.x - bowlD * 0.15;
-  const bowlX = t.x + tankD * 0.35;
-
-  return (
-    <group name={t.label}>
-      {/* Tank */}
-      <mesh
-        position={[tankX, baseY + tankH / 2, t.z]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[tankD, tankH, tankW]} />
-        <meshStandardMaterial color={COLORS.propPorcelain} roughness={0.4} />
-      </mesh>
-      {/* Bowl / seat */}
-      <mesh
-        position={[bowlX, baseY + seatH / 2, t.z]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[bowlD, seatH, tankW * 0.95]} />
-        <meshStandardMaterial color={COLORS.propPorcelain} roughness={0.35} />
       </mesh>
     </group>
   );

@@ -249,6 +249,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 **Done so far**
 - [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
 - [x] `hero-1f-scl-getabako` — SCL 北牆象牙白鞋罐（車腳／圓角頂／雙扇框心門／尖頭細跟並攏；落地 tokonoma-card）
+- [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -359,3 +360,4 @@ Every task also satisfies:
 | 2026-08-02 | SCL north getabako (ivory + karakusa, red heels, weak key); paired vignette with trench |
 | 2026-08-02 | Getabako quality pass: cabriole legs, dual panel doors, rounded top ornaments, stiletto Extrude+Lathe |
 | 2026-08-02 | Docs: tokonoma-card ethos 高貴典雅 + 細節優先 in DESIGN/AGENTS/TASKS/README |
+| 2026-08-02 | 1F toilet tokonoma-card wet fixture (placement locked; boutique form) |
