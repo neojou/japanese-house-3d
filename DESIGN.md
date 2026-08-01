@@ -207,6 +207,7 @@ When changing look, verify in first-person:
 | 2026-08-01 | Interior walls: 70/25/5 oat/warm-gray/charcoal; plaster grit; ceiling shadow-gaps; wood accents |
 | 2026-08-01 | Genkan-n: clear passage 1.15 m; remove full-width wood seal; side stubs only |
 | 2026-08-01 | Genkan interior: slate dust (genkan+SCL), N/S cove wash, flat iron sconce E-south |
+| 2026-08-01 | Loading: real texture-step progress bar + step names; show scene when ready |
 
 ---
 

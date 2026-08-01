@@ -335,3 +335,4 @@ Every task also satisfies:
 | 2026-08-01 | Fix genkan north block: passage 1.15 m center; no full-width wood panel sealing view |
 | 2026-08-01 | Door-click priority: any raycast door hit skips lock; frames marked interactable |
 | 2026-08-01 | Genkan 落塵: slate genkan+SCL; N/S cove; flat sconce on east wall near door |
+| 2026-08-01 | Loading screen: weighted texture preload + step labels; reveal scene on first ready frame |

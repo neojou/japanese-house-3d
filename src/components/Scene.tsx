@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Environment, PerspectiveCamera } from "@react-three/drei";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { House } from "@/components/house";
 import { Player } from "@/components/Player";
@@ -157,7 +157,34 @@ function HelpOverlay() {
   );
 }
 
-export function Scene() {
+type SceneProps = {
+  /** Fired once after WebGL context + first content frame are ready */
+  onReady?: () => void;
+};
+
+function ReadySignal({ onReady }: { onReady?: () => void }) {
+  const sent = useRef(false);
+  useEffect(() => {
+    if (sent.current || !onReady) return;
+    // Double rAF: after first layout + paint of 3D content
+    let id2 = 0;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => {
+        if (!sent.current) {
+          sent.current = true;
+          onReady();
+        }
+      });
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
+  }, [onReady]);
+  return null;
+}
+
+export function Scene({ onReady }: SceneProps = {}) {
   return (
     <div className="relative h-full w-full min-h-0 flex-1">
       <HelpOverlay />
@@ -172,9 +199,13 @@ export function Scene() {
           toneMappingExposure: 1.12,
         }}
         className="h-full w-full touch-none"
+        onCreated={() => {
+          // Context up; final ready after House mounts (ReadySignal)
+        }}
       >
         <Suspense fallback={null}>
           <SceneContent />
+          <ReadySignal onReady={onReady} />
         </Suspense>
       </Canvas>
     </div>

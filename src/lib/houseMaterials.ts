@@ -126,23 +126,163 @@ let woodNormal: THREE.Texture;
 let slateAlbedo: THREE.Texture;
 let slateNormal: THREE.Texture;
 
+export type TextureLoadProgress = {
+  /** 0–1 */
+  progress: number;
+  /** Chinese step label for UI */
+  step: string;
+};
+
+function yieldToMain(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+}
+
+/** Weighted steps for real progress (yaki 1024 is heaviest). */
+function textureBuildSteps(): { weight: number; step: string; run: () => void }[] {
+  return [
+    {
+      weight: 6,
+      step: "外牆塗料（albedo）…",
+      run: () => {
+        stuccoAlbedo = createStuccoAlbedoMap(512);
+      },
+    },
+    {
+      weight: 10,
+      step: "外牆塗料（法線 grit）…",
+      run: () => {
+        stuccoNormal = createStuccoNormalMap(512);
+      },
+    },
+    {
+      weight: 4,
+      step: "外牆塗料（roughness）…",
+      run: () => {
+        stuccoRough = createStuccoRoughnessMap(256);
+      },
+    },
+    {
+      weight: 20,
+      step: "燒杉紋理（albedo）…",
+      run: () => {
+        yakiAlbedo = createYakiSugiAlbedoMap(1024);
+      },
+    },
+    {
+      weight: 22,
+      step: "燒杉紋理（法線）…",
+      run: () => {
+        yakiNormal = createYakiSugiNormalMap(1024);
+      },
+    },
+    {
+      weight: 8,
+      step: "燒杉紋理（roughness）…",
+      run: () => {
+        yakiRough = createYakiSugiRoughnessMap(512);
+      },
+    },
+    {
+      weight: 6,
+      step: "室內燕麥塗料…",
+      run: () => {
+        oatAlbedo = createInteriorOatAlbedoMap(512);
+      },
+    },
+    {
+      weight: 6,
+      step: "室內珪藻土感法線…",
+      run: () => {
+        oatNormal = createInteriorPlasterNormalMap(512, 0.36);
+      },
+    },
+    {
+      weight: 5,
+      step: "室內暖灰牆面…",
+      run: () => {
+        grayAlbedo = createInteriorWarmGrayAlbedoMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "室內暖灰法線…",
+      run: () => {
+        grayNormal = createInteriorPlasterNormalMap(512, 0.48);
+      },
+    },
+    {
+      weight: 4,
+      step: "室內木質…",
+      run: () => {
+        woodAlbedo = createInteriorWoodAlbedoMap(512);
+      },
+    },
+    {
+      weight: 4,
+      step: "室內木質法線…",
+      run: () => {
+        woodNormal = createInteriorWoodNormalMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "落塵區板岩…",
+      run: () => {
+        slateAlbedo = createSlateAlbedoMap(512, 4);
+      },
+    },
+    {
+      weight: 5,
+      step: "落塵區板岩法線…",
+      run: () => {
+        slateNormal = createSlateNormalMap(512, 4);
+      },
+    },
+  ];
+}
+
+/**
+ * Async preload with progress — yields between steps so the loading UI can paint.
+ * Prefer this on first visit; `ensureFaçadeTextures` remains sync fallback.
+ */
+export async function preloadFaçadeTextures(
+  onProgress?: (p: TextureLoadProgress) => void,
+): Promise<void> {
+  if (typeof document === "undefined") return;
+  if (_ready) {
+    onProgress?.({ progress: 1, step: "材質已就緒" });
+    return;
+  }
+
+  const steps = textureBuildSteps();
+  const total = steps.reduce((s, x) => s + x.weight, 0);
+  let done = 0;
+
+  for (const s of steps) {
+    onProgress?.({ progress: done / total, step: s.step });
+    await yieldToMain();
+    s.run();
+    done += s.weight;
+    onProgress?.({ progress: Math.min(done / total, 0.98), step: s.step });
+  }
+
+  _ready = true;
+  onProgress?.({ progress: 0.98, step: "材質完成，準備場景…" });
+}
+
+/** Sync ensure (used by materials if preload was skipped). */
 export function ensureFaçadeTextures(): void {
   if (_ready || typeof document === "undefined") return;
-  stuccoAlbedo = createStuccoAlbedoMap(512);
-  stuccoNormal = createStuccoNormalMap(512);
-  stuccoRough = createStuccoRoughnessMap(256);
-  yakiAlbedo = createYakiSugiAlbedoMap(1024);
-  yakiNormal = createYakiSugiNormalMap(1024);
-  yakiRough = createYakiSugiRoughnessMap(512);
-  oatAlbedo = createInteriorOatAlbedoMap(512);
-  oatNormal = createInteriorPlasterNormalMap(512, 0.36);
-  grayAlbedo = createInteriorWarmGrayAlbedoMap(512);
-  grayNormal = createInteriorPlasterNormalMap(512, 0.48);
-  woodAlbedo = createInteriorWoodAlbedoMap(512);
-  woodNormal = createInteriorWoodNormalMap(512);
-  slateAlbedo = createSlateAlbedoMap(512, 4);
-  slateNormal = createSlateNormalMap(512, 4);
+  for (const s of textureBuildSteps()) {
+    s.run();
+  }
   _ready = true;
+}
+
+export function areFaçadeTexturesReady(): boolean {
+  return _ready;
 }
 
 export function isExteriorShellId(id: string): boolean {
