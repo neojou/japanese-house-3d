@@ -72,7 +72,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 - **SCL**: EW **1.21** × NS **1.72**; 北貼／共用洗面南 (東段); 南與玄関切齊; 東貼 UB 西; 西牆通道 **0.9**（無門）; 無中隔
 - **玄関**: 同南北帶 z 2.83–4.55 (NS 1.72); 北牆 @4.55 有通道
 - Interior 0.91 module grid (CL / stairs / rooms)
-- L-stair **0.91 + 0.91** (1F→2F & 2F→PH): straight + **90° winders**; **2f-stair-deck** Y=2.7 over well (x4.55–6.37, z4.55–6.37) joins corridor + NE room
+- L-stair **0.91 + 0.91** (1F→2F & 2F→PH): straight + **90° winders**; **exit bridge only** east bay x **5.46–6.37** × z **4.55–6.37** (2F Y=2.7 / PH Y=5.4) — **well open** over straight so stairs visible & walkable down
 - **Stair east screen** @ **x=5.46** (`stairE`), z **4.55–6.37**, oat wall **solid** (no door-aligned pass — that opened a sightline to the stair); enter stair from LDK **south of z=4.55** (option A)
 - LDK door @ genkanW **z 4.55–5.46** (0.91), abut toilet west wall south
 - 1F トイレ: **1.82×0.91** @ x 6.37–8.19, z 5.46–6.37; sit toilet west half facing east; south wall + east **0.7** passage with **double curtains** (no door)
@@ -84,7 +84,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 - U-turn at north: lower 6×0.20 north → mid landing Y=1.7 → upper 5×0.20 south → 2F
 - Tread 0.22; **5 cm overlap** landing ↔ flights (no void gap)
 - **Stair well NS 1.82** (z 4.55–6.37): open hole option **A** — lower spur may enter LDK; do not force entire U into 1.82
-- 2F exit bridge only mid → upper south end (do not slab over rising upper treads)
+- 2F/PH exit = **east bridge only** (do not full-slab the well over rising straight + winders)
 
 ### 2F NE 洋室 6.5 (current focus room)
 
@@ -257,6 +257,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-ub-bathmat` — 浴缸西側白羊毛腳踏（0.5×0.75）
 - [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
 - [x] `hero-1f-ldk-kitchen` — LDK 西 2.175 m 開放廚（南北島＋水槽、南冰箱、暖木淺石）
+- [x] `hero-1f-senmen` — 洗面北牆：西置物籃＋中洗面台豎鏡＋東前開洗衣機
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -375,5 +376,7 @@ Every task also satisfies:
 | 2026-08-02 | UB floor diatom yellow seamless; wool bath mat west of tub |
 | 2026-08-02 | Toilet café curtains: upper 1/3 pink, dogs L/R, rod + rings |
 | 2026-08-02 | LDK open kitchen west 2.175 m (island NS, fridge, wood/stone, tokonoma-card) |
+| 2026-08-02 | 1F senmen north: laundry basket, vanity+vertical mirror, washer |
 | 2026-08-02 | 1F stair east screen @ x=5.46 z4.55–6.37; south 0.91 pass; genkan door sightline |
 | 2026-08-02 | Stair east screen: remove door-aligned pass (was see-through); solid wall; approach S of 4.55 |
+| 2026-08-02 | Stair well open: 2f/ph-stair-deck → east exit bridge only; height prefers stair on descent |

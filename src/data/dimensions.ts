@@ -1153,6 +1153,63 @@ export const SENMEN_1F = {
 const SENMEN_DOOR_FROM = SENMEN_1F.doorFrom;
 
 /**
+ * 1F 洗面 north-wall vignette — tokonoma-card (DESIGN.md §2.7).
+ * Facing north: west basket + laundry, center vanity + vertical mirror, east washer.
+ */
+export const PROP_1F_SENMEN = {
+  id: "hero-1f-senmen",
+  style: "tokonoma-card" as const,
+  floor: "1f" as FloorId,
+  label: "1F洗面",
+  y: INTERIOR_FLOOR_Y,
+  /** North wall interior face */
+  wallZ: IR.north,
+  wallFaceZ: IR.north - BUILDING.wallThickness / 2,
+  standoff: 0.04,
+  /** Vertical mirror above vanity */
+  mirror: {
+    w: 0.48,
+    h: 0.95,
+    t: 0.02,
+    frame: 0.03,
+    /** Bottom of mirror above vanity top */
+    gapAboveVanity: 0.12,
+  },
+  vanity: {
+    w: 1.05,
+    d: 0.52,
+    h: 0.86,
+    /** Center X — middle of senmen */
+    x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
+    wood: "#c4a882",
+    stone: "#f0ebe4",
+  },
+  washer: {
+    w: 0.62,
+    d: 0.64,
+    h: 0.88,
+    /** East — flush-ish to room east */
+    x: SENMEN_1F.x1 - 0.12 - 0.62 / 2,
+    body: "#eef0f2",
+    door: "#d8dce0",
+    glass: "#a8b4bc",
+  },
+  basket: {
+    w: 0.42,
+    d: 0.38,
+    h: 0.36,
+    /** West of vanity */
+    x: SENMEN_1F.x0 + 0.14 + 0.42 / 2,
+    rattan: "#c4a574",
+  },
+  light: {
+    intensity: 0.28,
+    distance: 1.8,
+    color: "#fff2e4",
+  },
+} as const;
+
+/**
  * 1F SCL — EW 1.21 × NS 1.72.
  * 南=玄関南(2.83); 北=洗面南(4.55，東段與洗面南牆共用);
  * 東=UB 西; 西=玄関（中段通道無門）; 室內無中隔.
@@ -1959,37 +2016,36 @@ export const FLOORS_PH: FloorSlab[] = [
     color: "#b0aaa0",
   },
   /**
-   * L-stair top deck @ PH: full well x 4.55–6.37, z 4.55–6.37, Y=5.4.
-   * Fills gap (e.g. 5.92, 4.8) between corridor and north landing band.
-   * Connects winder exit → corridor (south) → balcony door.
+   * PH L-stair exit bridge (east bay only) — open well over straight flight.
+   * Same pattern as 2f-stair-deck: winder exit east → bridge south → corridor.
    */
   {
     id: "ph-stair-deck",
     floor: "ph",
     y: Y_PH,
     rect: {
-      x: PH_HALL.x0, // 4.55
+      x: IR.stairE, // 5.46
       z: PH_HALL.wellZ0, // 4.55
-      width: PH_HALL.width, // 1.82
+      width: IR.genkanW - IR.stairE, // 0.91
       depth: PH_HALL.wellDepth, // 1.82
     },
     thickness: T_PH,
-    label: "PH梯口甲板",
+    label: "PH梯口東橋",
     color: "#b8b4ac",
   },
-  // North band still listed for clarity (overlaps deck; harmless)
+  // North band east only (overlaps east bridge; west well open)
   {
     id: "ph-hall-landing-top",
     floor: "ph",
     y: Y_PH,
     rect: {
-      x: PH_HALL.x0,
+      x: IR.stairE,
       z: PH_HALL.landZ0,
-      width: PH_HALL.width,
+      width: IR.genkanW - IR.stairE,
       depth: PH_HALL.landZ1 - PH_HALL.landZ0,
     },
     thickness: T_PH,
-    label: "PH梯間北平台面",
+    label: "PH梯間北東平台",
     color: "#b8b4ac",
   },
 ];
@@ -2168,7 +2224,7 @@ const T2 = BUILDING.slabThickness;
 /**
  * 2F walkable floors.
  * South rooms z0–2.73; corridor 2.73–3.64; north wing 3.64–6.37.
- * Stair well / deck still z 4.55–6.37 (1F). Approach strip 3.64–4.55 to deck.
+ * Stair well z 4.55–6.37 open; east exit bridge only (not full deck). Approach 3.64–4.55.
  * NE G2 4.55 m EW @ z=clN. Balcony south of G2.
  */
 export const FLOORS_2F: FloorSlab[] = [
@@ -2268,21 +2324,23 @@ export const FLOORS_2F: FloorSlab[] = [
     color: "#b0aaa0",
   },
   /**
-   * L-stair top deck: full well x 4.55–6.37, z 4.55–6.37 @ Y=2.7.
-   * mid-climb snap limited by maxStepUp 0.55.
+   * L-stair exit bridge only (east bay of well) — NOT full well slab.
+   * Winder exit faces east into x≈5.46–6.37; west bay (straight) stays open
+   * so looking down sees stairs and height sampling can step onto treads.
+   * Walk: bridge → south onto 2f-stair-approach → corridor.
    */
   {
     id: "2f-stair-deck",
     floor: "2f",
     y: Y2,
     rect: {
-      x: IR.clE, // 4.55
+      x: IR.stairE, // 5.46 — east of straight flight
       z: Z2.wellS, // 4.55
-      width: IR.genkanW - IR.clE, // 1.82
+      width: IR.genkanW - IR.stairE, // 0.91
       depth: Z2.north - Z2.wellS, // 1.82
     },
     thickness: T2,
-    label: "2F梯口甲板",
+    label: "2F梯口東橋",
     color: "#b8b4ac",
   },
   /**

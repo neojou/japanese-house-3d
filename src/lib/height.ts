@@ -217,15 +217,35 @@ function isOverInteriorFloor(planX: number, planZ: number): boolean {
   return false;
 }
 
+function isStairish(h: SurfaceHit): boolean {
+  return h.kind === "stair" || h.kind === "landing" || h.kind === "step";
+}
+
 function pickBest(hits: SurfaceHit[]): number {
   if (hits.length === 0) return 0;
   const maxY = Math.max(...hits.map((h) => h.y));
   const top = hits.filter((h) => Math.abs(h.y - maxY) < 1e-6);
-  const preferred = top.find(
-    (h) =>
-      h.kind === "stair" || h.kind === "landing" || h.kind === "step",
-  );
+  const preferred = top.find((h) => isStairish(h));
   return preferred ? preferred.y : maxY;
+}
+
+/**
+ * When a coplanar/higher slab would trap the player on a deck over stairs,
+ * prefer the highest stair tread within maxStepDown of current feet.
+ */
+function pickDescent(
+  hits: SurfaceHit[],
+  feetY: number,
+  maxStepDown: number,
+): number | null {
+  const stairDown = hits.filter(
+    (h) =>
+      isStairish(h) &&
+      h.y < feetY - 0.02 &&
+      h.y >= feetY - maxStepDown - 0.02,
+  );
+  if (stairDown.length === 0) return null;
+  return Math.max(...stairDown.map((h) => h.y));
 }
 
 /**
@@ -246,11 +266,15 @@ export function getGroundHeight(
 
   const inWindow = all.filter((h) => h.y >= lo && h.y <= hi);
   if (inWindow.length > 0) {
+    const down = pickDescent(inWindow, feetY, maxStepDown);
+    if (down !== null) return down;
     return pickBest(inWindow);
   }
 
   const stepUpOk = all.filter((h) => h.y <= hi);
   if (stepUpOk.length > 0) {
+    const down = pickDescent(stepUpOk, feetY, maxStepDown);
+    if (down !== null) return down;
     return pickBest(stepUpOk);
   }
 
