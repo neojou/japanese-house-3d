@@ -89,22 +89,23 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 
 | Element | Spec |
 |---------|------|
-| West wall | x = 6.37 (stair \| room); door in **0.91** hall band (z 3.64–4.55); hinge S / handle N; open into room (+X) |
+| West wall | x = 6.37 (stair \| room); door in **corridor band** (z **2.73–3.64**); hinge S / handle N; open into room (+X) |
 | North / East | Solid exterior |
-| South G2 | Floor-to-ceiling glass **4.55 m** = 2.73 + 1.82, z = mid (3.64), west 6.37 → east **10.92** (meets east wall) |
-| Balcony | **Two rects** south of NE G2: west **2.73×1.11** (z 2.53–3.64), east **1.82×0.91** (z 2.73–3.64); west overhangs genkan **0.30 m**; warm-grey slab + soffit; 3 downlights + door-east sconce; **no parapet**; **no door** (T-202 deferred) |
-| 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** (rooms + corridor + north wing); stair well NS 1.82 → corridor = 2.73−1.82 |
-| South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (3.64)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
-| Corridor | z **3.64–4.55**, x **1.82–6.37** (west jog 0.91), slab Y=2.7; SW door → indoors |
-| NW jog | x 1.82–2.73, NS **1.365** (clN→nwJogN); solid wall to トイレ (no door); sink prop on north |
+| South G2 | Floor-to-ceiling glass **4.55 m** = 2.73 + 1.82, z = **clN (2.73)**, west 6.37 → east **10.92** |
+| Balcony | **Two rects** south of G2 @ clN: west **2.73×1.11** (z **1.62–2.73**), east **1.82×0.91** (z **1.82–2.73**); warm-grey slab + soffit; 3 downlights + door-east sconce; **no parapet**; **no door** (T-202 deferred) |
+| 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**; clN=2.73, corrN=3.64; well z 4.55–6.37 |
+| South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (2.73)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
+| Corridor | z **2.73–3.64**, x **1.82–6.37** (west jog 0.91); **east faces NE door** (not balcony) |
+| NE 洋室 | South = **clN (2.73)** = 廊南／南房北; z **2.73–6.37** (depth 3.64); G2 @ clN; west door in corridor band |
+| NW jog | x 1.82–2.73, NS **1.365** (corrN→nwJogN); solid wall to トイレ (no door); sink prop on north |
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
-| トイレ | North of corridor; door @ **corrN (4.55)** from corridor |
-| 2F ceiling | Soffit **Y=5.2** (2.7+2.5); indoor slabs only; balcony + stair well open |
+| トイレ | North of corridor; door @ **corrN (3.64)** from corridor |
+| 2F ceiling | Soffit **Y=5.2**; indoor slabs only; balcony + stair well open |
 | PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37; 4 walls + ceiling; south door → roof |
 | PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
 | PH stair | Same L as 1F→2F; exit onto deck → corr → balcony |
 | PH balcony | x 0–6.37, z **0–3.64**, Y=5.4; parapet **1.4 m** (N only west of hall) |
-| Plan CL between stair\|NE | **Not built** (locked: stair\|room direct @ x=6.37) |
+| Plan CL between stair\|NE | **Not built** (stair\|room direct @ x=6.37) |
 
 ### Height sampling (`src/lib/height.ts`)
 
@@ -336,3 +337,6 @@ Every task also satisfies:
 | 2026-08-01 | Door-click priority: any raycast door hit skips lock; frames marked interactable |
 | 2026-08-01 | Genkan 落塵: slate genkan+SCL; N/S cove; flat sconce on east wall near door |
 | 2026-08-01 | Loading screen: weighted texture preload + step labels; reveal scene on first ready frame |
+| 2026-08-01 | Fix NS swing doors: baseYaw −π/2 + open angle (senmen closed leaf on opening) |
+| 2026-08-01 | 2F regrid: south z=0 flush 1F; 2.73+0.91+2.73; remove SW 0.91 exterior notch |
+| 2026-08-01 | NE south = clN 2.73 (align corridor/south rooms); corridor east → NE door not balcony |

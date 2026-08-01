@@ -45,6 +45,15 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
       ? [hingeAlong, sillY, def.wallZ]
       : [def.wallX, sillY, hingeAlong];
 
+  /**
+   * NS walls: leaf local +X must map to +Z when closed so the leaf fills the
+   * wall opening (hinge@min → leaf toward +Z; hinge@max + leafDir-1 → −Z).
+   * Three.js R_y(-π/2): (x,0,0) → (0,0,x).
+   * Must ADD open angle to baseYaw — never overwrite base with angle alone
+   * (that left NS doors closed along world X, off the opening).
+   */
+  const baseYaw = def.axis === "ns" ? -Math.PI / 2 : 0;
+
   const onClick = useCallback((e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     setOpen((v) => !v);
@@ -53,7 +62,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
   useFrame((_, dt) => {
     const target = open ? openRad : 0;
     angle.current = THREE.MathUtils.damp(angle.current, target, 10, dt);
-    if (hingeRef.current) hingeRef.current.rotation.y = angle.current;
+    if (hingeRef.current) {
+      hingeRef.current.rotation.y = baseYaw + angle.current;
+    }
   });
 
   const ptr = {
@@ -65,12 +76,6 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
       document.body.style.cursor = "auto";
     },
   };
-
-  // Local leaf: along +X in hinge local space, then rotate group for NS walls
-  const groupRotY = def.axis === "ns" ? Math.PI / 2 : 0;
-  // For NS walls: local +X should map to +Z or -Z depending on hinge
-  // wall NS: opening along Z. hinge at min Z, leaf toward +Z → local +X after rotY(π/2) goes to +Z.
-  // hinge at max Z, leafDir -1 → leaf toward -Z. Good if we place leaf at leafDir * leafW/2 on local X.
 
   return (
     <group name={def.id} userData={{ interactable: "door" }}>
@@ -170,7 +175,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
       <group
         ref={hingeRef}
         position={hingePos}
-        rotation={[0, groupRotY, 0]}
+        rotation={[0, baseYaw, 0]}
         userData={{ interactable: "door" }}
       >
         <mesh

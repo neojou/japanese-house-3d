@@ -222,12 +222,12 @@ export function InteriorFinishes() {
         <boxGeometry args={[SX.xLdkE * 0.72, 0.12, 0.18]} />
       </mesh>
 
-      {/* 2F G2 interior sill band */}
+      {/* 2F G2 interior sill band (NE south @ clN = 2.73) */}
       <mesh
         position={[
           (IR.genkanW + SX.xEast) / 2,
           FLOOR_LEVELS["2f"] + 0.12,
-          IR.mid + halfT + 0.015,
+          2.73 + halfT + 0.015,
         ]}
         material={matWood}
       >

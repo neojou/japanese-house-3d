@@ -52,13 +52,13 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 | Stairs | **L 形**：直線 0.91 + **90° 踢步** 0.91；轉完＝2F；**2f-stair-deck** 蓋滿井 x4.55–6.37×z4.55–6.37 接廊道／東北室 |
 | 1F トイレ | **1.82×0.91**（x 6.37–8.19, z 5.46–6.37）；西半坐便朝東；南牆東側 0.7 通道 + **雙片門簾**（無門） |
 | 1F 洗面 | **EW 2.73**（x 8.19–10.92, 西貼トイレ）；NS 1.82；西牆**南側 0.91** 門（鉸鏈南／把手北，開進室內） |
-| 2F NS | **2.73 (南翼) + 0.91 (廊道) + 2.73 (北翼) = 6.37**（與 1F 對齊） |
-| 2F south wing | 洋室6.5 / CL×2 / 洋室6；房門 @ z=3.64 → **廊道**；兩門夾 CL、開向相對；南 CL 只東、北 CL 只西 |
-| 2F 廊道 | z 3.64–4.55、**x 1.82–6.37**（西推 0.91），Y=2.7；西南門開向室內廊 |
+| 2F NS | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**（與 1F 南西切齊，無舊 0.91 凹槽） |
+| 2F south wing | 洋室6.5 / CL×2 / 洋室6；房門 @ **clN z=2.73** → **廊道**；兩門夾 CL、開向相對；南 CL 只東、北 CL 只西 |
+| 2F 廊道 | z **2.73–3.64**、**x 1.82–6.37**（西推 0.91），Y=2.7；**東端對 NE 西門**（非陽台） |
 | 2F 西北凸角 | 0.91×1.365；西牆 @1.82；與トイレ **實牆無門**；北牆簡易洗手台 |
-| 2F NE 洋室 | West door @ x=6.37（廊道帶）；G2 **4.55 m** |
-| 2F トイレ | 廊道北側 z=4.55 開門（井西） |
-| Balcony | Dual slabs S of NE: W **2.73×1.11**, E **1.82×0.91**; 30 cm over genkan; soffit lights + door-east sconce; no parapet/door yet |
+| 2F NE 洋室 | 南 = clN 2.73；West door @ x=6.37（廊道帶 z 2.73–3.64）；G2 **4.55 m** @ clN |
+| 2F トイレ | 廊道北側 z=**3.64** 開門（井西） |
+| Balcony | Dual slabs S of G2 @ clN: W **2.73×1.11** (z 1.62–2.73), E **1.82×0.91** (z 1.82–2.73); soffit lights + door-east sconce; no parapet/door yet |
 | 1F ceiling | Soffit Y=2.5; open over stair well |
 | 2F ceiling | Soffit Y=5.2 over indoor rooms/corridor/toilet/NE; **no** slab on balcony or stair well |
 | PH / 3F | L 梯 + **ph-stair-deck** 蓋井 z4.55–6.37；廊 0.91→南門→陽台 6.37×3.64 @ Y=5.4；矮牆 **1.4 m** |
