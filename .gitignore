@@ -16,9 +16,12 @@ mygrok
 # testing
 /coverage
 
-# next.js
+# next.js (legacy — remove after cleanup)
 /.next/
 /out/
+
+# vite
+/dist/
 
 # production
 /build

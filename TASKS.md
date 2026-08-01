@@ -380,3 +380,4 @@ Every task also satisfies:
 | 2026-08-02 | 1F stair east screen @ x=5.46 z4.55–6.37; south 0.91 pass; genkan door sightline |
 | 2026-08-02 | Stair east screen: remove door-aligned pass (was see-through); solid wall; approach S of 4.55 |
 | 2026-08-02 | Stair well open: 2f/ph-stair-deck → east exit bridge only; height prefers stair on descent |
+| 2026-08-02 | Migrate Next.js → Vite SPA (React 19, Tailwind 4, base /japanese-house-3d/, dist for Pages) |

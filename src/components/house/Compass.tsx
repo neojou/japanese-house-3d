@@ -1,4 +1,3 @@
-"use client";
 
 import { BUILDING, COLORS } from "@/data/dimensions";
 

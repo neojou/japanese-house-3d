@@ -1,4 +1,3 @@
-"use client";
 
 import { COLORS, FLOOR_LEVELS, PROP_2F_SINK } from "@/data/dimensions";
 import { CoatDisplay } from "./CoatDisplay";

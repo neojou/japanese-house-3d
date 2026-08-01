@@ -1,4 +1,3 @@
-"use client";
 
 type Props = {
   /** 0-1 */

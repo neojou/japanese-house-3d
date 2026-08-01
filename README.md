@@ -16,6 +16,13 @@ Walk the house at eye height: walls, floors, stairs, and clickable doors match t
 
 ---
 
+## Stack
+
+**Vite + React 19 + TypeScript + React Three Fiber + Tailwind CSS v4 + zustand**  
+(static SPA — no Next.js; output `dist/` for GitHub Pages)
+
+---
+
 ## Run
 
 ```bash
@@ -23,7 +30,32 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:5173/japanese-house-3d/](http://localhost:5173/japanese-house-3d/)  
+(`base` is `/japanese-house-3d/` for GitHub Pages — same path in dev.)
+
+```bash
+npm run build    # → dist/
+npm run preview  # serve dist locally
+```
+
+### GitHub Pages
+
+1. `npm run build`
+2. Deploy **`dist/`** contents to `gh-pages` (or Actions `peaceiris/actions-gh-pages`)
+3. Site: `https://<user>.github.io/japanese-house-3d/`
+4. `vite.config.ts` → `base: '/japanese-house-3d/'` (repo name)
+
+---
+
+### Vite migration checklist
+
+- [ ] `npm install` succeeds (no `next` dependency)
+- [ ] `npm run dev` loads LoadingScreen → 3D scene
+- [ ] Pointer lock, WASD, doors, stairs still work
+- [ ] `npm run build` produces `dist/index.html` + assets
+- [ ] `npm run preview` works under `/japanese-house-3d/`
+- [ ] No remaining `next/*` or `"use client"` in `src/`
+- [ ] `@/` imports resolve (alias in vite + tsconfig)
 
 ---
 

@@ -1,4 +1,3 @@
-"use client";
 
 import { Text } from "@react-three/drei";
 import { PLAN_LABELS } from "@/data/dimensions";

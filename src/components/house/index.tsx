@@ -1,4 +1,3 @@
-"use client";
 
 import { Floors } from "./Floors";
 import { Walls } from "./Walls";

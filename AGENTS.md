@@ -37,11 +37,13 @@ Phase work is tracked only in `TASKS.md` — do not invent a parallel roadmap he
 
 ## Tech stack
 
-- Next.js (App Router) + TypeScript + Tailwind CSS
+- **Vite** + React 19 + TypeScript + Tailwind CSS v4
 - three, @react-three/fiber, @react-three/drei
 - zustand (viewer position / floor HUD)
+- Static SPA (`dist/`); GitHub Pages `base: /japanese-house-3d/`
 
-Do **not** add major dependencies unless the owner explicitly requests them.
+Do **not** add major dependencies unless the owner explicitly requests them.  
+Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 
 ---
 

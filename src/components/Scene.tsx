@@ -1,4 +1,3 @@
-"use client";
 
 import { Canvas } from "@react-three/fiber";
 import { Environment, PerspectiveCamera } from "@react-three/drei";

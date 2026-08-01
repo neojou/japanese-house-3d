@@ -1,4 +1,3 @@
-"use client";
 
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ThreeEvent, useFrame } from "@react-three/fiber";

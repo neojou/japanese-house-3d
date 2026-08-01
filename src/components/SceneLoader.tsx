@@ -1,19 +1,15 @@
-"use client";
-
-import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { preloadFaçadeTextures } from "@/lib/houseMaterials";
 
 /**
- * Client-only loader:
- * 1) Show progress while building procedural textures (real steps + names)
+ * Client-only loader (Vite SPA — no SSR):
+ * 1) Show progress while building procedural textures
  * 2) Mount Canvas only after textures ready
  * 3) Hide overlay when first frame reports ready
  */
-const Scene = dynamic(
-  () => import("@/components/Scene").then((m) => m.Scene),
-  { ssr: false },
+const Scene = lazy(() =>
+  import("@/components/Scene").then((m) => ({ default: m.Scene })),
 );
 
 export function SceneLoader() {
@@ -29,13 +25,11 @@ export function SceneLoader() {
     (async () => {
       setStep("載入 3D 模組…");
       setProgress(0.02);
-      // Allow dynamic import of Scene to start while we prepare copy
       await new Promise((r) => setTimeout(r, 0));
       if (cancelled) return;
 
       await preloadFaçadeTextures((p) => {
         if (cancelled) return;
-        // Reserve 0–90% for textures; last 10% for first frame
         setProgress(0.02 + p.progress * 0.88);
         setStep(p.step);
       });
@@ -54,7 +48,6 @@ export function SceneLoader() {
   const onSceneReady = useCallback(() => {
     setProgress(1);
     setStep("完成");
-    // Brief paint of 100% then fade out overlay
     requestAnimationFrame(() => {
       setFading(true);
       window.setTimeout(() => setSceneReady(true), 120);
@@ -74,7 +67,9 @@ export function SceneLoader() {
             sceneReady || fading ? "opacity-100" : "opacity-0"
           }`}
         >
-          <Scene onReady={onSceneReady} />
+          <Suspense fallback={null}>
+            <Scene onReady={onSceneReady} />
+          </Suspense>
         </div>
       )}
     </div>
