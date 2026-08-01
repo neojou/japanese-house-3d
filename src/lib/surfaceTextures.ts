@@ -1269,3 +1269,217 @@ export function createBathHexPatchworkNormalMap(
   return canvasToTexture(canvas);
 }
 
+// ─────────────────────────────────────────────────────────────
+// Toilet café curtains: pink fabric + kawaii dogs
+// ─────────────────────────────────────────────────────────────
+
+function fillPinkFabric(
+  ctx: CanvasRenderingContext2D,
+  size: number,
+  seed: number,
+) {
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(seed);
+  const br = 242,
+    bg = 184,
+    bb = 196;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const n = fbm(u * 14, v * 18, 4, cache, rand);
+      const weave = Math.sin(u * 80) * Math.sin(v * 90) * 0.5 + 0.5;
+      const t = (n - 0.5) * 12 + (weave - 0.5) * 6;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.min(255, Math.max(0, br + t));
+      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.85));
+      img.data[i + 2] = Math.min(255, Math.max(0, bb + t * 0.9));
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+function drawKawaiiChihuahua(ctx: CanvasRenderingContext2D, size: number) {
+  const cx = size * 0.5;
+  const cy = size * 0.52;
+  const s = size * 0.22;
+  ctx.fillStyle = "#8b5a3c";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + s * 0.85, s * 0.85, s * 0.7, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(cx, cy - s * 0.15, s * 0.95, s * 0.9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx - s * 0.55, cy - s * 0.5);
+  ctx.lineTo(cx - s * 1.15, cy - s * 1.55);
+  ctx.lineTo(cx - s * 0.15, cy - s * 0.85);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx + s * 0.55, cy - s * 0.5);
+  ctx.lineTo(cx + s * 1.15, cy - s * 1.55);
+  ctx.lineTo(cx + s * 0.15, cy - s * 0.85);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#e8a090";
+  ctx.beginPath();
+  ctx.moveTo(cx - s * 0.5, cy - s * 0.55);
+  ctx.lineTo(cx - s * 0.95, cy - s * 1.35);
+  ctx.lineTo(cx - s * 0.25, cy - s * 0.8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx + s * 0.5, cy - s * 0.55);
+  ctx.lineTo(cx + s * 0.95, cy - s * 1.35);
+  ctx.lineTo(cx + s * 0.25, cy - s * 0.8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#c4a090";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + s * 0.25, s * 0.45, s * 0.35, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#1a120e";
+  ctx.beginPath();
+  ctx.arc(cx - s * 0.32, cy - s * 0.2, s * 0.14, 0, Math.PI * 2);
+  ctx.arc(cx + s * 0.32, cy - s * 0.2, s * 0.14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(cx - s * 0.28, cy - s * 0.25, s * 0.05, 0, Math.PI * 2);
+  ctx.arc(cx + s * 0.36, cy - s * 0.25, s * 0.05, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#2a1810";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + s * 0.22, s * 0.12, s * 0.1, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#2a1810";
+  ctx.lineWidth = size * 0.008;
+  ctx.beginPath();
+  ctx.arc(cx, cy + s * 0.32, s * 0.18, 0.15, Math.PI - 0.15);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(255,140,150,0.45)";
+  ctx.beginPath();
+  ctx.ellipse(cx - s * 0.55, cy + s * 0.1, s * 0.16, s * 0.1, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx + s * 0.55, cy + s * 0.1, s * 0.16, s * 0.1, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawKawaiiPomeranian(ctx: CanvasRenderingContext2D, size: number) {
+  const cx = size * 0.5;
+  const cy = size * 0.5;
+  const s = size * 0.2;
+  ctx.fillStyle = "#1a1a1c";
+  for (const [ox, oy, rx, ry] of [
+    [0, 0.1, 1.15, 1.1],
+    [-0.5, -0.3, 0.55, 0.7],
+    [0.5, -0.3, 0.55, 0.7],
+    [0, 0.9, 0.9, 0.75],
+    [-0.7, 0.4, 0.5, 0.55],
+    [0.7, 0.4, 0.5, 0.55],
+  ] as const) {
+    ctx.beginPath();
+    ctx.ellipse(cx + ox * s, cy + oy * s, rx * s, ry * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = "#2a2a2e";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + s * 0.05, s * 0.7, s * 0.65, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#121214";
+  ctx.beginPath();
+  ctx.ellipse(cx - s * 0.55, cy - s * 0.55, s * 0.28, s * 0.4, -0.3, 0, Math.PI * 2);
+  ctx.ellipse(cx + s * 0.55, cy - s * 0.55, s * 0.28, s * 0.4, 0.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#0a0a0c";
+  ctx.beginPath();
+  ctx.arc(cx - s * 0.28, cy - s * 0.05, s * 0.13, 0, Math.PI * 2);
+  ctx.arc(cx + s * 0.28, cy - s * 0.05, s * 0.13, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(cx - s * 0.24, cy - s * 0.1, s * 0.045, 0, Math.PI * 2);
+  ctx.arc(cx + s * 0.32, cy - s * 0.1, s * 0.045, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#0a0a0c";
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + s * 0.22, s * 0.11, s * 0.09, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#0a0a0c";
+  ctx.lineWidth = size * 0.007;
+  ctx.beginPath();
+  ctx.arc(cx, cy + s * 0.3, s * 0.16, 0.2, Math.PI - 0.2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(255,130,150,0.4)";
+  ctx.beginPath();
+  ctx.ellipse(cx - s * 0.48, cy + s * 0.15, s * 0.14, s * 0.09, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx + s * 0.48, cy + s * 0.15, s * 0.14, s * 0.09, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+/** Left café curtain: pink + brown chihuahua (entering view). */
+export function createToiletCurtainChihuahuaMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  fillPinkFabric(ctx, size, 0xc001);
+  drawKawaiiChihuahua(ctx, size);
+  const tex = canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
+/** Right café curtain: pink + black Pomeranian (entering view). */
+export function createToiletCurtainPomeranianMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  fillPinkFabric(ctx, size, 0xc002);
+  drawKawaiiPomeranian(ctx, size);
+  const tex = canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
+/** Soft fabric normal for café curtains. */
+export function createCurtainFabricNormalMap(size = 256): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0xc00a);
+  const strength = 0.7;
+
+  const heightAt = (u: number, v: number) => {
+    const folds = Math.sin(u * Math.PI * 6) * 0.4;
+    const n = fbm(u * 20, v * 24, 3, cache, rand);
+    return 0.5 + folds * 0.3 + n * 0.3;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 3;
+      const dy = (hy - h0) * strength * 3;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+

@@ -1,16 +1,10 @@
 "use client";
 
-import {
-  COLORS,
-  FLOOR_LEVELS,
-  INTERIOR_FLOOR_Y,
-  PROP_1F_TOILET_CURTAIN,
-  PROP_2F_SINK,
-} from "@/data/dimensions";
-import * as THREE from "three";
+import { COLORS, FLOOR_LEVELS, PROP_2F_SINK } from "@/data/dimensions";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
 import { ToiletDisplay } from "./ToiletDisplay";
+import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
 
 /**
@@ -22,7 +16,7 @@ export function Props() {
     <group name="props">
       <Sink2F />
       <ToiletDisplay />
-      <ToiletCurtain1F />
+      <ToiletCurtainDisplay />
       <CoatDisplay />
       <GetabakoDisplay />
       <TubDisplay />
@@ -55,38 +49,6 @@ function Sink2F() {
           roughness={0.25}
           metalness={0.05}
         />
-      </mesh>
-    </group>
-  );
-}
-
-/** Double center-split curtains in toilet south passage. */
-function ToiletCurtain1F() {
-  const c = PROP_1F_TOILET_CURTAIN;
-  const baseY = INTERIOR_FLOOR_Y;
-  const panelW = (c.passW - c.panelGap) / 2;
-  const midX = c.x;
-  const y = baseY + c.height / 2;
-  const z = c.z + c.thickness; // slightly inside room (+Z)
-
-  const curtainMat = {
-    color: COLORS.propCurtain,
-    roughness: 0.9,
-    transparent: true,
-    opacity: 0.55,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  } as const;
-
-  return (
-    <group name={c.label}>
-      <mesh position={[midX - panelW / 2 - c.panelGap / 2, y, z]}>
-        <boxGeometry args={[panelW, c.height, c.thickness]} />
-        <meshStandardMaterial {...curtainMat} />
-      </mesh>
-      <mesh position={[midX + panelW / 2 + c.panelGap / 2, y, z]}>
-        <boxGeometry args={[panelW, c.height, c.thickness]} />
-        <meshStandardMaterial {...curtainMat} />
       </mesh>
     </group>
   );

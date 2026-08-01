@@ -254,6 +254,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-ub-tub` — UB 東半南北獨立浴缸（弧線瓷白、南落地香檳金龍頭、裝飾水面）
 - [x] `ub-bath-finish` — UB：南 seamless 深灰；東 hex 青拼布；地鵝黃珪藻土整片；浴缸實底＋龍頭
 - [x] `hero-1f-ub-bathmat` — 浴缸西側白羊毛腳踏（0.5×0.75）
+- [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -370,3 +371,4 @@ Every task also satisfies:
 | 2026-08-02 | UB bath marble walls/floor; split east-wing slabs; interior clad on S/E |
 | 2026-08-02 | UB east hex patchwork; large floor tiles; tub opaque basin + faucet assembly |
 | 2026-08-02 | UB floor diatom yellow seamless; wool bath mat west of tub |
+| 2026-08-02 | Toilet café curtains: upper 1/3 pink, dogs L/R, rod + rings |

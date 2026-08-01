@@ -908,17 +908,28 @@ export const PROP_1F_UB_TUB = {
   },
 } as const;
 
-/** Double center-split curtains in south passage (no swing door) */
+/**
+ * 1F toilet south-passage café curtains (tokonoma-card).
+ * Upper third only; entering from south: left=chihuahua, right=Pomeranian.
+ */
 export const PROP_1F_TOILET_CURTAIN = {
+  id: "hero-1f-toilet-curtain",
+  style: "tokonoma-card" as const,
   floor: "1f" as FloorId,
   /** Passage center X */
   x: TOILET_1F.x0 + TOILET_1F.solidW + TOILET_1F.passW / 2,
   z: TOILET_1F.z0,
-  y: INTERIOR_FLOOR_Y,
   passW: TOILET_1F.passW,
-  height: 1.9,
-  panelGap: 0.02,
-  thickness: 0.02,
+  /** Full clear opening height (for top alignment) */
+  openingH: INT_DOOR_H,
+  /** Café curtain = upper third */
+  heightFrac: 1 / 3,
+  panelGap: 0.025,
+  thickness: 0.018,
+  rod: {
+    radius: 0.008,
+    color: "#c4a574",
+  },
   label: "1Fトイレ門簾",
 } as const;
 

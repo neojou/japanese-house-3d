@@ -22,6 +22,9 @@ import {
   createBathMarbleWallAlbedoMap,
   createBathMarbleWallNormalMap,
   createWoolPileNormalMap,
+  createCurtainFabricNormalMap,
+  createToiletCurtainChihuahuaMap,
+  createToiletCurtainPomeranianMap,
   createIvoryLacquerAlbedoMap,
   createIvoryLacquerNormalMap,
   createTrenchCoatAlbedoMap,
@@ -160,6 +163,9 @@ let bathHexNormal: THREE.Texture;
 let bathDiatomAlbedo: THREE.Texture;
 let bathDiatomNormal: THREE.Texture;
 let woolPileNormal: THREE.Texture;
+let curtainChiAlbedo: THREE.Texture;
+let curtainPomAlbedo: THREE.Texture;
+let curtainFabricNormal: THREE.Texture;
 
 export type TextureLoadProgress = {
   /** 0–1 */
@@ -357,6 +363,27 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
       step: "羊毛腳踏布法線…",
       run: () => {
         woolPileNormal = createWoolPileNormalMap(256);
+      },
+    },
+    {
+      weight: 5,
+      step: "トイレ門簾（吉娃娃）…",
+      run: () => {
+        curtainChiAlbedo = createToiletCurtainChihuahuaMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "トイレ門簾（博美）…",
+      run: () => {
+        curtainPomAlbedo = createToiletCurtainPomeranianMap(512);
+      },
+    },
+    {
+      weight: 3,
+      step: "門簾布紋法線…",
+      run: () => {
+        curtainFabricNormal = createCurtainFabricNormalMap(256);
       },
     },
     {
@@ -695,6 +722,49 @@ export function createBathFloorMaterial(
     metalness: 0,
     envMapIntensity: 0.12,
   });
+}
+
+/** Café curtain panel materials (left chihuahua / right Pomeranian). */
+export function createToiletCurtainMaterials(): {
+  left: THREE.MeshStandardMaterial;
+  right: THREE.MeshStandardMaterial;
+} {
+  ensureFaçadeTextures();
+  if (!_ready || !curtainChiAlbedo || !curtainPomAlbedo) {
+    const fallback = (color: string) =>
+      new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.92,
+        transparent: true,
+        opacity: 0.88,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      });
+    return {
+      left: fallback("#f2b8c4"),
+      right: fallback("#f2b8c4"),
+    };
+  }
+  const mk = (map: THREE.Texture) => {
+    const n = curtainFabricNormal.clone();
+    n.wrapS = THREE.RepeatWrapping;
+    n.wrapT = THREE.RepeatWrapping;
+    n.repeat.set(2.2, 2.5);
+    n.needsUpdate = true;
+    return new THREE.MeshStandardMaterial({
+      color: "#fff5f7",
+      map,
+      normalMap: n,
+      normalScale: new THREE.Vector2(0.45, 0.45),
+      roughness: 0.92,
+      metalness: 0,
+      transparent: true,
+      opacity: 0.88,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+  };
+  return { left: mk(curtainChiAlbedo), right: mk(curtainPomAlbedo) };
 }
 
 /** White wool bath mat — high roughness + pile normal. */
