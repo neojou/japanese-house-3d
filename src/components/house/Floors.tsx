@@ -6,21 +6,25 @@ import {
   COLORS,
   GENKAN_INTERIOR,
   MATERIAL_PRESETS,
+  UB_BATH,
   type FloorSlab,
 } from "@/data/dimensions";
 import {
+  createBathFloorMaterial,
   createGenkanSlateMaterial,
   ensureFaçadeTextures,
 } from "@/lib/houseMaterials";
 
 const GENKAN_FLOOR_IDS = new Set<string>(GENKAN_INTERIOR.floorIds);
+const UB_FLOOR_IDS = new Set<string>(UB_BATH.floorIds);
 
-/** Category materials — genkan dust slate vs wood vs outdoor. */
+/** Category materials — genkan dust slate vs UB bath vs wood vs outdoor. */
 function floorLook(slab: FloorSlab): {
   color: string;
   roughness: number;
   metalness: number;
   genkanSlate?: boolean;
+  bathFloor?: boolean;
 } {
   const id = slab.id;
   if (GENKAN_FLOOR_IDS.has(id)) {
@@ -29,6 +33,14 @@ function floorLook(slab: FloorSlab): {
       roughness: 0.9,
       metalness: 0.03,
       genkanSlate: true,
+    };
+  }
+  if (UB_FLOOR_IDS.has(id)) {
+    return {
+      color: "#a8acb0",
+      roughness: 0.86,
+      metalness: 0.04,
+      bathFloor: true,
     };
   }
   if (
@@ -69,24 +81,33 @@ function FloorMesh({ slab }: { slab: FloorSlab }) {
     ensureFaçadeTextures();
   }, []);
 
-  const slateMat = useMemo(() => {
-    if (!look.genkanSlate) return null;
-    return createGenkanSlateMaterial(
-      rect.width,
-      rect.depth,
-      GENKAN_INTERIOR.tileM,
-    );
-  }, [look.genkanSlate, rect.width, rect.depth]);
+  const specialMat = useMemo(() => {
+    if (look.genkanSlate) {
+      return createGenkanSlateMaterial(
+        rect.width,
+        rect.depth,
+        GENKAN_INTERIOR.tileM,
+      );
+    }
+    if (look.bathFloor) {
+      return createBathFloorMaterial(
+        rect.width,
+        rect.depth,
+        UB_BATH.floorTileM,
+      );
+    }
+    return null;
+  }, [look.genkanSlate, look.bathFloor, rect.width, rect.depth]);
 
   useLayoutEffect(() => {
     return () => {
-      if (slateMat) {
-        slateMat.map?.dispose();
-        slateMat.normalMap?.dispose();
-        slateMat.dispose();
+      if (specialMat) {
+        specialMat.map?.dispose();
+        specialMat.normalMap?.dispose();
+        specialMat.dispose();
       }
     };
-  }, [slateMat]);
+  }, [specialMat]);
 
   return (
     <mesh
@@ -96,8 +117,8 @@ function FloorMesh({ slab }: { slab: FloorSlab }) {
       castShadow
     >
       <boxGeometry args={[rect.width, thickness, rect.depth]} />
-      {slateMat ? (
-        <primitive object={slateMat} attach="material" />
+      {specialMat ? (
+        <primitive object={specialMat} attach="material" />
       ) : (
         <meshStandardMaterial
           color={look.color}

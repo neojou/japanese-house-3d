@@ -526,18 +526,33 @@ export const FLOORS: FloorSlab[] = [
     color: GENKAN_INTERIOR.floorColor,
   },
   {
-    id: "1f-east-wing",
+    id: "1f-ub",
     floor: "1f",
     y: INTERIOR_FLOOR_Y,
-    // UB + 洗面 block (east of SCL)
+    // UB only (south of 洗面南) — bath marble floor
     rect: {
       x: SX.xSclE,
       z: SZ.ubSouth,
       width: SX.xEast - SX.xSclE,
-      depth: SZ.north - SZ.ubSouth,
+      depth: SENMEN_SOUTH_Z - SZ.ubSouth, // ≈ 1.83
     },
     thickness: INTERIOR_SLAB_THICKNESS,
-    label: "東側",
+    label: "UB",
+    color: "#ead9b0",
+  },
+  {
+    id: "1f-senmen",
+    floor: "1f",
+    y: INTERIOR_FLOOR_Y,
+    // 洗面 only (north of 洗面南) — keep warm interior floor
+    rect: {
+      x: SX.xSclE,
+      z: SENMEN_SOUTH_Z,
+      width: SX.xEast - SX.xSclE,
+      depth: SZ.north - SENMEN_SOUTH_Z, // 1.82
+    },
+    thickness: INTERIOR_SLAB_THICKNESS,
+    label: "洗面",
     color: "#c4ced2",
   },
   {
@@ -800,6 +815,48 @@ export const PROP_1F_TOILET = {
 } as const;
 
 /**
+ * UB bath finishes — tokonoma-card wet zone (DESIGN.md §2.7).
+ * South/partitions: darker seamless smoke marble.
+ * East clad: elongated hex cyan patchwork.
+ * Floor: seamless goose-yellow diatomaceous earth (no joints).
+ */
+export const UB_BATH = {
+  floorIds: ["1f-ub"] as const,
+  /** UV scale for seamless diatom grit (large = subtle) */
+  floorTileM: 1.4,
+  wallTileM: 1.2,
+  /** East hex feature wall */
+  eastHex: {
+    tileM: 0.55,
+    aspect: 1.8,
+    seed: 42,
+  },
+  /** Interior clad on exterior shell faces (keep outer stucco) */
+  clad: {
+    thickness: 0.018,
+    south: true,
+    east: true,
+  },
+} as const;
+
+/**
+ * White wool bath mat west of freestanding tub (tokonoma-card accessory).
+ */
+export const PROP_1F_UB_BATHMAT = {
+  id: "hero-1f-ub-bathmat",
+  style: "tokonoma-card" as const,
+  floor: "1f" as FloorId,
+  label: "UB白羊毛腳踏",
+  /** Sized relative to tub; placed on west long side */
+  width: 0.5, // EW
+  depth: 0.75, // NS
+  thickness: 0.02,
+  /** Gap from tub west face */
+  gap: 0.06,
+  color: "#f5f2ec",
+} as const;
+
+/**
  * 1F UB east-half freestanding tub — tokonoma-card wet fixture (DESIGN.md §2.7).
  * Long axis NS; faucet on south; boutique sculptural porcelain + champagne metal.
  */
@@ -823,22 +880,23 @@ export const PROP_1F_UB_TUB = {
   basinDepth: 0.38,
   porcelain: "#f7f2ea",
   porcelainInner: "#d4cdc4",
-  /** Decorative water plane */
+  /** Decorative water plane — opaque enough to hide floor from above */
   water: {
-    color: "#a8c8d8",
-    opacity: 0.38,
+    color: "#9ec0d0",
+    opacity: 0.62,
     /** Below rim */
     insetY: 0.1,
   },
   /** Champagne / soft gold metal */
   metal: "#c4a574",
   metalness: 0.72,
-  /** Floor-mount faucet south of tub */
+  /** Floor-mount faucet south of tub (full assembly) */
   faucet: {
     /** Offset south of tub south end (m) */
-    southGap: 0.07,
-    columnH: 0.92,
-    spoutReach: 0.18,
+    southGap: 0.08,
+    columnH: 0.95,
+    spoutReach: 0.22,
+    spoutDrop: 0.1,
   },
   light: {
     dx: -0.25,

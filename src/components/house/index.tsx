@@ -15,12 +15,13 @@ import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
 import { ToiletDisplay } from "./ToiletDisplay";
 import { TubDisplay } from "./TubDisplay";
+import { BathFinishes } from "./BathFinishes";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
 /**
  * House shell — floors / walls / stairs / genkan / ceilings / sparse props.
  * Exterior L1 + interior 70/25/5 (DESIGN.md / houseMaterials).
- * M8 hero props mount via Props (e.g. SCL trench).
+ * M8 hero props + UB bath finishes.
  */
 export function House() {
   return (
@@ -46,6 +47,7 @@ export function House() {
       <GenkanEntry />
       <BalconyExterior />
       <InteriorFinishes />
+      <BathFinishes />
       <Props />
       <PlanLabels />
       <Compass />
@@ -67,6 +69,7 @@ export {
   GetabakoDisplay,
   ToiletDisplay,
   TubDisplay,
+  BathFinishes,
   PlanLabels,
   Compass,
 };

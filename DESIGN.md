@@ -201,7 +201,8 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`  
-- **Freestanding tub:** sculptural oval shell (Lathe + scale), inner basin, optional decorative water plane, floor faucet; long axis per plan; no brand marks — `TubDisplay.tsx` + `PROP_1F_UB_TUB`
+- **Freestanding tub:** sculptural oval shell (Lathe + scale), inner basin, optional decorative water plane, floor faucet; long axis per plan; no brand marks — `TubDisplay.tsx` + `PROP_1F_UB_TUB`  
+- **UB room finishes:** darker **seamless** smoke-marble on south/partitions; **east clad** = elongated **hex cyan patchwork**; floor **seamless goose-yellow diatomaceous earth** (no joints); white wool bath mat west of tub; exterior stucco kept via clad (`BathFinishes`, `UB_BATH`); tub solid basin + denser water + full faucet
 
 ### Sliding wet door variant (淋浴拉門)
 
@@ -223,6 +224,8 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
 | `hero-1f-ub-tub` | 1F UB 東半 — 南北獨立浴缸 + 南端落地龍頭 | `tokonoma-card` (潔具) | **Done** |
+| `ub-bath-finish` | 1F UB 牆 seamless／東 hex 青拼布／地鵝黃珪藻土整片 | `tokonoma-card` (濕區) | **Done** |
+| `hero-1f-ub-bathmat` | 1F UB 浴缸西側白羊毛腳踏 | `tokonoma-card` (配件) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -331,6 +334,9 @@ When changing look, verify in first-person:
 | 2026-08-02 | 1F toilet tokonoma-card: boutique lathe bowl, wood endscape, lid ajar; wet-fixture variant |
 | 2026-08-02 | UB\|洗面 shower slide: dual bypass west stack, frosted glass, no swing arc |
 | 2026-08-02 | UB freestanding tub (east half, NS, champagne faucet, decorative water) |
+| 2026-08-02 | UB bath marble: wall seamless dark, floor light tiled; split 1f-ub/1f-senmen; south/east clad |
+| 2026-08-02 | UB east hex cyan patchwork; floor 0.6 m tiles; tub solid bottom + denser water + full faucet |
+| 2026-08-02 | UB floor → goose-yellow seamless diatom; white wool bath mat west of tub |
 
 ---
 

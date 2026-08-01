@@ -306,6 +306,79 @@ export function createYakiSugiRoughnessMap(size = 512): THREE.CanvasTexture {
   return canvasToTexture(canvas);
 }
 
+/**
+ * Goose-yellow diatomaceous earth floor (seamless, no grout).
+ * Warm cream-yellow grit — UB bath floor (tokonoma-card wet calm base).
+ */
+export function createBathDiatomFloorAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0xd1a0);
+  // Cream goose-yellow base
+  const br = 234,
+    bg = 217,
+    bb = 176;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const n = fbm(u * 12, v * 12, 5, cache, rand);
+      const g = fbm(u * 40, v * 40, 3, cache, rand);
+      const cloud = fbm(u * 4 + 0.2, v * 5, 3, cache, rand);
+      const t = (n - 0.5) * 14 + (g - 0.5) * 8 + (cloud - 0.5) * 6;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.min(255, Math.max(0, br + t));
+      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.85));
+      img.data[i + 2] = Math.min(255, Math.max(0, bb + t * 0.55));
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+/** Soft wool / pile normal for bath mat (medium fluff). */
+export function createWoolPileNormalMap(size = 256): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0xf001);
+  const strength = 1.1;
+
+  const heightAt = (u: number, v: number) => {
+    const n = fbm(u * 48, v * 48, 4, cache, rand);
+    const fibers = Math.abs(Math.sin(u * 90 + n * 4) * Math.cos(v * 70 + n * 3));
+    return n * 0.55 + fibers * 0.45;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 3.5;
+      const dy = (hy - h0) * strength * 3.5;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+
 /** Soft diatomaceous / milk-oat plaster albedo (interior main ~70%). */
 export function createInteriorOatAlbedoMap(size = 512): THREE.CanvasTexture {
   const canvas = makeCanvas(size);
@@ -845,6 +918,342 @@ export function createIvoryLacquerNormalMap(size = 512): THREE.CanvasTexture {
       const hy = heightAt(u, v + 1 / size);
       const dx = (hx - h0) * strength * 3;
       const dy = (hy - h0) * strength * 3;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+
+// ─────────────────────────────────────────────────────────────
+// UB bath marble / slate (smoke veins; wall seamless, floor tiled)
+// ─────────────────────────────────────────────────────────────
+
+/** Soft marble vein field: cyan + warm yellow smoke in gray body. */
+function bathVein(
+  u: number,
+  v: number,
+  cache: Map<string, number>,
+  seed: number,
+) {
+  const n1 = fbm(u * 3.2 + 0.1, v * 4.5, 5, cache, mulberry32(seed));
+  const n2 = fbm(u * 7.5, v * 2.8 + 0.3, 4, cache, mulberry32(seed + 1));
+  const flow =
+    Math.sin((u * 2.2 + n1 * 1.4) * Math.PI * 2) *
+    Math.cos((v * 1.6 + n2) * Math.PI * 2);
+  const smoke = fbm(u * 5 + n2, v * 6 - n1, 4, cache, mulberry32(seed + 2));
+  return { n1, n2, flow, smoke };
+}
+
+/**
+ * Darker wall marble — seamless, no grout; gray + pale cyan/yellow wash.
+ */
+export function createBathMarbleWallAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const { n1, flow, smoke } = bathVein(u, v, cache, 0xb01);
+      const base = 0.38 + n1 * 0.08;
+      const cyan = Math.max(0, flow) * 0.06 + smoke * 0.04;
+      const warm = Math.max(0, -flow) * 0.05 + (1 - smoke) * 0.03;
+      const r = base + warm * 0.9 - cyan * 0.15;
+      const g = base + warm * 0.55 + cyan * 0.25;
+      const b = base - warm * 0.1 + cyan * 0.55;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(Math.min(1, Math.max(0, r)) * 255);
+      img.data[i + 1] = Math.round(Math.min(1, Math.max(0, g)) * 255);
+      img.data[i + 2] = Math.round(Math.min(1, Math.max(0, b)) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+export function createBathMarbleWallNormalMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const strength = 0.65;
+
+  const heightAt = (u: number, v: number) => {
+    const { n1, flow, smoke } = bathVein(u, v, cache, 0xb02);
+    return n1 * 0.5 + Math.abs(flow) * 0.35 + smoke * 0.25;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 3.2;
+      const dy = (hy - h0) * strength * 3.2;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+
+/**
+ * Lighter floor marble + clear tile grid.
+ * tiles = cells across the map (UV repeat sets real size).
+ */
+export function createBathMarbleFloorAlbedoMap(
+  size = 512,
+  tiles = 4,
+): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const joint = 0.045;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const { n1, flow, smoke } = bathVein(u * 1.1, v * 1.1, cache, 0xb03);
+      const tx = (u * tiles) % 1;
+      const ty = (v * tiles) % 1;
+      const onJoint =
+        tx < joint ||
+        ty < joint ||
+        tx > 1 - joint * 0.45 ||
+        ty > 1 - joint * 0.45;
+      const base = 0.62 + n1 * 0.1;
+      const cyan = Math.max(0, flow) * 0.05 + smoke * 0.03;
+      const warm = Math.max(0, -flow) * 0.045;
+      let r = base + warm * 0.85 - cyan * 0.1;
+      let g = base + warm * 0.5 + cyan * 0.2;
+      let b = base - warm * 0.08 + cyan * 0.4;
+      if (onJoint) {
+        r *= 0.42;
+        g *= 0.44;
+        b *= 0.46;
+      }
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(Math.min(1, Math.max(0, r)) * 255);
+      img.data[i + 1] = Math.round(Math.min(1, Math.max(0, g)) * 255);
+      img.data[i + 2] = Math.round(Math.min(1, Math.max(0, b)) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+export function createBathMarbleFloorNormalMap(
+  size = 512,
+  tiles = 4,
+): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const joint = 0.045;
+  const strength = 0.8;
+
+  const heightAt = (u: number, v: number) => {
+    const { n1, flow, smoke } = bathVein(u, v, cache, 0xb04);
+    const tx = (u * tiles) % 1;
+    const ty = (v * tiles) % 1;
+    const onJoint =
+      tx < joint ||
+      ty < joint ||
+      tx > 1 - joint * 0.45 ||
+      ty > 1 - joint * 0.45;
+    return (
+      (onJoint ? 0.12 : 0.55) +
+      n1 * 0.3 +
+      Math.abs(flow) * 0.2 +
+      smoke * 0.15
+    );
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 3.5;
+      const dy = (hy - h0) * strength * 3.5;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+
+// ─────────────────────────────────────────────────────────────
+// UB east wall: elongated hex cyan patchwork
+// ─────────────────────────────────────────────────────────────
+
+/** Flat-top elongated hex metric: 0 inside, >1 outside. aspect = width/height. */
+function elongHexMetric(dx: number, dy: number, halfW: number, halfH: number) {
+  const x = Math.abs(dx) / halfW;
+  const y = Math.abs(dy) / halfH;
+  // Hex: max(|x|, |x|/2 + |y|·√3/2, …) with stretched axes
+  return Math.max(x, 0.5 * x + 0.866025 * y);
+}
+
+function hash2(ix: number, iy: number, seed: number) {
+  const s = Math.sin(ix * 127.1 + iy * 311.7 + seed * 0.013) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+/**
+ * Elongated hex tiles (aspect ~1.8), each cell random deep→pale cyan patchwork.
+ * UV space; joints darker slate-cyan.
+ */
+export function createBathHexPatchworkAlbedoMap(
+  size = 512,
+  /** Hex rows across map (vertical density) */
+  rows = 7,
+  aspect = 1.8,
+  seed = 42,
+): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+
+  const cellH = 1 / rows;
+  const cellW = cellH * aspect * 0.75; // horizontal pitch for hex packing
+  const halfH = cellH * 0.5;
+  const halfW = halfH * aspect;
+  const joint = 0.92; // metric threshold inside tile
+
+  // Deep cyan → pale cyan
+  const deep = { r: 0.16, g: 0.29, b: 0.32 };
+  const pale = { r: 0.56, g: 0.72, b: 0.74 };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+
+      // Candidate hex centers (staggered rows)
+      let best = 1e9;
+      let bestIx = 0;
+      let bestIy = 0;
+      const iy0 = Math.floor(v / (cellH * 0.75)) - 1;
+      const ix0 = Math.floor(u / cellW) - 1;
+      for (let iy = iy0; iy <= iy0 + 3; iy++) {
+        for (let ix = ix0; ix <= ix0 + 3; ix++) {
+          const cx = (ix + (iy & 1) * 0.5) * cellW;
+          const cy = iy * cellH * 0.75;
+          const m = elongHexMetric(u - cx, v - cy, halfW, halfH);
+          if (m < best) {
+            best = m;
+            bestIx = ix;
+            bestIy = iy;
+          }
+        }
+      }
+
+      const i = (y * size + x) * 4;
+      if (best > joint) {
+        // Joint / grout
+        img.data[i] = 42;
+        img.data[i + 1] = 52;
+        img.data[i + 2] = 56;
+        img.data[i + 3] = 255;
+        continue;
+      }
+
+      const t = hash2(bestIx, bestIy, seed);
+      const { smoke } = bathVein(u * 2, v * 2, cache, 0xc01 + bestIx);
+      const r = deep.r + (pale.r - deep.r) * t + smoke * 0.04;
+      const g = deep.g + (pale.g - deep.g) * t + smoke * 0.03;
+      const b = deep.b + (pale.b - deep.b) * t + smoke * 0.05;
+      // Soft edge darken near joint
+      const edge = Math.min(1, (joint - best) / 0.08);
+      const e = 0.75 + 0.25 * edge;
+      img.data[i] = Math.round(Math.min(1, r * e) * 255);
+      img.data[i + 1] = Math.round(Math.min(1, g * e) * 255);
+      img.data[i + 2] = Math.round(Math.min(1, b * e) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+export function createBathHexPatchworkNormalMap(
+  size = 512,
+  rows = 7,
+  aspect = 1.8,
+): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cellH = 1 / rows;
+  const cellW = cellH * aspect * 0.75;
+  const halfH = cellH * 0.5;
+  const halfW = halfH * aspect;
+  const joint = 0.92;
+  const strength = 0.9;
+
+  const heightAt = (u: number, v: number) => {
+    let best = 1e9;
+    const iy0 = Math.floor(v / (cellH * 0.75)) - 1;
+    const ix0 = Math.floor(u / cellW) - 1;
+    for (let iy = iy0; iy <= iy0 + 3; iy++) {
+      for (let ix = ix0; ix <= ix0 + 3; ix++) {
+        const cx = (ix + (iy & 1) * 0.5) * cellW;
+        const cy = iy * cellH * 0.75;
+        best = Math.min(best, elongHexMetric(u - cx, v - cy, halfW, halfH));
+      }
+    }
+    if (best > joint) return 0.15;
+    return 0.55 + (joint - best) * 0.4;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 4;
+      const dy = (hy - h0) * strength * 4;
       const nx = -dx;
       const ny = -dy;
       const nz = 1;

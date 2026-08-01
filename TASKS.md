@@ -252,6 +252,8 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
 - [x] `slide-ub-shower` — UB｜洗面 雙片西向淋浴拉門（磨砂／炭灰／地軌／加高；無平開佔位）
 - [x] `hero-1f-ub-tub` — UB 東半南北獨立浴缸（弧線瓷白、南落地香檳金龍頭、裝飾水面）
+- [x] `ub-bath-finish` — UB：南 seamless 深灰；東 hex 青拼布；地鵝黃珪藻土整片；浴缸實底＋龍頭
+- [x] `hero-1f-ub-bathmat` — 浴缸西側白羊毛腳踏（0.5×0.75）
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -365,3 +367,6 @@ Every task also satisfies:
 | 2026-08-02 | 1F toilet tokonoma-card wet fixture (placement locked; boutique form) |
 | 2026-08-02 | UB shower: replace swing with dual bypass slide (tokonoma-card wet door) |
 | 2026-08-02 | UB freestanding tub east half (NS, champagne faucet, water plane) |
+| 2026-08-02 | UB bath marble walls/floor; split east-wing slabs; interior clad on S/E |
+| 2026-08-02 | UB east hex patchwork; large floor tiles; tub opaque basin + faucet assembly |
+| 2026-08-02 | UB floor diatom yellow seamless; wool bath mat west of tub |

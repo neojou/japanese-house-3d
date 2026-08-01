@@ -14,6 +14,14 @@ import {
   createStuccoAlbedoMap,
   createStuccoNormalMap,
   createStuccoRoughnessMap,
+  createBathDiatomFloorAlbedoMap,
+  createBathHexPatchworkAlbedoMap,
+  createBathHexPatchworkNormalMap,
+  createBathMarbleFloorAlbedoMap,
+  createBathMarbleFloorNormalMap,
+  createBathMarbleWallAlbedoMap,
+  createBathMarbleWallNormalMap,
+  createWoolPileNormalMap,
   createIvoryLacquerAlbedoMap,
   createIvoryLacquerNormalMap,
   createTrenchCoatAlbedoMap,
@@ -31,6 +39,7 @@ export type WallFinish =
   | "interiorSecondary"
   | "interiorAccent"
   | "interiorWood"
+  | "bathMarble"
   /** @deprecated alias of interiorMain */
   | "interior";
 
@@ -80,10 +89,8 @@ export const INTERIOR_SECONDARY_WALL_IDS = new Set<string>([
   "1f-int-toilet-e",
   "1f-int-toilet-s",
   "1f-int-senmen-w",
-  "1f-int-senmen-ub",
   "1f-int-scl-n-west",
   "1f-int-scl-w",
-  "1f-int-scl-ub-w",
   "1f-int-cl-s",
   "1f-int-cl-e",
   "1f-int-yoshitsu-e", // CL channel side
@@ -97,6 +104,15 @@ export const INTERIOR_SECONDARY_WALL_IDS = new Set<string>([
   "ph-hall-w",
   "ph-hall-e",
   "ph-hall-s",
+]);
+
+/**
+ * UB bath marble walls (darker seamless smoke veins).
+ * Shared SCL|UB and 洗面|UB partitions use bath finish on the whole wall.
+ */
+export const BATH_MARBLE_WALL_IDS = new Set<string>([
+  "1f-int-scl-ub-w",
+  "1f-int-senmen-ub",
 ]);
 
 /**
@@ -135,6 +151,15 @@ let trenchNormal: THREE.Texture;
 let trenchRough: THREE.Texture;
 let ivoryLacquerAlbedo: THREE.Texture;
 let ivoryLacquerNormal: THREE.Texture;
+let bathWallAlbedo: THREE.Texture;
+let bathWallNormal: THREE.Texture;
+let bathFloorAlbedo: THREE.Texture;
+let bathFloorNormal: THREE.Texture;
+let bathHexAlbedo: THREE.Texture;
+let bathHexNormal: THREE.Texture;
+let bathDiatomAlbedo: THREE.Texture;
+let bathDiatomNormal: THREE.Texture;
+let woolPileNormal: THREE.Texture;
 
 export type TextureLoadProgress = {
   /** 0–1 */
@@ -285,6 +310,69 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
         ivoryLacquerNormal = createIvoryLacquerNormalMap(512);
       },
     },
+    {
+      weight: 6,
+      step: "UB 浴牆大理石…",
+      run: () => {
+        bathWallAlbedo = createBathMarbleWallAlbedoMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "UB 浴牆法線…",
+      run: () => {
+        bathWallNormal = createBathMarbleWallNormalMap(512);
+      },
+    },
+    {
+      weight: 4,
+      step: "UB 浴地板磚（備用）…",
+      run: () => {
+        bathFloorAlbedo = createBathMarbleFloorAlbedoMap(512, 2);
+      },
+    },
+    {
+      weight: 3,
+      step: "UB 浴地板法線（備用）…",
+      run: () => {
+        bathFloorNormal = createBathMarbleFloorNormalMap(512, 2);
+      },
+    },
+    {
+      weight: 6,
+      step: "UB 鵝黃色珪藻土地…",
+      run: () => {
+        bathDiatomAlbedo = createBathDiatomFloorAlbedoMap(512);
+      },
+    },
+    {
+      weight: 5,
+      step: "UB 珪藻土法線…",
+      run: () => {
+        bathDiatomNormal = createInteriorPlasterNormalMap(512, 0.42);
+      },
+    },
+    {
+      weight: 3,
+      step: "羊毛腳踏布法線…",
+      run: () => {
+        woolPileNormal = createWoolPileNormalMap(256);
+      },
+    },
+    {
+      weight: 7,
+      step: "UB 東牆六角拼布…",
+      run: () => {
+        bathHexAlbedo = createBathHexPatchworkAlbedoMap(512, 7, 1.8, 42);
+      },
+    },
+    {
+      weight: 5,
+      step: "UB 東牆六角法線…",
+      run: () => {
+        bathHexNormal = createBathHexPatchworkNormalMap(512, 7, 1.8);
+      },
+    },
   ];
 }
 
@@ -343,6 +431,7 @@ export function isExteriorShellId(id: string): boolean {
 
 export function wallFinishForId(id: string): WallFinish {
   if (YAKI_SUGI_WALL_IDS.has(id)) return "yakiSugi";
+  if (BATH_MARBLE_WALL_IDS.has(id)) return "bathMarble";
   if (isExteriorShellId(id)) return "stucco";
   if (INTERIOR_WOOD_WALL_IDS.has(id)) return "interiorWood";
   if (INTERIOR_ACCENT_WALL_IDS.has(id)) return "interiorAccent";
@@ -579,6 +668,126 @@ export function createGenkanSlateMaterial(
 }
 
 /**
+ * UB floor: seamless goose-yellow diatomaceous earth (no tile joints).
+ * tileM = large UV scale for subtle grit variation.
+ */
+export function createBathFloorMaterial(
+  sizeX: number,
+  sizeZ: number,
+  tileM = 1.4,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !bathDiatomAlbedo) {
+    return new THREE.MeshStandardMaterial({
+      color: "#ead9b0",
+      roughness: 0.94,
+    });
+  }
+  const repU = Math.max(sizeX / tileM, 0.6);
+  const repV = Math.max(sizeZ / tileM, 0.6);
+  const maps = cloneMaps(bathDiatomAlbedo, bathDiatomNormal, null, repU, repV);
+  return new THREE.MeshStandardMaterial({
+    color: "#f5ecd4",
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.4, 0.4),
+    roughness: 0.94,
+    metalness: 0,
+    envMapIntensity: 0.12,
+  });
+}
+
+/** White wool bath mat — high roughness + pile normal. */
+export function createWoolMatMaterial(
+  sizeX: number,
+  sizeZ: number,
+  pileM = 0.12,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !woolPileNormal) {
+    return new THREE.MeshStandardMaterial({
+      color: "#f5f2ec",
+      roughness: 0.98,
+    });
+  }
+  const repU = Math.max(sizeX / pileM, 1);
+  const repV = Math.max(sizeZ / pileM, 1);
+  const n = woolPileNormal.clone();
+  n.wrapS = THREE.RepeatWrapping;
+  n.wrapT = THREE.RepeatWrapping;
+  n.repeat.set(repU, repV);
+  n.needsUpdate = true;
+  return new THREE.MeshStandardMaterial({
+    color: "#f7f4ee",
+    normalMap: n,
+    normalScale: new THREE.Vector2(0.85, 0.85),
+    roughness: 0.97,
+    metalness: 0,
+    envMapIntensity: 0.08,
+  });
+}
+
+/** UB wall: darker seamless smoke marble (no grout). */
+export function createBathWallMaterial(
+  alongM: number,
+  upM: number,
+  tileM = 1.2,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !bathWallAlbedo) {
+    return new THREE.MeshStandardMaterial({
+      color: "#5a5e62",
+      roughness: 0.88,
+    });
+  }
+  const repU = Math.max(alongM / tileM, 0.5);
+  const repV = Math.max(upM / tileM, 0.5);
+  const maps = cloneMaps(bathWallAlbedo, bathWallNormal, null, repU, repV);
+  return new THREE.MeshStandardMaterial({
+    color: "#c8cdd2",
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.55, 0.55),
+    roughness: 0.84,
+    metalness: 0.04,
+    envMapIntensity: 0.28,
+    side: THREE.DoubleSide,
+  });
+}
+
+/**
+ * UB east feature wall: elongated hex cyan patchwork (tokonoma-card wet).
+ * tileM ≈ vertical span of ~few hex rows in meters.
+ */
+export function createBathHexEastMaterial(
+  alongM: number,
+  upM: number,
+  tileM = 0.55,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !bathHexAlbedo) {
+    return new THREE.MeshStandardMaterial({
+      color: "#4a7a82",
+      roughness: 0.86,
+    });
+  }
+  const repU = Math.max(alongM / (tileM * 1.8), 0.4);
+  const repV = Math.max(upM / tileM, 0.4);
+  const maps = cloneMaps(bathHexAlbedo, bathHexNormal, null, repU, repV);
+  return new THREE.MeshStandardMaterial({
+    color: "#e8f0f2",
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.75, 0.75),
+    roughness: 0.82,
+    metalness: 0.05,
+    envMapIntensity: 0.3,
+    // Clad planes are thin; double-side so room-facing face always reads
+    side: THREE.DoubleSide,
+  });
+}
+
+/**
  * Material for a wall box piece.
  */
 export function createWallMaterial(
@@ -595,6 +804,10 @@ export function createWallMaterial(
 
   if (f === "yakiSugi") {
     return createYakiSugiMaterial(along, up);
+  }
+
+  if (f === "bathMarble") {
+    return createBathWallMaterial(along, up);
   }
 
   if (f === "stucco" && _ready) {
