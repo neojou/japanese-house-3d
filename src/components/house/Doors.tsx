@@ -73,7 +73,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
 
   return (
     <group name={def.id}>
-      {/* Simple frame posts at opening ends (thin) */}
+      {/* Simple frame posts at opening ends (thin) — not interactable */}
       {def.axis === "ew" ? (
         <>
           <mesh
@@ -154,11 +154,17 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
         </>
       )}
 
-      <group ref={hingeRef} position={hingePos} rotation={[0, groupRotY, 0]}>
+      <group
+        ref={hingeRef}
+        position={hingePos}
+        rotation={[0, groupRotY, 0]}
+        userData={{ interactable: "door" }}
+      >
         <mesh
           position={[(leafDir * leafW) / 2, leafH / 2, 0]}
           castShadow
           receiveShadow
+          userData={{ interactable: "door" }}
           {...ptr}
         >
           <boxGeometry args={[leafW, leafH, LEAF_T]} />
@@ -171,6 +177,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
         {/* Handle near free edge */}
         <mesh
           position={[leafDir * leafW * 0.85, leafH * 0.45, LEAF_T / 2 + 0.015]}
+          userData={{ interactable: "door" }}
           {...ptr}
         >
           <boxGeometry args={[0.02, 0.12, 0.03]} />

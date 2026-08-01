@@ -27,7 +27,7 @@ Coding rules and conventions for AI agents working in this repo.
 Interactive **first-person** walkthrough of a Japanese house (1F / 2F / PH plans).  
 Phase work is tracked only in `TASKS.md` — do not invent a parallel roadmap here.
 
-**Controls today:** W/S move; A/D turn 10°; click canvas for Pointer Lock look; Esc unlock then click doors.
+**Controls today:** W/S move; A/D turn 10°; click empty → Pointer Lock; click door → open only (no lock); Esc unlock.
 
 ---
 

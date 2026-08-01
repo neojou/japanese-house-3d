@@ -9,15 +9,28 @@ import { useViewerStore } from "@/store/useViewerStore";
 
 const PITCH_LIMIT = THREE.MathUtils.degToRad(85);
 const _euler = new THREE.Euler(0, 0, 0, "YXZ");
+const _ndc = new THREE.Vector2();
+const _raycaster = new THREE.Raycaster();
+
+/** Walk parent chain for door meshes marked `userData.interactable === "door"`. */
+function isDoorInteractable(obj: THREE.Object3D | null): boolean {
+  let o: THREE.Object3D | null = obj;
+  while (o) {
+    if (o.userData?.interactable === "door") return true;
+    o = o.parent;
+  }
+  return false;
+}
 
 /**
  * First-person camera:
  * - Pointer Lock mouse look (yaw + pitch)
  * - A / D / ← / → discrete yaw steps (PLAYER.turnDegrees)
+ * - Click empty space → lock; click door → open only (no lock)
  * - Esc unlocks pointer so doors can be clicked
  */
 export function FirstPersonCamera() {
-  const { camera, gl } = useThree();
+  const { camera, gl, scene } = useThree();
   const setPosition = useViewerStore((s) => s.setPosition);
   const locked = useRef(false);
   const yaw = useRef(0);
@@ -49,14 +62,27 @@ export function FirstPersonCamera() {
     });
   }, [camera, setPosition]);
 
-  // Pointer lock + mouse look
+  // Pointer lock + mouse look (door clicks take priority over lock)
   useEffect(() => {
     const el = gl.domElement;
 
-    const onClick = () => {
-      if (document.pointerLockElement !== el) {
-        el.requestPointerLock();
+    const onClick = (e: MouseEvent) => {
+      if (document.pointerLockElement === el) return;
+
+      const rect = el.getBoundingClientRect();
+      const w = rect.width || 1;
+      const h = rect.height || 1;
+      _ndc.x = ((e.clientX - rect.left) / w) * 2 - 1;
+      _ndc.y = -((e.clientY - rect.top) / h) * 2 + 1;
+
+      _raycaster.setFromCamera(_ndc, camera);
+      const hits = _raycaster.intersectObjects(scene.children, true);
+      // Nearest hit: if door, only toggle door (R3F onClick); do not lock
+      if (hits.length > 0 && isDoorInteractable(hits[0].object)) {
+        return;
       }
+
+      el.requestPointerLock();
     };
 
     const onLockChange = () => {
@@ -83,7 +109,7 @@ export function FirstPersonCamera() {
         document.exitPointerLock();
       }
     };
-  }, [gl]);
+  }, [gl, camera, scene]);
 
   // Discrete A/D (and arrows) turn — must update yaw here so useFrame does not overwrite
   useEffect(() => {
@@ -91,11 +117,9 @@ export function FirstPersonCamera() {
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code === "KeyA" || e.code === "ArrowLeft") {
-        // Turn left (same sign as mouse look-left: yaw increases)
         yaw.current += step;
         if (e.code === "ArrowLeft") e.preventDefault();
       } else if (e.code === "KeyD" || e.code === "ArrowRight") {
-        // Turn right
         yaw.current -= step;
         if (e.code === "ArrowRight") e.preventDefault();
       }

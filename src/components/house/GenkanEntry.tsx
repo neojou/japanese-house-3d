@@ -195,11 +195,13 @@ export function GenkanEntry() {
         ref={hingeRef}
         position={[hingeX, frameBaseY, leafZ]}
         name="genkan-door-hinge"
+        userData={{ interactable: "door" }}
       >
         <mesh
           position={[-leafW / 2, leafH * 0.38, 0]}
           castShadow
           receiveShadow
+          userData={{ interactable: "door" }}
           {...doorPointer}
         >
           <boxGeometry args={[leafW, leafH * 0.72, g.leafThickness]} />
@@ -212,6 +214,7 @@ export function GenkanEntry() {
         <mesh
           position={[-leafW / 2, leafH * 0.84, 0]}
           castShadow
+          userData={{ interactable: "door" }}
           {...doorPointer}
         >
           <boxGeometry
@@ -231,6 +234,7 @@ export function GenkanEntry() {
             leafH * 0.45,
             -g.leafThickness / 2 - 0.015,
           ]}
+          userData={{ interactable: "door" }}
           {...doorPointer}
         >
           <boxGeometry args={[0.025, 0.14, 0.035]} />
@@ -246,6 +250,7 @@ export function GenkanEntry() {
             leafH * 0.45,
             g.leafThickness / 2 + 0.015,
           ]}
+          userData={{ interactable: "door" }}
           {...doorPointer}
         >
           <boxGeometry args={[0.025, 0.14, 0.035]} />

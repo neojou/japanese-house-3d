@@ -61,8 +61,8 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 |--------|---------|
 | Move | W / S (or ↑↓) — `moveSpeed` forward/back |
 | Turn | A / D (or ←→) — ±`turnDegrees` (10°) per keypress |
-| Look | Click canvas → Pointer Lock; mouse look; Esc unlock |
-| Doors | Unlock (Esc) then click leaf |
+| Look | Click empty space → Pointer Lock; mouse look; Esc unlock |
+| Doors | Click leaf → open/close only (raycast priority; no lock on door hit) |
 | Position | HUD: plan X / Z / eye Y |
 
 ### 1F architecture
@@ -321,3 +321,4 @@ Every task also satisfies:
 | 2026-08-01 | Controls: Pointer Lock look + WASD/arrows strafe (same moveSpeed); Esc then click doors |
 | 2026-08-01 | Controls: A/D (←→) back to ±10° turn; W/S move only; mouse look kept |
 | 2026-08-01 | T-202 remains deferred (owner 暫緩); T-301 materials + lighting done (M7) |
+| 2026-08-01 | Door click priority: raycast door → no pointer lock; empty click locks |

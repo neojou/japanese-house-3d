@@ -123,11 +123,11 @@ function HelpOverlay() {
               <kbd className="rounded bg-white/15 px-1">A D</kbd> 左轉/右轉 10°
             </li>
             <li>
-              <strong>點擊畫面</strong>：鎖定滑鼠視角 ·{" "}
+              <strong>點空白</strong>：鎖定視角 ·{" "}
               <kbd className="rounded bg-white/15 px-1">Esc</kbd> 解鎖
             </li>
             <li>
-              <strong>解鎖後點門</strong>：玄関／室內門開關
+              <strong>點門</strong>：只開關門（不上鎖）
             </li>
           </ul>
         </div>
