@@ -200,7 +200,8 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - **Readable porcelain form** — Lathe bowl, rounded tank, seat ring, lid, base skirt; **never** two bare boxes  
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
-- Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`
+- Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`  
+- **Freestanding tub:** sculptural oval shell (Lathe + scale), inner basin, optional decorative water plane, floor faucet; long axis per plan; no brand marks — `TubDisplay.tsx` + `PROP_1F_UB_TUB`
 
 ### Sliding wet door variant (淋浴拉門)
 
@@ -221,6 +222,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
+| `hero-1f-ub-tub` | 1F UB 東半 — 南北獨立浴缸 + 南端落地龍頭 | `tokonoma-card` (潔具) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -328,6 +330,7 @@ When changing look, verify in first-person:
 | 2026-08-02 | tokonoma-card ethos: 高貴典雅 + 細節優先 (noble elegant, detail-first); quality bar vs 組合木板 |
 | 2026-08-02 | 1F toilet tokonoma-card: boutique lathe bowl, wood endscape, lid ajar; wet-fixture variant |
 | 2026-08-02 | UB\|洗面 shower slide: dual bypass west stack, frosted glass, no swing arc |
+| 2026-08-02 | UB freestanding tub (east half, NS, champagne faucet, decorative water) |
 
 ---
 

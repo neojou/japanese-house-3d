@@ -11,6 +11,7 @@ import * as THREE from "three";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
 import { ToiletDisplay } from "./ToiletDisplay";
+import { TubDisplay } from "./TubDisplay";
 
 /**
  * Sparse props + M8 hero displays (not full furniture set).
@@ -24,6 +25,7 @@ export function Props() {
       <ToiletCurtain1F />
       <CoatDisplay />
       <GetabakoDisplay />
+      <TubDisplay />
     </group>
   );
 }

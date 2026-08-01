@@ -14,6 +14,7 @@ import { Props } from "./Props";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
 import { ToiletDisplay } from "./ToiletDisplay";
+import { TubDisplay } from "./TubDisplay";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
 /**
@@ -65,6 +66,7 @@ export {
   CoatDisplay,
   GetabakoDisplay,
   ToiletDisplay,
+  TubDisplay,
   PlanLabels,
   Compass,
 };

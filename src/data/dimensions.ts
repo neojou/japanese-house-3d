@@ -799,6 +799,57 @@ export const PROP_1F_TOILET = {
   button: "#4a4642",
 } as const;
 
+/**
+ * 1F UB east-half freestanding tub — tokonoma-card wet fixture (DESIGN.md §2.7).
+ * Long axis NS; faucet on south; boutique sculptural porcelain + champagne metal.
+ */
+export const PROP_1F_UB_TUB = {
+  id: "hero-1f-ub-tub",
+  style: "tokonoma-card" as const,
+  floor: "1f" as FloorId,
+  label: "UB獨立浴缸",
+  /** East half of UB (x 9.10–10.92) */
+  x: SX.xSclE + (SX.xEast - SX.xSclE) * 0.72, // ≈ 10.41
+  /** NS center; length leaves ~0.16 m clear N/S */
+  z: (SZ.ubSouth + IR.wetS) / 2, // ≈ 3.635
+  y: INTERIOR_FLOOR_Y,
+  /** Outer length along Z (north–south) */
+  length: 1.5,
+  /** Outer width along X (east–west) */
+  width: 0.73,
+  /** Rim height above finished floor */
+  rimH: 0.56,
+  /** Inner basin depth below rim */
+  basinDepth: 0.38,
+  porcelain: "#f7f2ea",
+  porcelainInner: "#d4cdc4",
+  /** Decorative water plane */
+  water: {
+    color: "#a8c8d8",
+    opacity: 0.38,
+    /** Below rim */
+    insetY: 0.1,
+  },
+  /** Champagne / soft gold metal */
+  metal: "#c4a574",
+  metalness: 0.72,
+  /** Floor-mount faucet south of tub */
+  faucet: {
+    /** Offset south of tub south end (m) */
+    southGap: 0.07,
+    columnH: 0.92,
+    spoutReach: 0.18,
+  },
+  light: {
+    dx: -0.25,
+    dy: 0.7,
+    dz: 0.15,
+    intensity: 0.28,
+    distance: 1.9,
+    color: "#fff0e0",
+  },
+} as const;
+
 /** Double center-split curtains in south passage (no swing door) */
 export const PROP_1F_TOILET_CURTAIN = {
   floor: "1f" as FloorId,
