@@ -93,6 +93,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | NW jog | x 1.82–2.73, NS **1.365** (clN→nwJogN); solid wall to トイレ (no door); sink prop on north |
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
 | トイレ | North of corridor; door @ **corrN (4.55)** from corridor |
+| 2F ceiling | Soffit **Y=5.2** (2.7+2.5); indoor slabs only; balcony + stair well open |
 | Plan CL between stair\|NE | **Not built** (locked: stair\|room direct @ x=6.37) |
 
 ### Height sampling (`src/lib/height.ts`)
@@ -298,3 +299,4 @@ Every task also satisfies:
 | 2026-08-01 | South-wing NS 3.64 (CL 2.73 + pocket 0.91); CL one-side openings; doors → corridor |
 | 2026-08-01 | Fix: corridor 0.91 restored (rooms 2.73); doors @ clN; トイレ @ corrN; SW door east to CL |
 | 2026-08-01 | NW jog: west wall @1.82, NS 1.365; solid to toilet; Phase-1 sink prop |
+| 2026-08-01 | 2F ceilings: soffit 5.2; indoor blocks; no balcony/stair-well slab |

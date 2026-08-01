@@ -55,6 +55,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 | 2F トイレ | 廊道北側 z=4.55 開門（井西） |
 | Balcony | Slab visible; no parapet; access door deferred |
 | 1F ceiling | Soffit Y=2.5; open over stair well |
+| 2F ceiling | Soffit Y=5.2 over indoor rooms/corridor/toilet/NE; **no** slab on balcony or stair well |
 | Height | Multi-level sampling; ignore 2F slabs while feetY &lt; 2.0 |
 
 **Edit sizes in** `src/data/dimensions.ts` first.

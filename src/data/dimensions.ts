@@ -1434,6 +1434,114 @@ export const CEILINGS_1F: FloorSlab[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────
+// 2F ceiling — soffit at 2F wall top (2.7 + 2.5 = 5.2)
+// Indoor footprint only; balcony + stair well open (no slab).
+// ─────────────────────────────────────────────────────────────
+
+export const CEILING_2F = {
+  /** Underside Y from 2F rooms (floor 2.7 + wallHeight 2.5). */
+  soffitY: FLOOR_LEVELS["2f"] + BUILDING.wallHeight, // 5.2
+  thickness: CEILING_1F.thickness, // 0.12
+} as const;
+
+const CEIL2_TOP_Y = CEILING_2F.soffitY + CEILING_2F.thickness; // 5.32
+const CEIL2_T = CEILING_2F.thickness;
+const CEIL2_COLOR = "#e4dfd6";
+
+/**
+ * 2F ceiling slabs aligned with indoor floors.
+ * Omits: balcony, stair well (x 4.55–6.37, z ≥ corrN).
+ */
+export const CEILINGS_2F: FloorSlab[] = [
+  {
+    id: "ceil-2f-sw",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: { x: 0, z: Z2.south, width: 2.73, depth: Z2.sRoomDepth },
+    thickness: CEIL2_T,
+    label: "天花 2F西洋室",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-cl",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: { x: 2.73, z: Z2.south, width: 0.91, depth: Z2.clDepth },
+    thickness: CEIL2_T,
+    label: "天花 2F-CL",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-sc",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: { x: 3.64, z: Z2.south, width: 2.73, depth: Z2.sRoomDepth },
+    thickness: CEIL2_T,
+    label: "天花 2F中央洋室",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-corridor",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: {
+      x: X2_NW_JOG,
+      z: Z2.clN,
+      width: IR.genkanW - X2_NW_JOG,
+      depth: Z2.corrDepth,
+    },
+    thickness: CEIL2_T,
+    label: "天花 2F廊道",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-nw-jog",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: {
+      x: X2_NW_JOG,
+      z: Z2.corrN,
+      width: 2.73 - X2_NW_JOG,
+      depth: Z2.nwJogN - Z2.corrN,
+    },
+    thickness: CEIL2_T,
+    label: "天花 2F西北凸角",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-toilet",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: {
+      x: 2.73,
+      z: Z2.corrN,
+      width: IR.clE - 2.73,
+      depth: Z2.north - Z2.corrN,
+    },
+    thickness: CEIL2_T,
+    label: "天花 2Fトイレ",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-ne",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: {
+      x: IR.genkanW,
+      z: Z2.clN,
+      width: BUILDING.width - IR.genkanW,
+      depth: Z2.north - Z2.clN,
+    },
+    thickness: CEIL2_T,
+    label: "天花 2F東北洋室",
+    color: CEIL2_COLOR,
+  },
+];
+
+/** All ceiling slabs for rendering (not walkable). */
+export const ALL_CEILINGS: FloorSlab[] = [...CEILINGS_1F, ...CEILINGS_2F];
+
+// ─────────────────────────────────────────────────────────────
 // 2F walls (base Y = 2.7)
 // NS: rooms 2.73 + corridor 0.91 + north 2.73 (= 6.37 from south 0.91)
 // South wing doors @ clN → corridor; トイレ door @ corrN from corridor
