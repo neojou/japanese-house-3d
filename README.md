@@ -47,7 +47,12 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 | Display | House X-mirrored so north view matches the PDF (LDK left) |
 | 1F floor | Raised interior **0.5 m**; genkan steps 0.25 × 2 |
 | Stairs | U-stair 1F→2F, north mid-landing Y=1.7; well NS **1.82** |
-| 2F NE 洋室 | West door @ x=6.37 (0.91 hall band); N/E solid; south G2 glass **4.55 m** (2.73+1.82) to east wall |
+| 2F NS | **2.73 (南翼) + 0.91 (廊道) + 2.73 (北翼) = 6.37**（與 1F 對齊） |
+| 2F south wing | 洋室6.5 / CL×2 / 洋室6；房門 @ z=3.64 → **廊道**；兩門夾 CL、開向相對；南 CL 只東、北 CL 只西 |
+| 2F 廊道 | z 3.64–4.55、**x 1.82–6.37**（西推 0.91），Y=2.7；西南門開向室內廊 |
+| 2F 西北凸角 | 0.91×1.365；西牆 @1.82；與トイレ **實牆無門**；北牆簡易洗手台 |
+| 2F NE 洋室 | West door @ x=6.37（廊道帶）；G2 **4.55 m** |
+| 2F トイレ | 廊道北側 z=4.55 開門（井西） |
 | Balcony | Slab visible; no parapet; access door deferred |
 | 1F ceiling | Soffit Y=2.5; open over stair well |
 | Height | Multi-level sampling; ignore 2F slabs while feetY &lt; 2.0 |

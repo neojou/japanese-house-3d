@@ -8,10 +8,11 @@ import { GenkanEntry } from "./GenkanEntry";
 import { Ceilings } from "./Ceilings";
 import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
+import { Props } from "./Props";
 import { BUILDING, COLORS } from "@/data/dimensions";
 
 /**
- * Phase 1 — 1F/2F shell, interior, stairs, genkan, 1F ceilings.
+ * Phase 1 — 1F/2F shell, interior, stairs, genkan, 1F ceilings, sparse props.
  */
 export function House() {
   return (
@@ -31,6 +32,7 @@ export function House() {
       <Stairs />
       <Doors />
       <GenkanEntry />
+      <Props />
       <PlanLabels />
       <Compass />
     </group>
@@ -44,6 +46,7 @@ export {
   Stairs,
   Doors,
   GenkanEntry,
+  Props,
   PlanLabels,
   Compass,
 };

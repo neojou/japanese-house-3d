@@ -87,7 +87,13 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | North / East | Solid exterior |
 | South G2 | Floor-to-ceiling glass **4.55 m** = 2.73 + 1.82, z = mid (3.64), west 6.37 → east **10.92** (meets east wall) |
 | Balcony | Slab kept (visual); **no parapet**; **no door** (access deferred) |
-| CL / other 2F rooms | Partial floors/walls only; full partitions later |
+| 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** (rooms + corridor + north wing); stair well NS 1.82 → corridor = 2.73−1.82 |
+| South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (3.64)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
+| Corridor | z **3.64–4.55**, x **1.82–6.37** (west jog 0.91), slab Y=2.7; SW door → indoors |
+| NW jog | x 1.82–2.73, NS **1.365** (clN→nwJogN); solid wall to トイレ (no door); sink prop on north |
+| CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
+| トイレ | North of corridor; door @ **corrN (4.55)** from corridor |
+| Plan CL between stair\|NE | **Not built** (locked: stair\|room direct @ x=6.37) |
 
 ### Height sampling (`src/lib/height.ts`)
 
@@ -110,13 +116,13 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M2** | 1F interior + doors | `done` | Partitions, swing doors, 0.91 grid |
 | **M3** | U-stair + height | `done` | Climbable 1F→2F, landing overlaps, corridors A/B |
 | **M4** | 2F shell + NE room | `done` | Floors/walls, stair well 1.82, NE G2 4.55, balcony slab |
-| **M5** | 2F complete shell | `todo` | Remaining 2F rooms/CL, balcony access optional |
+| **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access optional |
 | **M6** | PH / roof | `todo` | Third plan massing |
 | **M7** | Materials + light | `todo` | Basic materials, lighting (still Phase-style) |
 | **M8** | Furniture | `todo` | Sparse props from plan |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
-**Current milestone:** M4 complete → next work under **M5**.
+**Current milestone:** **M5** (south wing partitions done; balcony T-202 deferred).
 
 ---
 
@@ -163,48 +169,15 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - DoD: West door in 0.91 band; N/E solid; south glass **6.37→10.92**; balcony slab no door/parapet; stair well NS 1.82.
 - Verify: enter NE via stair door; glass meets east wall; no balcony swing.
 
+#### T-201 · 2F remaining partitions (south wing + CL) · `done` · M5
+
+- DoD: South wing 2.73/0.91/2.73; mid-wall doors (西・中央洋室); stacked CL + bedroom passages; トイレ west of well; NE G2 4.55 unchanged.
+- Note: plan CL between stair|NE **not** added (T-105 lock: direct stair|room @ x=6.37).
+- Verify: climb 2F → hall → south rooms + トイレ; NE regression; no slab over upper flight.
+
 ---
 
 ### Active / next
-
-#### T-201 · 2F remaining partitions (south wing + CL) · `todo` · M5
-
-**Goal:** Align south-block rooms (洋室西 / CL / 洋室6) and any north-wing leftovers with `SecondFloor.jpeg`.
-
-**Scope**
-
-- Interior walls + doors where plan shows
-- Keep NE room + G2 as specified (do not shorten south glass)
-- Stair well void unchanged unless plan correction
-
-**Out of scope**
-
-- Balcony walk-through (see T-202)
-- PH, materials, furniture
-
-**DoD**
-
-- [ ] South-wing room boxes match plan widths (2.73 / 0.91 / 2.73)
-- [ ] Doors clickable where plan shows leaf; hinge side sensible
-- [ ] Walk path from stair hall into each south room without falling through
-- [ ] `npx tsc --noEmit` clean; `npm run dev` runs
-- [ ] README “Current geometry” one-liner updated if public behavior changes
-
-**Verify**
-
-1. Climb to 2F; enter NE room (regression).
-2. Enter each south room; confirm walls vs plan screenshot.
-3. No new 2F slab over rising upper flight.
-
-**Grok Build prompt**
-
-```text
-@TASKS.md @AGENTS.md implement T-201 (2F remaining partitions).
-Plan against docs/2d-floors/SecondFloor.jpeg first if geometry ambiguous; then implement.
-Do not change NE G2 4.55 m or re-add top-down. Update TASKS.md status when DoD met.
-```
-
----
 
 #### T-202 · 2F balcony access (optional) · `deferred` · M5
 
@@ -321,3 +294,7 @@ Every task also satisfies:
 |------|------|
 | 2026-08-01 | TASKS.md created; task content moved from README/AGENTS; top-down cancelled; NE G2 4.55 recorded |
 | 2026-08-01 | M0–M4 marked done from implemented Phase 1 work |
+| 2026-08-01 | T-201 done: 2F south wing partitions + トイレ; M5 in progress (balcony deferred) |
+| 2026-08-01 | South-wing NS 3.64 (CL 2.73 + pocket 0.91); CL one-side openings; doors → corridor |
+| 2026-08-01 | Fix: corridor 0.91 restored (rooms 2.73); doors @ clN; トイレ @ corrN; SW door east to CL |
+| 2026-08-01 | NW jog: west wall @1.82, NS 1.365; solid to toilet; Phase-1 sink prop |

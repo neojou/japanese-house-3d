@@ -880,6 +880,58 @@ export const SWING_DOORS: SwingDoorDef[] = [
     floor: "2f",
     label: "2F梯|洋室",
   },
+  // ── 2F south-wing doors @ clN (3.64) → corridor north (not outdoors) ──
+  // Flank CL: SW door east-shifted (tight to CL west); SC tight to CL east.
+  // Open opposite: both into room (−Z); hinges on CL side face each other.
+  {
+    id: "swing-2f-sw",
+    openingId: "2f-door-sw-yoshitsu",
+    wallX: 0,
+    wallZ: IR.mid, // = Z2.clN 3.64
+    alongMin: 2.73 - 0.8 - 0.04,
+    alongMax: 2.73 - 0.04,
+    axis: "ew",
+    sill: 0,
+    height: 1.95,
+    hingeAt: "max", // east / CL side
+    openSign: -1, // into room (−Z)
+    openAngleDeg: 90,
+    floor: "2f",
+    label: "2F西洋室",
+  },
+  {
+    id: "swing-2f-sc",
+    openingId: "2f-door-sc-yoshitsu",
+    wallX: 0,
+    wallZ: IR.mid,
+    alongMin: 3.64 + 0.04,
+    alongMax: 3.64 + 0.04 + 0.8,
+    axis: "ew",
+    sill: 0,
+    height: 1.95,
+    hingeAt: "min", // west / CL side
+    openSign: 1, // opposite sense vs SW, into room (−Z)
+    openAngleDeg: 90,
+    floor: "2f",
+    label: "2F中央洋室",
+  },
+  // ── 2F トイレ: door on corridor north edge z=stairS (4.55) ──
+  {
+    id: "swing-2f-toilet",
+    openingId: "2f-door-toilet",
+    wallX: 0,
+    wallZ: IR.stairS,
+    alongMin: 2.73 + 0.2,
+    alongMax: 2.73 + 0.2 + 0.8,
+    axis: "ew",
+    sill: 0,
+    height: 1.95,
+    hingeAt: "min",
+    openSign: -1, // open north into トイレ (+Z)
+    openAngleDeg: 90,
+    floor: "2f",
+    label: "2Fトイレ",
+  },
   // Balcony access door deferred (south wall is fixed G2 glass for now)
 ];
 
@@ -1009,15 +1061,49 @@ export const FLOOR_STAIR_MID_LANDING: FloorSlab = {
 export const FLOOR_2F_LANDING = FLOOR_STAIR_MID_LANDING;
 
 // ─────────────────────────────────────────────────────────────
-// 2F footprint (north-aligned: north=6.37, south=0.91, depth 5.46)
+// 2F footprint — NS total 6.37 aligned with 1F:
+//   south rooms 2.73 + corridor 0.91 + north wing 2.73
+//   (corridor = north_wing 2.73 − stair_well 1.82)
+//
+// z (south=0.91): rooms → 3.64 | corridor → 4.55 | well/toilet → 6.37
+//
+// NW jog: corridor west wall pushed west 0.91 → x=1.82; protrusion NS 1.365
+// (half of 2.73) with solid wall to トイレ; sink on north face.
 // ─────────────────────────────────────────────────────────────
 
 export const Z2 = {
+  /** 2F south face of south wing */
   south: IR.north - 5.46, // 0.91
+  /**
+   * South-room / CL north = corridor south = NE/G2 south line.
+   * Room doors open north into corridor.
+   */
+  clN: IR.north - 2.73, // 3.64
+  /** @deprecated alias of clN */
   mid: IR.north - 2.73, // 3.64
+  /**
+   * Corridor north edge (= stair well south / IR.stairS).
+   * トイレ door sits on this line (from corridor).
+   */
+  corrN: IR.north - 1.82, // 4.55
+  /** @deprecated old misread “room north”; use corrN for corridor north */
+  sRoomN: IR.north - 1.82, // 4.55
   balcS: IR.north - 2.73 - 0.91, // 2.73
   north: IR.north, // 6.37
+  /** South-wing bedroom NS (includes full CL stack) */
+  sRoomDepth: 2.73,
+  /** Stacked CLs total NS (= sRoomDepth) */
+  clDepth: 2.73,
+  /** Corridor NS (stair exit / NE door band) */
+  corrDepth: 0.91,
+  /** NW protrusion NS (= half of north-wing 2.73) */
+  nwJogDepth: 2.73 / 2, // 1.365
+  /** North edge of NW jog / sink bay */
+  nwJogN: IR.north - 2.73 + 2.73 / 2, // clN + 1.365 ≈ 5.005
 } as const;
+
+/** NW corridor west façade (south-block west + 0 is rooms; jog = 2.73 − 0.91). */
+export const X2_NW_JOG = 2.73 - 0.91; // 1.82
 
 export const X2 = {
   w0: 0,
@@ -1037,39 +1123,36 @@ const T2 = BUILDING.slabThickness;
 /**
  * 2F walkable floors.
  *
- * Stair well (open hole, no slab): x 4.55–6.37, z stairS(4.55)–north(6.37) = NS 1.82.
- * Lower U-spur into LDK remains (option A); 2F only voids the north 1.82 well.
- *
- * NE 洋室6.5: x 6.37–east, z mid(3.64)–north(6.37) = NS 2.73.
- * South G2 wall full width 4.55 (2.73+1.82) at z=mid. Balcony slab south
- * of mid kept (visual only; door deferred).
+ * South rooms NS 2.73; corridor NS 0.91 (clN→corrN), west to X2_NW_JOG=1.82;
+ * NW jog wet bay NS 1.365 west of トイレ; stair well void x 4.55–6.37, z≥corrN.
+ * NE G2 4.55 m locked. Balcony visual only.
  */
 export const FLOORS_2F: FloorSlab[] = [
   {
     id: "2f-sw-room",
     floor: "2f",
     y: Y2,
-    rect: { x: 0, z: Z2.south, width: 2.73, depth: 2.73 },
+    rect: { x: 0, z: Z2.south, width: 2.73, depth: Z2.sRoomDepth },
     thickness: T2,
-    label: "2F洋室西",
+    label: "2F洋室6.5(西)",
     color: "#cfc9be",
   },
   {
     id: "2f-s-cl",
     floor: "2f",
     y: Y2,
-    rect: { x: 2.73, z: Z2.south, width: 0.91, depth: 2.73 },
+    rect: { x: 2.73, z: Z2.south, width: 0.91, depth: Z2.clDepth },
     thickness: T2,
-    label: "2F-CL",
+    label: "2F-CL(南翼)",
     color: "#c8c2b8",
   },
   {
     id: "2f-s-center",
     floor: "2f",
     y: Y2,
-    rect: { x: 3.64, z: Z2.south, width: 2.73, depth: 2.73 },
+    rect: { x: 3.64, z: Z2.south, width: 2.73, depth: Z2.sRoomDepth },
     thickness: T2,
-    label: "2F洋室6",
+    label: "2F洋室6(中央)",
     color: "#cfc9be",
   },
   {
@@ -1081,24 +1164,58 @@ export const FLOORS_2F: FloorSlab[] = [
     label: "2Fバルコニー",
     color: "#a8b0a4",
   },
-  // North wing west of stair well (x < 4.55)
+  /**
+   * 0.91 corridor: west façade at 1.82 (jog) → 6.37; SW door stays indoors.
+   */
+  {
+    id: "2f-corridor",
+    floor: "2f",
+    y: Y2,
+    rect: {
+      x: X2_NW_JOG,
+      z: Z2.clN,
+      width: IR.genkanW - X2_NW_JOG, // 1.82 → 6.37
+      depth: Z2.corrDepth, // 0.91
+    },
+    thickness: T2,
+    label: "2F廊道0.91",
+    color: "#b0aaa0",
+  },
+  /**
+   * NW jog wet / sink bay (north of corridor strip, west of トイレ solid wall).
+   * x 1.82–2.73, z corrN→nwJogN (completes protrusion NS 1.365 with corridor).
+   */
+  {
+    id: "2f-nw-jog",
+    floor: "2f",
+    y: Y2,
+    rect: {
+      x: X2_NW_JOG,
+      z: Z2.corrN,
+      width: 2.73 - X2_NW_JOG, // 0.91
+      depth: Z2.nwJogN - Z2.corrN, // ≈ 0.455
+    },
+    thickness: T2,
+    label: "2F西北凸角(洗面)",
+    color: "#b8b4ac",
+  },
+  // トイレ (north of corridor, east of jog solid wall @ 2.73)
   {
     id: "2f-n-west",
     floor: "2f",
     y: Y2,
     rect: {
       x: 2.73,
-      z: Z2.mid,
+      z: Z2.corrN,
       width: IR.clE - 2.73,
-      depth: Z2.north - Z2.mid,
+      depth: Z2.north - Z2.corrN,
     },
     thickness: T2,
-    label: "2F北翼西",
+    label: "2Fトイレ",
     color: "#c5c0b6",
   },
   /**
-   * NE 洋室6.5 — east of stair|room wall at x=6.37.
-   * NS 2.73 (mid→north); EW full to east façade.
+   * NE 洋室6.5 — x≥6.37, z clN→north.
    */
   {
     id: "2f-ne-yoshitsu",
@@ -1106,36 +1223,32 @@ export const FLOORS_2F: FloorSlab[] = [
     y: Y2,
     rect: {
       x: IR.genkanW,
-      z: Z2.mid,
+      z: Z2.clN,
       width: BUILDING.width - IR.genkanW,
-      depth: Z2.north - Z2.mid, // 2.73
+      depth: Z2.north - Z2.clN, // 2.73
     },
     thickness: T2,
     label: "2F洋室6.5(東北)",
     color: "#c5c0b6",
   },
-  /**
-   * Bridge only: upper flight exit (z≈3.96) → 2F mid (3.64).
-   * Do NOT slab over rising upper treads (z > STAIR_UPPER_Z_SOUTH) or
-   * height sampling snaps climbers to Y=2.7 mid-flight.
-   * NE door (0.91 band) is reachable from the last treads + this strip.
-   * Stair well void remains x 4.55–6.37, z stairS(4.55)–north = NS 1.82.
-   */
-  {
-    id: "2f-stair-exit-bridge",
-    floor: "2f",
-    y: Y2,
-    rect: {
-      x: IR.clE,
-      z: Z2.mid,
-      width: IR.genkanW - IR.clE, // 4.55–6.37
-      depth: Math.max(STAIR_UPPER_Z_SOUTH - Z2.mid, 0.05),
-    },
-    thickness: T2,
-    label: "2F梯口接板",
-    color: "#b8b4ac",
-  },
 ];
+
+/**
+ * Simple Phase-1 sink placeholder (plan-space, on 2F).
+ * Against north wall of NW jog, east of west façade.
+ */
+export const PROP_2F_SINK = {
+  floor: "2f" as FloorId,
+  /** Cabinet + basin AABB center (plan) */
+  x: X2_NW_JOG + 0.91 / 2, // mid of jog width
+  z: Z2.nwJogN - 0.22,
+  y: FLOOR_LEVELS["2f"],
+  width: 0.55,
+  depth: 0.4,
+  height: 0.85,
+  basinH: 0.12,
+  label: "2F洗手台",
+} as const;
 
 /**
  * 1F north-of-mid floors.
@@ -1322,9 +1435,9 @@ export const CEILINGS_1F: FloorSlab[] = [
 
 // ─────────────────────────────────────────────────────────────
 // 2F walls (base Y = 2.7)
-// NE 洋室: W wall at x=6.37 + door in 0.91 hall band; N/E solid;
-// S G2 floor-to-ceiling glass full width 2.73+1.82=4.55 → east wall.
-// Balcony slab kept (visual); no door / parapet (access deferred).
+// NS: rooms 2.73 + corridor 0.91 + north 2.73 (= 6.37 from south 0.91)
+// South wing doors @ clN → corridor; トイレ door @ corrN from corridor
+// 南 CL only east; 北 CL only west. NE G2 4.55 locked.
 // ─────────────────────────────────────────────────────────────
 
 /** 2F interior door / glass (sill relative to floor top of story). */
@@ -1332,75 +1445,219 @@ const INT2_DOOR_W = 0.8;
 const INT2_DOOR_H = 1.95;
 const INT2_SILL = 0;
 
+/** South-wing plan X breaks (bottom chain). */
+const X2_SW0 = 0;
+const X2_CL0 = 2.73;
+const X2_CL1 = 3.64;
+const X2_SE = IR.genkanW; // 6.37
+
+/** CL stack: south → clN; equal halves. */
+const Z2_CL_SPLIT = Z2.south + Z2.clDepth / 2; // ≈ 2.275
+const Z2_CL_N = Z2.clN; // 3.64 — room door wall / corridor south
+const Z2_CORR_N = Z2.corrN; // 4.55 — corridor north / トイレ south
+const Z2_NW_JOG_N = Z2.nwJogN; // ≈ 5.005 — NW protrusion north
+const X2_JOG = X2_NW_JOG; // 1.82
+
 /**
- * NE 洋室 south wall (G2): plan bottom chain balcony bay 2.73 + east 1.82.
- * x 6.37 → 10.92, z = mid (3.64); meets east exterior at SE corner.
+ * NE 洋室 south wall (G2): 2.73 + 1.82 = 4.55 → east wall.
  */
 const NE_S_X0 = IR.genkanW; // 6.37
 const NE_S_X1 = BUILDING.width; // 10.92
-const NE_S_LEN = NE_S_X1 - NE_S_X0; // 4.55 = 2.73 + 1.82
+const NE_S_LEN = NE_S_X1 - NE_S_X0; // 4.55
 
-/** Single full-width floor-to-ceiling glass (small edge posts for wall solid). */
 const G2_SILL = 0.1;
 const G2_H = BUILDING.wallHeight - G2_SILL - 0.08;
-const G2_EDGE = 0.08; // solid wall posts at each end
+const G2_EDGE = 0.08;
 const G2_FROM = G2_EDGE;
 const G2_W = NE_S_LEN - 2 * G2_EDGE;
 
-/**
- * Door on stair|room wall: in south 0.91 band (z mid→stairS).
- * Wall NS from mid; fromStart from min Z.
- */
-const DOOR_2F_NE_FROM = (IR.stairS - IR.mid - INT2_DOOR_W) / 2; // center in 0.91
+/** NE door centered in corridor band on wall from clN (along Z). */
+const DOOR_2F_NE_FROM = (Z2_CORR_N - Z2_CL_N - INT2_DOOR_W) / 2;
+
+/** Room doors flank CL on wall @ clN (fromStart from x=0). */
+const DOOR_2F_SW_FROM = X2_CL0 - INT2_DOOR_W - 0.04; // east-shifted, tight to CL
+const DOOR_2F_SC_FROM = X2_CL1 + 0.04; // tight to CL east
+
+const CL_PASS_W = 0.7;
+const CL_PASS_H = INT2_DOOR_H;
+const CL_PASS_S_FROM = (Z2_CL_SPLIT - Z2.south - CL_PASS_W) / 2;
+const CL_PASS_N_FROM =
+  Z2_CL_SPLIT - Z2.south + (Z2_CL_N - Z2_CL_SPLIT - CL_PASS_W) / 2;
 
 export const WALLS_2F: WallSegment[] = [
   // ── South face of south block ──
   {
     id: "2f-ext-south-w",
-    ...wallEW(0, IR.genkanW, Z2.south),
+    ...wallEW(X2_SW0, X2_SE, Z2.south),
     floor: "2f",
     label: "2F南(西〜中央)",
   },
   // ── West ──
   {
     id: "2f-ext-west-s",
-    ...wallNS(halfT, Z2.south, Z2.mid),
+    ...wallNS(halfT, Z2.south, Z2_CL_N),
     floor: "2f",
     label: "2F西(南翼)",
   },
+  // NW jog west façade (corridor + sink bay), x=1.82, z clN→nwJogN
+  {
+    id: "2f-ext-west-nw-jog",
+    ...wallNS(X2_JOG + halfT, Z2_CL_N, Z2_NW_JOG_N),
+    floor: "2f",
+    label: "2F西(廊道凸角)",
+  },
+  // North wing west only north of jog (トイレ NW corner → north)
   {
     id: "2f-ext-west-n",
-    ...wallNS(2.73 + halfT, Z2.mid, Z2.north),
+    ...wallNS(X2_CL0 + halfT, Z2_NW_JOG_N, Z2.north),
     floor: "2f",
-    label: "2F西(北翼起)",
+    label: "2F西(北翼トイレ北段)",
   },
-  // ── North exterior (solid for NE room) ──
+  // NW jog north exterior (sink bay)
+  {
+    id: "2f-ext-nw-jog-n",
+    ...wallEW(X2_JOG, X2_CL0, Z2_NW_JOG_N),
+    floor: "2f",
+    label: "2F北(西北凸角)",
+  },
+  // ── North exterior (from x=2.73 east; jog has own north wall) ──
   {
     id: "2f-ext-north",
-    ...wallEW(2.73, BUILDING.width, Z2.north),
+    ...wallEW(X2_CL0, BUILDING.width, Z2.north),
     floor: "2f",
     label: "2F北",
   },
-  // ── East exterior (solid for NE room) ──
+  // ── East exterior (NE) ──
   {
     id: "2f-ext-east",
-    ...wallNS(BUILDING.width - halfT, Z2.mid, Z2.north),
+    ...wallNS(BUILDING.width - halfT, Z2.clN, Z2.north),
     floor: "2f",
     label: "2F東(北翼)",
   },
-  // ── South block east end at x=6.37 (south of mid only) ──
+  // ── South block east @ x=6.37 (rooms only; NE continues north of clN) ──
   {
     id: "2f-ext-s-block-e",
-    ...wallNS(IR.genkanW, Z2.south, Z2.mid),
+    ...wallNS(X2_SE, Z2.south, Z2_CL_N),
     floor: "2f",
     label: "2F南翼東",
   },
 
-  // ── NE 洋室 west: stair|room at x=6.37, full NS 2.73 ──
-  // Door in 0.91 hall band (z mid–stairS); hinge S / handle N; open into room (+X)
+  // ═══════════════════════════════════════════════════════════
+  // South-wing north wall @ clN → corridor (not outdoors)
+  // Doors flank CL; open opposite into rooms.
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    id: "2f-int-sroom-n",
+    ...wallEW(X2_SW0, X2_SE, Z2_CL_N),
+    floor: "2f",
+    label: "2F南翼北牆→廊",
+    openings: [
+      {
+        id: "2f-door-sw-yoshitsu",
+        fromStart: DOOR_2F_SW_FROM,
+        width: INT2_DOOR_W,
+        height: INT2_DOOR_H,
+        sill: INT2_SILL,
+        type: "door",
+      },
+      {
+        id: "2f-door-sc-yoshitsu",
+        fromStart: DOOR_2F_SC_FROM,
+        width: INT2_DOOR_W,
+        height: INT2_DOOR_H,
+        sill: INT2_SILL,
+        type: "door",
+      },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // CL stack — 南 only east; 北 only west
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    id: "2f-int-sw-cl",
+    ...wallNS(X2_CL0, Z2.south, Z2_CL_N),
+    floor: "2f",
+    label: "2F西洋室|CL",
+    openings: [
+      {
+        id: "2f-pass-ncl-west",
+        fromStart: CL_PASS_N_FROM,
+        width: CL_PASS_W,
+        height: CL_PASS_H,
+        sill: INT2_SILL,
+        type: "passage",
+      },
+    ],
+  },
+  {
+    id: "2f-int-cl-sc",
+    ...wallNS(X2_CL1, Z2.south, Z2_CL_N),
+    floor: "2f",
+    label: "2F-CL|中央洋室",
+    openings: [
+      {
+        id: "2f-pass-scl-east",
+        fromStart: CL_PASS_S_FROM,
+        width: CL_PASS_W,
+        height: CL_PASS_H,
+        sill: INT2_SILL,
+        type: "passage",
+      },
+    ],
+  },
+  {
+    id: "2f-int-cl-split",
+    ...wallEW(X2_CL0, X2_CL1, Z2_CL_SPLIT),
+    floor: "2f",
+    label: "2F-CL中隔",
+  },
+  // CL north face is solid segment of 2f-int-sroom-n (x 2.73–3.64, no opening)
+
+  // ═══════════════════════════════════════════════════════════
+  // Corridor north / トイレ south @ corrN
+  // NW jog | トイレ: solid wall @ x=2.73, z corrN→nwJogN (no door)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    id: "2f-int-toilet-s",
+    ...wallEW(X2_CL0, IR.clE, Z2_CORR_N),
+    floor: "2f",
+    label: "2Fトイレ南←廊",
+    openings: [
+      {
+        id: "2f-door-toilet",
+        fromStart: 0.2,
+        width: INT2_DOOR_W,
+        height: INT2_DOOR_H,
+        sill: INT2_SILL,
+        type: "door",
+      },
+    ],
+  },
+  {
+    id: "2f-int-toilet-e",
+    ...wallNS(IR.clE, Z2_CORR_N, Z2.north),
+    floor: "2f",
+    label: "2Fトイレ東|梯井",
+  },
+  // Solid partition: NW sink bay | トイレ (no door)
+  {
+    id: "2f-int-nw-jog-toilet",
+    ...wallNS(X2_CL0, Z2_CORR_N, Z2_NW_JOG_N),
+    floor: "2f",
+    label: "2F凸角|トイレ(實)",
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NE 洋室 (G2 4.55 locked)
+  // ═══════════════════════════════════════════════════════════
+
   {
     id: "2f-int-ne-west",
-    ...wallNS(IR.genkanW, Z2.mid, Z2.north),
+    ...wallNS(IR.genkanW, Z2.clN, Z2.north),
     floor: "2f",
     label: "2F梯|洋室 西牆",
     openings: [
@@ -1414,12 +1671,9 @@ export const WALLS_2F: WallSegment[] = [
       },
     ],
   },
-
-  // ── NE 洋室 south G2: full 4.55 m (2.73+1.82) to east wall ──
-  // Fixed glass only; balcony door deferred. Slab south of wall kept for later.
   {
     id: "2f-ne-room-s",
-    ...wallEW(NE_S_X0, NE_S_X1, Z2.mid),
+    ...wallEW(NE_S_X0, NE_S_X1, Z2.clN),
     floor: "2f",
     label: "2F洋室南 G2 4.55",
     openings: [
