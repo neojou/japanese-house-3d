@@ -1,7 +1,7 @@
 # TASKS — Japanese House 3D
 
 > **Single source of truth** for goals, phase status, milestones, acceptance criteria (DoD), and suggested Grok Build prompts.  
-> Product overview → `README.md` · Agent coding rules → `AGENTS.md`
+> Product overview → `README.md` · Visual aesthetics → `DESIGN.md` · Agent coding rules → `AGENTS.md`
 
 ---
 
@@ -285,10 +285,11 @@ Every task also satisfies:
 ```text
 1. Read TASKS.md (current milestone + next todo)
 2. Read AGENTS.md conventions
-3. If geometry: open Second/First floor plan + dimensions.ts
-4. Plan if task says so → wait for owner if ambiguous
-5. Implement → tsc → manual verify DoD
-6. Mark task done in TASKS.md; note residual risks
+3. If materials / light / façade: read DESIGN.md
+4. If geometry: open Second/First floor plan + dimensions.ts
+5. Plan if task says so → wait for owner if ambiguous
+6. Implement → tsc → manual verify DoD (+ DESIGN cues if look work)
+7. Mark task done in TASKS.md; update DESIGN.md if aesthetics/hang-points changed
 ```
 
 **One-shot “what next?” prompt**
@@ -327,3 +328,5 @@ Every task also satisfies:
 | 2026-08-01 | 1F SCL: west wall+passage 0.7; merge east with UB; NS≈0.885 (not 1.82) |
 | 2026-08-01 | SCL+玄関 NS **1.72** (z 2.83–4.55); 北貼洗面南; EW 1.21; 西通道 0.9; wetS=stairS=4.55 |
 | 2026-08-01 | L1 façade: procedural ivory stucco (albedo/normal/rough) + yaki-sugi on `1f-jog-ldk-east` only |
+| 2026-08-01 | DESIGN.md added (aesthetics); AGENTS/README/TASKS point agents to it for look work |
+| 2026-08-01 | Genkan: flush yaki-sugi door+portal (L/R/top), matte-black vertical handle; plan walls unchanged |

@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
+import { Environment, PerspectiveCamera } from "@react-three/drei";
 import { Suspense, useMemo } from "react";
 import * as THREE from "three";
 import { House } from "@/components/house";
@@ -13,6 +13,7 @@ import { planToWorldX } from "@/lib/coords";
 
 function Lights() {
   const sun = LIGHTING.sun;
+  const genkan = LIGHTING.genkanRecess;
   return (
     <>
       <ambientLight intensity={LIGHTING.ambient} />
@@ -33,7 +34,7 @@ function Lights() {
         shadow-camera-bottom={-sun.shadowExtent}
         shadow-bias={-0.0002}
       />
-      {/* Soft interior fills under roofs (plan-space; house group is X-mirrored) */}
+      {/* Soft interior + genkan recess fills (plan-space; house group is X-mirrored) */}
       <group
         name="interior-fills"
         scale={[-1, 1, 1]}
@@ -49,7 +50,24 @@ function Lights() {
             color={f.color}
           />
         ))}
+        {/* Reveal yaki-sugi grain on west jog + door (otherwise pure black) */}
+        <pointLight
+          position={genkan.fill.position}
+          intensity={genkan.fill.intensity}
+          distance={genkan.fill.distance}
+          decay={2}
+          color={genkan.fill.color}
+        />
+        <pointLight
+          position={genkan.rakeWest.position}
+          intensity={genkan.rakeWest.intensity}
+          distance={genkan.rakeWest.distance}
+          decay={2}
+          color={genkan.rakeWest.color}
+        />
       </group>
+      {/* Low-intensity env for micro-specular on char ridges (no new deps) */}
+      <Environment preset="city" environmentIntensity={0.28} />
     </>
   );
 }

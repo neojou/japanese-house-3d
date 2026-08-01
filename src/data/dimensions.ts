@@ -2405,9 +2405,9 @@ export const COLORS = {
   /** Ceiling soffit (brighter than walls) */
   ceiling: "#faf7f1",
   doorFill: "#8a8580",
-  /** Accent wood door (~5% with frames) */
-  genkanDoor: "#5c4030",
-  genkanDoorFrame: "#3d342c",
+  /** Genkan leaf/frame — light tint; grain comes from yaki maps */
+  genkanDoor: "#c8c0b4",
+  genkanDoorFrame: "#c8c0b4",
   glass: "#a8c4d4",
   parking: "#5a5a5a",
   parkingLine: "#d0d0d0",
@@ -2451,25 +2451,45 @@ export const LIGHTING = {
   background: "#c5d0dc",
   fogNear: 50,
   fogFar: 110,
-  ambient: 0.28,
+  ambient: 0.32,
   hemiSky: "#eef2f8",
   hemiGround: "#8a8a78",
-  hemiIntensity: 0.38,
+  hemiIntensity: 0.4,
   sun: {
     color: "#fff1de",
-    intensity: 1.55,
-    /** More raking angle for grit / grain shadow */
-    position: [18, 16, 9] as [number, number, number],
+    intensity: 1.65,
+    /** Low raking sun — carves stucco grit + yaki board seams */
+    position: [14, 11, 16] as [number, number, number],
     shadowMap: 2048,
     shadowFar: 70,
     shadowExtent: 22,
+  },
+  /**
+   * Genkan recess key lights (plan space, mirrored with house).
+   * Without these, 内縮 west wall + door sit in shadow → pure black.
+   */
+  genkanRecess: {
+    /** Soft fill from parking toward door */
+    fill: {
+      position: [7.1, 2.0, 1.4] as [number, number, number],
+      intensity: 1.15,
+      distance: 7,
+      color: "#fff6ea",
+    },
+    /** Raking strip along west jog (LDK outer → parking) */
+    rakeWest: {
+      position: [5.9, 1.85, 1.6] as [number, number, number],
+      intensity: 0.85,
+      distance: 5,
+      color: "#ffe8c8",
+    },
   },
   /** Soft interior fills so rooms stay readable under roofs */
   interiorFills: [
     // 1F LDK approx center
     { id: "fill-1f-ldk", position: [3.0, 2.1, 2.8] as [number, number, number], intensity: 0.55, distance: 8, color: "#fff8f0" },
     // 1F genkan / east
-    { id: "fill-1f-east", position: [8.5, 2.1, 3.5] as [number, number, number], intensity: 0.4, distance: 6, color: "#f5f8ff" },
+    { id: "fill-1f-east", position: [8.5, 2.1, 3.5] as [number, number, number], intensity: 0.45, distance: 6, color: "#f5f8ff" },
     // 2F corridor / stair hall
     { id: "fill-2f-hall", position: [5.4, 4.3, 4.2] as [number, number, number], intensity: 0.5, distance: 7, color: "#fff8f0" },
     // 2F NE room

@@ -3,6 +3,7 @@
 Interactive **first-person** 3D walkthrough of a Japanese residential house, built from three floor plans (1F / 2F / PH).
 
 **Tasks, milestones, DoD, and Grok prompts:** see **[`TASKS.md`](./TASKS.md)**  
+**Visual / material aesthetics:** see **[`DESIGN.md`](./DESIGN.md)**  
 **Agent coding rules:** see **[`AGENTS.md`](./AGENTS.md)**
 
 ---
@@ -69,7 +70,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 ## Materials & light (L1)
 
-**Façade:** warm ivory **stucco** (~70%) with procedural grit (albedo + normal + roughness); **yaki-sugi** charred cedar on genkan parking recess side wall only for now (`1f-jog-ldk-east` — expand via `YAKI_SUGI_WALL_IDS`). Interior plaster, wood floors, glass, dark door accents (~5%).  
+**Façade:** warm ivory **stucco** (~70%) with procedural grit; **yaki-sugi** genkan recess (left wall + door bay + portal top/right cheeks) and **flush yaki-sugi main door** with matte-black vertical bar handle (DESIGN: 外牆即大門). Expand wood via `YAKI_SUGI_WALL_IDS`.  
 
 **Lighting:** raking sun + hemi + soft interior fills; ACES tone mapping.  
 
@@ -100,6 +101,7 @@ src/
 ├── store/useViewerStore.ts
 └── lib/                     # coords, height sampling, units
 TASKS.md                     # Goals, milestones, DoD, Grok prompts
+DESIGN.md                    # Façade aesthetics, 70/25/5, yaki-sugi hang-points
 AGENTS.md                    # Rules for AI / agents
 ```
 

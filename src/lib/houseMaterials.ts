@@ -20,23 +20,27 @@ export const FAÇADE = {
   stucco: "#f3eee4",
   /** Tint multiply on albedo map */
   stuccoTint: "#f7f2e8",
-  /** Yaki-sugi base (map carries grain) — secondary pockets ~25% later */
-  yakiSugi: "#2a2420",
+  /**
+   * Multiply tint for yaki maps — keep near white so map luminance is not crushed.
+   * (MeshStandard: final ≈ color × map)
+   */
+  yakiSugi: "#c8c0b4",
   /** Interior plaster (slightly cooler than exterior ivory) */
   interior: "#f0ebe3",
   /** Accent dark (door frames, etc.) ~5% */
   accentDark: "#3d342c",
-  /** World meters per texture tile */
+  /** World meters per texture tile — smaller = more boards / finer grain on screen */
   stuccoTileM: 1.6,
-  yakiTileM: 0.95,
+  yakiTileM: 0.72,
 } as const;
 
 /**
- * Genkan parking recess — yaki-sugi only (L1 phase 1).
+ * Genkan 内凹 pocket — yaki-sugi (DESIGN.md).
  * Expand this set as more wood pockets are approved.
  */
 export const YAKI_SUGI_WALL_IDS = new Set<string>([
-  "1f-jog-ldk-east", // 内縮西壁：駐車凹口側面（大门凹入主看面）
+  "1f-jog-ldk-east", // 内縮西壁（凹口左）
+  "1f-south-genkan-door", // 大门立面（凹口背面；門與壁同材）
 ]);
 
 let _ready = false;
@@ -53,9 +57,10 @@ export function ensureFaçadeTextures(): void {
   stuccoAlbedo = createStuccoAlbedoMap(512);
   stuccoNormal = createStuccoNormalMap(512);
   stuccoRough = createStuccoRoughnessMap(256);
-  yakiAlbedo = createYakiSugiAlbedoMap(512);
-  yakiNormal = createYakiSugiNormalMap(512);
-  yakiRough = createYakiSugiRoughnessMap(256);
+  // 1024 yaki maps — board seams + grain readable at genkan distance
+  yakiAlbedo = createYakiSugiAlbedoMap(1024);
+  yakiNormal = createYakiSugiNormalMap(1024);
+  yakiRough = createYakiSugiRoughnessMap(512);
   _ready = true;
 }
 
@@ -100,6 +105,45 @@ function cloneMaps(
   return { map: m, normalMap: n, roughnessMap: r };
 }
 
+/** Yaki-sugi material sized by face extents in meters (along × up). */
+export function createYakiSugiMaterial(
+  alongM: number,
+  upM: number,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready) {
+    return new THREE.MeshStandardMaterial({
+      color: FAÇADE.yakiSugi,
+      roughness: 0.88,
+      metalness: 0.02,
+    });
+  }
+  const repU = Math.max(alongM / FAÇADE.yakiTileM, 0.5);
+  const repV = Math.max(upM / FAÇADE.yakiTileM, 0.5);
+  const maps = cloneMaps(yakiAlbedo, yakiNormal, yakiRough, repU, repV);
+  return new THREE.MeshStandardMaterial({
+    color: FAÇADE.yakiSugi,
+    map: maps.map,
+    normalMap: maps.normalMap,
+    /** Stronger relief so raking light carves board seams */
+    normalScale: new THREE.Vector2(1.35, 1.35),
+    roughnessMap: maps.roughnessMap,
+    /** Slight sheen on char ridges (not chrome) */
+    roughness: 0.82,
+    metalness: 0.04,
+    envMapIntensity: 0.45,
+  });
+}
+
+/** Matte black metal — flush / vertical bar handles only (DESIGN). */
+export function createMatteBlackHandleMaterial(): THREE.MeshStandardMaterial {
+  return new THREE.MeshStandardMaterial({
+    color: "#1a1a1a",
+    roughness: 0.72,
+    metalness: 0.35,
+  });
+}
+
 /**
  * Material for a wall box piece. `along` / `up` in meters drive UV repeat.
  */
@@ -115,19 +159,8 @@ export function createWallMaterial(
   const along = Math.max(sizeX, sizeZ);
   const up = sizeY;
 
-  if (finish === "yakiSugi" && _ready) {
-    const repU = Math.max(along / FAÇADE.yakiTileM, 0.35);
-    const repV = Math.max(up / FAÇADE.yakiTileM, 0.35);
-    const maps = cloneMaps(yakiAlbedo, yakiNormal, yakiRough, repU, repV);
-    return new THREE.MeshStandardMaterial({
-      color: FAÇADE.yakiSugi,
-      map: maps.map,
-      normalMap: maps.normalMap,
-      normalScale: new THREE.Vector2(0.85, 0.85),
-      roughnessMap: maps.roughnessMap,
-      roughness: 1,
-      metalness: 0.02,
-    });
+  if (finish === "yakiSugi") {
+    return createYakiSugiMaterial(along, up);
   }
 
   if (finish === "stucco" && _ready) {

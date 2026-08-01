@@ -182,36 +182,42 @@ export function createStuccoRoughnessMap(size = 256): THREE.CanvasTexture {
 }
 
 /**
- * Yaki-sugi (charred cedar): dark vertical grain albedo.
- * Tile size intended ~0.9–1.2 m along grain when repeat is set in meters.
+ * Yaki-sugi (charred cedar) albedo — mid-dark with readable grain.
+ * IMPORTANT: stay in ~0.12–0.45 luminance so MeshStandard (color×map)
+ * does not crush to pure black under soft ambient.
  */
-export function createYakiSugiAlbedoMap(size = 512): THREE.CanvasTexture {
+export function createYakiSugiAlbedoMap(size = 1024): THREE.CanvasTexture {
   const canvas = makeCanvas(size);
   const ctx = canvas.getContext("2d")!;
   const img = ctx.createImageData(size, size);
   const cache = new Map<string, number>();
   const rand = mulberry32(2024);
+  const planks = 5;
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const u = x / size;
       const v = y / size;
-      // Vertical planks
-      const plank = Math.floor(u * 6);
-      const plankU = u * 6 - plank;
-      const seam = Math.min(plankU, 1 - plankU) < 0.04 ? 0.35 : 1;
-      // Strong vertical grain
+      const plank = Math.floor(u * planks);
+      const plankU = u * planks - plank;
+      const edge = Math.min(plankU, 1 - plankU);
+      // Dark board seams (still above pure black)
+      const seam = edge < 0.035 ? 0.55 : edge < 0.055 ? 0.78 : 1;
+      // Multi-scale vertical grain (high contrast)
       const grain =
-        fbm(plank * 3 + u * 2, v * 40, 5, cache, rand) * 0.65 +
-        fbm(u * 8, v * 120, 3, cache, rand) * 0.35;
-      // Char blotches
-      const char = fbm(u * 6, v * 10, 3, cache, rand);
-      const tone = 0.08 + grain * 0.12 + char * 0.06;
-      const warm = 1 + (char - 0.5) * 0.15;
+        fbm(plank * 4 + u * 3, v * 22, 5, cache, rand) * 0.45 +
+        fbm(u * 14, v * 90, 4, cache, rand) * 0.35 +
+        fbm(u * 40, v * 200, 2, cache, rand) * 0.2;
+      const char = fbm(u * 5 + plank, v * 8, 4, cache, rand);
+      // Lifted base so detail survives ACES + ambient
+      const tone = 0.16 + grain * 0.28 + (char - 0.5) * 0.1;
+      const warm = 1 + (char - 0.5) * 0.22;
+      // Occasional ash-grey highlight along grain
+      const ash = Math.max(0, grain - 0.55) * 0.35;
       const i = (y * size + x) * 4;
-      const r = Math.min(255, (tone * 255 * 1.1 * warm + 8) * seam);
-      const g = Math.min(255, (tone * 255 * 0.95 * warm + 6) * seam);
-      const b = Math.min(255, (tone * 255 * 0.85 + 5) * seam);
+      const r = Math.min(255, Math.max(0, (tone * 255 * 1.15 * warm + ash * 40) * seam));
+      const g = Math.min(255, Math.max(0, (tone * 255 * 0.98 * warm + ash * 36) * seam));
+      const b = Math.min(255, Math.max(0, (tone * 255 * 0.88 + ash * 32) * seam));
       img.data[i] = r;
       img.data[i + 1] = g;
       img.data[i + 2] = b;
@@ -219,24 +225,31 @@ export function createYakiSugiAlbedoMap(size = 512): THREE.CanvasTexture {
     }
   }
   ctx.putImageData(img, 0, 0);
-  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+  const tex = canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+  tex.anisotropy = 16;
+  return tex;
 }
 
-/** Vertical ridge normal for charred boards. */
-export function createYakiSugiNormalMap(size = 512): THREE.CanvasTexture {
+/** Vertical ridge normal for charred boards — stronger relief for raking light. */
+export function createYakiSugiNormalMap(size = 1024): THREE.CanvasTexture {
   const canvas = makeCanvas(size);
   const ctx = canvas.getContext("2d")!;
   const img = ctx.createImageData(size, size);
   const cache = new Map<string, number>();
   const rand = mulberry32(88);
-  const strength = 1.1;
+  const strength = 1.85;
+  const planks = 5;
 
   const heightAt = (u: number, v: number) => {
-    const plank = Math.floor(u * 6);
-    const plankU = u * 6 - plank;
-    const seam = Math.min(plankU, 1 - plankU) < 0.045 ? 0.15 : 0;
-    const grain = fbm(plank * 2 + u * 1.5, v * 50, 4, cache, rand);
-    return grain * 0.7 + seam + fbm(u * 10, v * 80, 2, cache, rand) * 0.2;
+    const plank = Math.floor(u * planks);
+    const plankU = u * planks - plank;
+    const edge = Math.min(plankU, 1 - plankU);
+    const seam = edge < 0.04 ? 0.55 : edge < 0.06 ? 0.2 : 0;
+    const grain =
+      fbm(plank * 3 + u * 2, v * 28, 5, cache, rand) * 0.55 +
+      fbm(u * 12, v * 110, 3, cache, rand) * 0.35 +
+      fbm(u * 30, v * 220, 2, cache, rand) * 0.1;
+    return grain + seam;
   };
 
   for (let y = 0; y < size; y++) {
@@ -246,8 +259,8 @@ export function createYakiSugiNormalMap(size = 512): THREE.CanvasTexture {
       const h = heightAt(u, v);
       const hx = heightAt(u + 1 / size, v);
       const hy = heightAt(u, v + 1 / size);
-      const dx = (hx - h) * strength * 5;
-      const dy = (hy - h) * strength * 5;
+      const dx = (hx - h) * strength * 6;
+      const dy = (hy - h) * strength * 6;
       const nx = -dx;
       const ny = -dy;
       const nz = 1;
@@ -260,10 +273,12 @@ export function createYakiSugiNormalMap(size = 512): THREE.CanvasTexture {
     }
   }
   ctx.putImageData(img, 0, 0);
-  return canvasToTexture(canvas);
+  const tex = canvasToTexture(canvas);
+  tex.anisotropy = 16;
+  return tex;
 }
 
-export function createYakiSugiRoughnessMap(size = 256): THREE.CanvasTexture {
+export function createYakiSugiRoughnessMap(size = 512): THREE.CanvasTexture {
   const canvas = makeCanvas(size);
   const ctx = canvas.getContext("2d")!;
   const img = ctx.createImageData(size, size);
@@ -274,9 +289,10 @@ export function createYakiSugiRoughnessMap(size = 256): THREE.CanvasTexture {
     for (let x = 0; x < size; x++) {
       const u = x / size;
       const v = y / size;
-      const n = fbm(u * 8, v * 30, 3, cache, rand);
-      // Charred wood: mostly matte, slight variation
-      const r = 0.78 + n * 0.18;
+      const n = fbm(u * 10, v * 40, 4, cache, rand);
+      const grain = fbm(u * 6, v * 100, 2, cache, rand);
+      // Charred: mostly matte; slightly glossier on raised grain (darker in roughness map)
+      const r = 0.62 + n * 0.28 - grain * 0.12;
       const val = Math.round(Math.min(255, Math.max(0, r * 255)));
       const i = (y * size + x) * 4;
       img.data[i] = val;

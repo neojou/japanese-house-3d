@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -10,17 +10,32 @@ import {
   GENKAN_ENTRY,
   MATERIAL_PRESETS,
   PARKING_1F,
-  SOUTH_FACADE,
-  SX,
-  SZ,
 } from "@/data/dimensions";
+import {
+  createMatteBlackHandleMaterial,
+  createYakiSugiMaterial,
+  ensureFaçadeTextures,
+} from "@/lib/houseMaterials";
 
 /** Negative Y: hinge east, open toward parking (−Z). */
 const OPEN_RAD = -THREE.MathUtils.degToRad(GENKAN_ENTRY.openAngleDeg);
 
+/** Shallow portal depth for right cheek + soffit (does not change plan walls). */
+const PORTAL_DEPTH = 0.42;
+/** Cladding thickness on top of existing geometry */
+const CLAD_T = 0.022;
+/** Vertical bar handle */
+const HANDLE_H = 1.15;
+const HANDLE_W = 0.018;
+const HANDLE_D = 0.032;
+const HANDLE_OFF = 0.07; // inset from free (west) edge
+
 /**
- * Parking + steps (0.25 m each) + 玄関大门 (sill 0.5 m).
- * Handle left (LDK); hinge right; click to open/close.
+ * Parking + steps + 玄関大门 (DESIGN: flush yaki-sugi portal).
+ * - 内凹三面燒杉：左（既有 jog 牆材）、右頰板、頂部 soffit
+ * - 門扇與門框同燒杉、同豎紋 → 遠看「外牆即大門」
+ * - 霧面消光黑一體式垂直長條把手
+ * Plan wall layout unchanged.
  */
 export function GenkanEntry() {
   const y0 = FLOOR_LEVELS["1f"];
@@ -28,15 +43,53 @@ export function GenkanEntry() {
   const bayW = g.x1 - g.x0;
   const wallZ = g.z;
   const sillY = g.sill;
-  const frameInnerW = bayW - 2 * g.frameThickness;
-  const leafW = frameInnerW - 2 * g.leafClearance;
-  const leafH = g.openingHeight - g.frameThickness - g.leafClearance;
-  const leafZ = wallZ;
-  const hingeX = g.x1 - g.frameThickness - g.leafClearance;
+  const wallH = BUILDING.wallHeight;
+  const halfT = BUILDING.wallThickness / 2;
+
+  // Flush leaf: minimal frame so door reads as continuous cladding
+  const frameReveal = 0.012;
+  const leafW = bayW - 2 * frameReveal;
+  const leafH = g.openingHeight - frameReveal * 0.5;
+  const leafT = Math.max(g.leafThickness, 0.048);
+  const leafZ = wallZ - halfT + leafT / 2 + 0.002;
+  const hingeX = g.x1 - frameReveal;
 
   const [open, setOpen] = useState(false);
   const hingeRef = useRef<THREE.Group>(null);
   const angleRef = useRef(0);
+
+  useLayoutEffect(() => {
+    ensureFaçadeTextures();
+  }, []);
+
+  const matLeaf = useMemo(
+    () => createYakiSugiMaterial(leafW, leafH),
+    [leafW, leafH],
+  );
+  const matFrame = useMemo(
+    () => createYakiSugiMaterial(bayW, wallH),
+    [bayW, wallH],
+  );
+  const matSoffit = useMemo(
+    () => createYakiSugiMaterial(bayW, PORTAL_DEPTH),
+    [bayW],
+  );
+  const matCheek = useMemo(
+    () => createYakiSugiMaterial(PORTAL_DEPTH, wallH),
+    [wallH],
+  );
+  const matHandle = useMemo(() => createMatteBlackHandleMaterial(), []);
+
+  useLayoutEffect(() => {
+    return () => {
+      for (const m of [matLeaf, matFrame, matSoffit, matCheek, matHandle]) {
+        m.map?.dispose();
+        m.normalMap?.dispose();
+        m.roughnessMap?.dispose();
+        m.dispose();
+      }
+    };
+  }, [matLeaf, matFrame, matSoffit, matCheek, matHandle]);
 
   const onDoorClick = useCallback((e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
@@ -51,12 +104,12 @@ export function GenkanEntry() {
     }
   });
 
-  const ft = g.frameThickness;
-  const fd = g.frameDepth;
-  const oh = g.openingHeight;
   const midX = (g.x0 + g.x1) / 2;
-  /** Frame sits on the sill (raised platform) */
   const frameBaseY = y0 + sillY;
+  const face = wallZ - halfT;
+  const soffitY = frameBaseY + g.openingHeight + CLAD_T * 0.5;
+  const cheekX = g.x1 - CLAD_T / 2;
+  const cheekZ = face - PORTAL_DEPTH / 2;
 
   const doorPointer = {
     onClick: onDoorClick,
@@ -67,8 +120,6 @@ export function GenkanEntry() {
       document.body.style.cursor = "auto";
     },
   };
-
-  const face = wallZ - BUILDING.wallThickness / 2;
 
   return (
     <group name="genkan-entry">
@@ -90,37 +141,12 @@ export function GenkanEntry() {
         />
       </mesh>
 
-      {/* LDK south dimension ticks */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[SX.xLdkA / 2, y0 + 0.01, SZ.outer - 0.25]}
-      >
-        <planeGeometry args={[SOUTH_FACADE.ldkA * 0.95, 0.08]} />
-        <meshStandardMaterial color="#e74c3c" />
-      </mesh>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[
-          SX.xLdkA + SOUTH_FACADE.ldkB / 2,
-          y0 + 0.01,
-          SZ.outer - 0.25,
-        ]}
-      >
-        <planeGeometry args={[SOUTH_FACADE.ldkB * 0.95, 0.08]} />
-        <meshStandardMaterial color="#e67e22" />
-      </mesh>
-
-      {/*
-        Two steps, each 0.25 m high, going south from the door face:
-          outer (south) top = 0.25 · inner (at door) top = 0.50
-      */}
+      {/* Steps — dark stone, low contrast under portal */}
       {Array.from({ length: g.stepCount }, (_, i) => {
-        // i=0 outer (first from parking), i=1 inner (second / door)
-        const level = i + 1; // 1 or 2
+        const level = i + 1;
         const topY = g.stepHeight * level;
         const centerY = topY - g.stepHeight / 2;
-        // outer further south
-        const fromDoor = g.stepCount - i; // 2, 1
+        const fromDoor = g.stepCount - i;
         const centerZ = face - g.stepDepth * (fromDoor - 0.5);
         return (
           <mesh
@@ -131,66 +157,80 @@ export function GenkanEntry() {
           >
             <boxGeometry args={[g.stepWidth, g.stepHeight, g.stepDepth]} />
             <meshStandardMaterial
-              color={COLORS.step}
-              roughness={MATERIAL_PRESETS.step.roughness}
-              metalness={MATERIAL_PRESETS.step.metalness}
+              color="#4a4844"
+              roughness={0.92}
+              metalness={0.02}
             />
           </mesh>
         );
       })}
 
-      {/* Door frame on sill */}
+      {/* ── Portal: 頂燒杉 soffit ── */}
       <mesh
-        position={[g.x0 + ft / 2, frameBaseY + oh / 2, wallZ]}
+        position={[midX, soffitY, face - PORTAL_DEPTH / 2]}
         castShadow
         receiveShadow
+        material={matSoffit}
       >
-        <boxGeometry args={[ft, oh, fd]} />
-        <meshStandardMaterial
-          color={COLORS.genkanDoorFrame}
-          roughness={MATERIAL_PRESETS.doorFrame.roughness}
-          metalness={MATERIAL_PRESETS.doorFrame.metalness}
-        />
-      </mesh>
-      <mesh
-        position={[g.x1 - ft / 2, frameBaseY + oh / 2, wallZ]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[ft, oh, fd]} />
-        <meshStandardMaterial
-          color={COLORS.genkanDoorFrame}
-          roughness={MATERIAL_PRESETS.doorFrame.roughness}
-          metalness={MATERIAL_PRESETS.doorFrame.metalness}
-        />
-      </mesh>
-      <mesh
-        position={[midX, frameBaseY + oh - ft / 2, wallZ]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[frameInnerW, ft, fd]} />
-        <meshStandardMaterial
-          color={COLORS.genkanDoorFrame}
-          roughness={MATERIAL_PRESETS.doorFrame.roughness}
-          metalness={MATERIAL_PRESETS.doorFrame.metalness}
-        />
-      </mesh>
-      {/* Threshold on sill */}
-      <mesh
-        position={[midX, frameBaseY + 0.015, wallZ]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[frameInnerW, 0.03, fd * 1.05]} />
-        <meshStandardMaterial
-          color={COLORS.genkanDoorFrame}
-          roughness={MATERIAL_PRESETS.doorFrame.roughness}
-          metalness={MATERIAL_PRESETS.doorFrame.metalness}
-        />
+        <boxGeometry args={[bayW + CLAD_T * 2, CLAD_T, PORTAL_DEPTH]} />
       </mesh>
 
-      {/* Door leaf — hinge east, handle west (LDK) */}
+      {/* ── Portal: 右頰燒杉（東側；左側由 1f-jog-ldk-east 牆材負責）── */}
+      <mesh
+        position={[cheekX, y0 + wallH / 2, cheekZ]}
+        castShadow
+        receiveShadow
+        material={matCheek}
+      >
+        <boxGeometry args={[CLAD_T, wallH, PORTAL_DEPTH]} />
+      </mesh>
+
+      {/* Flush yaki frame — same material as leaf (minimal reveal) */}
+      {/* West reveal */}
+      <mesh
+        position={[g.x0 + frameReveal / 2, frameBaseY + leafH / 2, leafZ]}
+        castShadow
+        receiveShadow
+        material={matFrame}
+      >
+        <boxGeometry args={[frameReveal, leafH + frameReveal, leafT * 0.95]} />
+      </mesh>
+      {/* East reveal */}
+      <mesh
+        position={[g.x1 - frameReveal / 2, frameBaseY + leafH / 2, leafZ]}
+        castShadow
+        receiveShadow
+        material={matFrame}
+      >
+        <boxGeometry args={[frameReveal, leafH + frameReveal, leafT * 0.95]} />
+      </mesh>
+      {/* Head */}
+      <mesh
+        position={[
+          midX,
+          frameBaseY + leafH + frameReveal / 2,
+          leafZ,
+        ]}
+        castShadow
+        receiveShadow
+        material={matFrame}
+      >
+        <boxGeometry args={[bayW, frameReveal, leafT * 0.95]} />
+      </mesh>
+      {/* Threshold — nearly invisible dark strip */}
+      <mesh
+        position={[midX, frameBaseY + 0.008, leafZ]}
+        castShadow
+        receiveShadow
+        material={matFrame}
+      >
+        <boxGeometry args={[leafW + frameReveal, 0.016, leafT * 1.05]} />
+      </mesh>
+
+      {/*
+        Door leaf — full bay yaki-sugi, no glass light (subtraction).
+        Hinge east; free edge west with matte-black vertical bar.
+      */}
       <group
         ref={hingeRef}
         position={[hingeX, frameBaseY, leafZ]}
@@ -198,69 +238,94 @@ export function GenkanEntry() {
         userData={{ interactable: "door" }}
       >
         <mesh
-          position={[-leafW / 2, leafH * 0.38, 0]}
+          position={[-leafW / 2, leafH / 2, 0]}
           castShadow
           receiveShadow
           userData={{ interactable: "door" }}
+          material={matLeaf}
           {...doorPointer}
         >
-          <boxGeometry args={[leafW, leafH * 0.72, g.leafThickness]} />
-          <meshStandardMaterial
-            color={COLORS.genkanDoor}
-            roughness={MATERIAL_PRESETS.doorWood.roughness}
-            metalness={MATERIAL_PRESETS.doorWood.metalness}
-          />
+          <boxGeometry args={[leafW, leafH, leafT]} />
         </mesh>
+
+        {/* Hairline shadow groove (closed look: almost invisible seam) */}
         <mesh
-          position={[-leafW / 2, leafH * 0.84, 0]}
+          position={[-leafW + 0.004, leafH / 2, -leafT / 2 - 0.001]}
+          userData={{ interactable: "door" }}
+          {...doorPointer}
+        >
+          <boxGeometry args={[0.004, leafH * 0.98, 0.003]} />
+          <meshStandardMaterial color="#0c0c0c" roughness={0.95} metalness={0} />
+        </mesh>
+
+        {/* Exterior vertical bar handle — matte black, free edge (west) */}
+        <mesh
+          position={[
+            -leafW + HANDLE_OFF,
+            leafH * 0.48,
+            -leafT / 2 - HANDLE_D / 2 - 0.002,
+          ]}
           castShadow
           userData={{ interactable: "door" }}
+          material={matHandle}
           {...doorPointer}
         >
-          <boxGeometry
-            args={[leafW * 0.92, leafH * 0.24, g.leafThickness * 0.6]}
-          />
-          <meshStandardMaterial
-            color={COLORS.glass}
-            transparent={MATERIAL_PRESETS.glass.transparent}
-            opacity={0.45}
-            roughness={MATERIAL_PRESETS.glass.roughness}
-            metalness={MATERIAL_PRESETS.glass.metalness}
-          />
+          <boxGeometry args={[HANDLE_W, HANDLE_H, HANDLE_D]} />
         </mesh>
+        {/* Slim standoffs */}
         <mesh
           position={[
-            -leafW * 0.88,
-            leafH * 0.45,
-            -g.leafThickness / 2 - 0.015,
+            -leafW + HANDLE_OFF,
+            leafH * 0.48 + HANDLE_H * 0.38,
+            -leafT / 2 - 0.006,
           ]}
+          material={matHandle}
           userData={{ interactable: "door" }}
           {...doorPointer}
         >
-          <boxGeometry args={[0.025, 0.14, 0.035]} />
-          <meshStandardMaterial
-            color="#b0b0b0"
-            metalness={MATERIAL_PRESETS.handle.metalness}
-            roughness={MATERIAL_PRESETS.handle.roughness}
-          />
+          <boxGeometry args={[0.012, 0.012, 0.014]} />
         </mesh>
         <mesh
           position={[
-            -leafW * 0.88,
-            leafH * 0.45,
-            g.leafThickness / 2 + 0.015,
+            -leafW + HANDLE_OFF,
+            leafH * 0.48 - HANDLE_H * 0.38,
+            -leafT / 2 - 0.006,
           ]}
+          material={matHandle}
           userData={{ interactable: "door" }}
           {...doorPointer}
         >
-          <boxGeometry args={[0.025, 0.14, 0.035]} />
-          <meshStandardMaterial
-            color="#b0b0b0"
-            metalness={MATERIAL_PRESETS.handle.metalness}
-            roughness={MATERIAL_PRESETS.handle.roughness}
-          />
+          <boxGeometry args={[0.012, 0.012, 0.014]} />
+        </mesh>
+
+        {/* Interior pull — same bar language, slightly lower profile */}
+        <mesh
+          position={[
+            -leafW + HANDLE_OFF,
+            leafH * 0.48,
+            leafT / 2 + HANDLE_D * 0.35,
+          ]}
+          userData={{ interactable: "door" }}
+          material={matHandle}
+          {...doorPointer}
+        >
+          <boxGeometry args={[HANDLE_W * 0.85, HANDLE_H * 0.9, HANDLE_D * 0.55]} />
         </mesh>
       </group>
+
+      {/* West portal cheek hint at LDK corner (reinforces left of 内凹 next to door) */}
+      <mesh
+        position={[
+          g.x0 + CLAD_T / 2,
+          y0 + wallH / 2,
+          face - PORTAL_DEPTH / 2,
+        ]}
+        castShadow
+        receiveShadow
+        material={matCheek}
+      >
+        <boxGeometry args={[CLAD_T, wallH, PORTAL_DEPTH]} />
+      </mesh>
     </group>
   );
 }
