@@ -333,3 +333,4 @@ Every task also satisfies:
 | 2026-08-01 | 2F NE balcony dual slabs (W 2.73×1.11 / E 1.82×0.91); soffit 3× downlight + genkan-east sconce |
 | 2026-08-01 | Interior finishes: oat main / warm-gray secondary / charcoal accent; shadow-gaps; wood endscape |
 | 2026-08-01 | Fix genkan north block: passage 1.15 m center; no full-width wood panel sealing view |
+| 2026-08-01 | Door-click priority: any raycast door hit skips lock; frames marked interactable |

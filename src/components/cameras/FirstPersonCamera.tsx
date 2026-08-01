@@ -77,9 +77,10 @@ export function FirstPersonCamera() {
 
       _raycaster.setFromCamera(_ndc, camera);
       const hits = _raycaster.intersectObjects(scene.children, true);
-      // Nearest hit: if door, only toggle door (R3F onClick); do not lock
-      if (hits.length > 0 && isDoorInteractable(hits[0].object)) {
-        return;
+      // Any door along the ray (frame/leaf/handle) → open only, never lock.
+      // Nearest-only failed when frame/portal mesh sat in front of the leaf.
+      for (const hit of hits) {
+        if (isDoorInteractable(hit.object)) return;
       }
 
       el.requestPointerLock();

@@ -73,12 +73,14 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
   // hinge at max Z, leafDir -1 → leaf toward -Z. Good if we place leaf at leafDir * leafW/2 on local X.
 
   return (
-    <group name={def.id}>
-      {/* Simple frame posts at opening ends (thin) — not interactable */}
+    <group name={def.id} userData={{ interactable: "door" }}>
+      {/* Frame posts — interactable so click frame opens door / skips pointer lock */}
       {def.axis === "ew" ? (
         <>
           <mesh
             position={[def.alongMin + FRAME_T / 2, sillY + def.height / 2, def.wallZ]}
+            userData={{ interactable: "door" }}
+            {...ptr}
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
             <meshStandardMaterial
@@ -89,6 +91,8 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           </mesh>
           <mesh
             position={[def.alongMax - FRAME_T / 2, sillY + def.height / 2, def.wallZ]}
+            userData={{ interactable: "door" }}
+            {...ptr}
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
             <meshStandardMaterial
@@ -103,6 +107,8 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               sillY + def.height - FRAME_T / 2,
               def.wallZ,
             ]}
+            userData={{ interactable: "door" }}
+            {...ptr}
           >
             <boxGeometry
               args={[leafW + 0.02, FRAME_T, BUILDING.wallThickness]}
@@ -118,6 +124,8 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
         <>
           <mesh
             position={[def.wallX, sillY + def.height / 2, def.alongMin + FRAME_T / 2]}
+            userData={{ interactable: "door" }}
+            {...ptr}
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
             <meshStandardMaterial
@@ -128,6 +136,8 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           </mesh>
           <mesh
             position={[def.wallX, sillY + def.height / 2, def.alongMax - FRAME_T / 2]}
+            userData={{ interactable: "door" }}
+            {...ptr}
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
             <meshStandardMaterial
@@ -142,6 +152,8 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               sillY + def.height - FRAME_T / 2,
               (def.alongMin + def.alongMax) / 2,
             ]}
+            userData={{ interactable: "door" }}
+            {...ptr}
           >
             <boxGeometry
               args={[BUILDING.wallThickness, FRAME_T, leafW + 0.02]}

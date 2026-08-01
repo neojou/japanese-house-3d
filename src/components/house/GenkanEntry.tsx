@@ -185,13 +185,15 @@ export function GenkanEntry() {
         <boxGeometry args={[CLAD_T, wallH, PORTAL_DEPTH]} />
       </mesh>
 
-      {/* Flush yaki frame — same material as leaf (minimal reveal) */}
+      {/* Flush yaki frame — same material as leaf; interactable for lock priority */}
       {/* West reveal */}
       <mesh
         position={[g.x0 + frameReveal / 2, frameBaseY + leafH / 2, leafZ]}
         castShadow
         receiveShadow
         material={matFrame}
+        userData={{ interactable: "door" }}
+        {...doorPointer}
       >
         <boxGeometry args={[frameReveal, leafH + frameReveal, leafT * 0.95]} />
       </mesh>
@@ -201,6 +203,8 @@ export function GenkanEntry() {
         castShadow
         receiveShadow
         material={matFrame}
+        userData={{ interactable: "door" }}
+        {...doorPointer}
       >
         <boxGeometry args={[frameReveal, leafH + frameReveal, leafT * 0.95]} />
       </mesh>
@@ -214,6 +218,8 @@ export function GenkanEntry() {
         castShadow
         receiveShadow
         material={matFrame}
+        userData={{ interactable: "door" }}
+        {...doorPointer}
       >
         <boxGeometry args={[bayW, frameReveal, leafT * 0.95]} />
       </mesh>
@@ -223,6 +229,8 @@ export function GenkanEntry() {
         castShadow
         receiveShadow
         material={matFrame}
+        userData={{ interactable: "door" }}
+        {...doorPointer}
       >
         <boxGeometry args={[leafW + frameReveal, 0.016, leafT * 1.05]} />
       </mesh>
