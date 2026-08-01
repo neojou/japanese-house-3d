@@ -67,9 +67,13 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 ---
 
-## Materials & light (T-301)
+## Materials & light (L1)
 
-Flat **MeshStandard** materials (no textures / post-processing): warm interior floors, cooler outdoor slabs, darker stair wood, plaster walls vs exterior stucco, bright ceilings, glass openings. Lighting: ambient + hemisphere + sun shadows + soft interior point fills. Tune palette / knobs in `src/data/dimensions.ts` (`COLORS`, `MATERIAL_PRESETS`, `LIGHTING`).
+**Façade:** warm ivory **stucco** (~70%) with procedural grit (albedo + normal + roughness); **yaki-sugi** charred cedar on genkan parking recess side wall only for now (`1f-jog-ldk-east` — expand via `YAKI_SUGI_WALL_IDS`). Interior plaster, wood floors, glass, dark door accents (~5%).  
+
+**Lighting:** raking sun + hemi + soft interior fills; ACES tone mapping.  
+
+**Code:** `src/lib/houseMaterials.ts`, `src/lib/surfaceTextures.ts`; palette / sun in `dimensions.ts` (`COLORS`, `LIGHTING`). No major new dependencies.
 
 ---
 

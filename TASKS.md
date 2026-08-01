@@ -129,7 +129,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M4** | 2F shell + NE room | `done` | Floors/walls, stair well 1.82, NE G2 4.55, balcony slab |
 | **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access deferred |
 | **M6** | PH / roof | `done` | 2F→PH stair, hall, roof balcony + parapet 1.4 |
-| **M7** | Materials + light | `done` | Flat materials + sun/hemi/interior fills (T-301) |
+| **M7** | Materials + light | `done` | L1 façade: ivory stucco maps + genkan yaki-sugi; fills (T-301→L1) |
 | **M8** | Furniture | `todo` | Sparse props from plan |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
@@ -326,3 +326,4 @@ Every task also satisfies:
 | 2026-08-01 | Door click priority: raycast door → no pointer lock; empty click locks |
 | 2026-08-01 | 1F SCL: west wall+passage 0.7; merge east with UB; NS≈0.885 (not 1.82) |
 | 2026-08-01 | SCL+玄関 NS **1.72** (z 2.83–4.55); 北貼洗面南; EW 1.21; 西通道 0.9; wetS=stairS=4.55 |
+| 2026-08-01 | L1 façade: procedural ivory stucco (albedo/normal/rough) + yaki-sugi on `1f-jog-ldk-east` only |

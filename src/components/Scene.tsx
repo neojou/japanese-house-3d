@@ -150,7 +150,8 @@ export function Scene() {
           antialias: true,
           alpha: false,
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.05,
+          /** Slightly brighter midtones for ivory stucco under raking sun */
+          toneMappingExposure: 1.12,
         }}
         className="h-full w-full touch-none"
       >

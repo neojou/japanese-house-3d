@@ -12,8 +12,8 @@ import { Props } from "./Props";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
 /**
- * Phase shell — floors / walls / stairs / genkan / ceilings / sparse props.
- * Materials: flat MeshStandard (T-301); no heavy textures.
+ * House shell — floors / walls / stairs / genkan / ceilings / sparse props.
+ * Façade L1: warm ivory stucco + yaki-sugi at genkan recess (`houseMaterials`).
  */
 export function House() {
   return (

@@ -1,15 +1,19 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useLayoutEffect, useMemo } from "react";
 import {
   BUILDING,
-  COLORS,
   FLOOR_LEVELS,
-  MATERIAL_PRESETS,
   WALLS,
   type Opening,
   type WallSegment,
 } from "@/data/dimensions";
+import {
+  createWallMaterial,
+  ensureFaçadeTextures,
+  wallFinishForId,
+  type WallFinish,
+} from "@/lib/houseMaterials";
 
 type SolidPiece = {
   key: string;
@@ -109,52 +113,55 @@ function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
   return pieces;
 }
 
-/** Exterior shell vs interior partition (T-301 distinct wall materials). */
-function isExteriorWall(id: string): boolean {
-  if (id.includes("-int-")) return false;
-  if (id.includes("-ext-") || id.includes("parapet") || id.includes("balc")) {
-    return true;
-  }
-  // 1F outer envelope (no -ext- prefix historically)
-  if (/^1f-(south|east|north|west|jog)/.test(id)) return true;
-  // PH hall shell + NE south glass wall (façade)
-  if (id.startsWith("ph-hall-") || id.startsWith("ph-balc-")) return true;
-  if (id === "2f-ne-room-s") return true;
-  return false;
-}
-
 function WallMesh({
   piece,
-  exterior,
+  finish,
 }: {
   piece: SolidPiece;
-  exterior: boolean;
+  finish: WallFinish;
 }) {
-  const preset = exterior
-    ? MATERIAL_PRESETS.wallExterior
-    : MATERIAL_PRESETS.wallInterior;
+  const material = useMemo(
+    () =>
+      createWallMaterial(finish, piece.sizeX, piece.sizeY, piece.sizeZ),
+    [finish, piece.sizeX, piece.sizeY, piece.sizeZ],
+  );
+
+  useLayoutEffect(() => {
+    return () => {
+      material.map?.dispose();
+      material.normalMap?.dispose();
+      material.roughnessMap?.dispose();
+      material.dispose();
+    };
+  }, [material]);
+
   return (
-    <mesh position={[piece.x, piece.y, piece.z]} castShadow receiveShadow>
+    <mesh
+      position={[piece.x, piece.y, piece.z]}
+      castShadow
+      receiveShadow
+      material={material}
+    >
       <boxGeometry args={[piece.sizeX, piece.sizeY, piece.sizeZ]} />
-      <meshStandardMaterial
-        color={exterior ? COLORS.wallExterior : COLORS.wall}
-        roughness={preset.roughness}
-        metalness={preset.metalness}
-      />
     </mesh>
   );
 }
 
 export function Walls() {
+  // Ensure maps exist before first material build (client only)
+  useLayoutEffect(() => {
+    ensureFaçadeTextures();
+  }, []);
+
   return (
     <group name="walls">
       {WALLS.map((wall) => {
-        const exterior = isExteriorWall(wall.id);
+        const finish = wallFinishForId(wall.id);
         const pieces = solidPiecesForWall(wall);
         return (
           <Fragment key={wall.id}>
             {pieces.map((piece) => (
-              <WallMesh key={piece.key} piece={piece} exterior={exterior} />
+              <WallMesh key={piece.key} piece={piece} finish={finish} />
             ))}
           </Fragment>
         );

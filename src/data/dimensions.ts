@@ -2383,14 +2383,16 @@ export const CAMERA = {
 } as const;
 
 /**
- * Phase-style palette (T-301). Flat MeshStandard colors — no textures / heavy PBR.
- * Components pick roughness/metalness via MATERIAL_PRESETS.
+ * L1 palette — warm ivory main (~70%), wood/yaki pockets (~25%), dark accent (~5%).
+ * Exterior stucco / yaki-sugi maps live in `src/lib/houseMaterials.ts`.
  */
 export const COLORS = {
-  /** Interior plaster */
-  wall: "#f2efe8",
-  /** Exterior stucco / cladding */
-  wallExterior: "#cfc8bc",
+  /** Interior plaster (slightly cooler than façade ivory) */
+  wall: "#f0ebe3",
+  /** Exterior warm ivory (fallback if maps unavailable) */
+  wallExterior: "#f3eee4",
+  /** Yaki-sugi / charred cedar accent */
+  yakiSugi: "#2a2420",
   /** Default interior floor (warm light wood) */
   floor: "#c9b59a",
   /** Outdoor slab / balcony concrete */
@@ -2401,16 +2403,18 @@ export const COLORS = {
   /** Stair treads / risers */
   stair: "#8f7a5e",
   /** Ceiling soffit (brighter than walls) */
-  ceiling: "#f7f5f0",
+  ceiling: "#faf7f1",
   doorFill: "#8a8580",
-  genkanDoor: "#a0673a",
-  genkanDoorFrame: "#5c4030",
-  glass: "#9ec4dc",
+  /** Accent wood door (~5% with frames) */
+  genkanDoor: "#5c4030",
+  genkanDoorFrame: "#3d342c",
+  glass: "#a8c4d4",
   parking: "#5a5a5a",
   parkingLine: "#d0d0d0",
-  ground: "#6d7d5c",
+  /** Soft landscape ground */
+  ground: "#7a8a6a",
   accent: "#2b6cb0",
-  step: "#9a9590",
+  step: "#8a857c",
   labelLdk: "#3d6b3d",
   labelGenkan: "#6b3d3d",
   labelEast: "#3d4d6b",
@@ -2420,40 +2424,45 @@ export const COLORS = {
   propCurtain: "#5c4a6a",
 } as const;
 
-/** Shared MeshStandardMaterial knobs (no textures). */
+/** Shared MeshStandardMaterial knobs (non-façade props / floors). */
 export const MATERIAL_PRESETS = {
   wallInterior: { roughness: 0.92, metalness: 0.0 },
-  wallExterior: { roughness: 0.88, metalness: 0.02 },
+  wallExterior: { roughness: 0.9, metalness: 0.0 },
   floorInterior: { roughness: 0.72, metalness: 0.0 },
   floorOutdoor: { roughness: 0.95, metalness: 0.0 },
   floorStair: { roughness: 0.78, metalness: 0.0 },
   stair: { roughness: 0.82, metalness: 0.0 },
   ceiling: { roughness: 0.96, metalness: 0.0 },
-  doorWood: { roughness: 0.7, metalness: 0.0 },
-  doorFrame: { roughness: 0.78, metalness: 0.02 },
-  glass: { roughness: 0.08, metalness: 0.15, transparent: true, opacity: 0.38 },
+  doorWood: { roughness: 0.68, metalness: 0.0 },
+  doorFrame: { roughness: 0.75, metalness: 0.02 },
+  glass: { roughness: 0.08, metalness: 0.12, transparent: true, opacity: 0.36 },
   ground: { roughness: 1.0, metalness: 0.0 },
   parking: { roughness: 0.95, metalness: 0.0 },
   step: { roughness: 0.9, metalness: 0.0 },
   handle: { roughness: 0.3, metalness: 0.7 },
 } as const;
 
-/** Scene lighting (T-301) — simple, no post-processing. */
+/**
+ * Scene lighting (L1) — lower ambient so stucco/yaki normals read in raking sun.
+ * No heavy post-processing.
+ */
 export const LIGHTING = {
-  background: "#b8c9d8",
-  fogNear: 45,
-  fogFar: 100,
-  ambient: 0.42,
-  hemiSky: "#e8f0ff",
-  hemiGround: "#6a7a5a",
-  hemiIntensity: 0.32,
+  /** Slightly warm sky so ivory walls don’t go hospital-cold */
+  background: "#c5d0dc",
+  fogNear: 50,
+  fogFar: 110,
+  ambient: 0.28,
+  hemiSky: "#eef2f8",
+  hemiGround: "#8a8a78",
+  hemiIntensity: 0.38,
   sun: {
-    color: "#fff4e5",
-    intensity: 1.25,
-    position: [16, 24, 12] as [number, number, number],
+    color: "#fff1de",
+    intensity: 1.55,
+    /** More raking angle for grit / grain shadow */
+    position: [18, 16, 9] as [number, number, number],
     shadowMap: 2048,
     shadowFar: 70,
-    shadowExtent: 20,
+    shadowExtent: 22,
   },
   /** Soft interior fills so rooms stay readable under roofs */
   interiorFills: [
