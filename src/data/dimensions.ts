@@ -315,6 +315,66 @@ export const GENKAN_ENTRY = {
 } as const;
 
 /**
+ * 2F NE balcony geometry + exterior lighting (plan space).
+ * West bay overhangs genkan by 0.30 m (balcWestS 2.53 vs recess 2.83).
+ */
+export const BALCONY_2F = {
+  y: FLOOR_LEVELS["2f"], // 2.7
+  slabT: BUILDING.slabThickness,
+  west: {
+    x0: SX.xLdkE, // 6.37
+    x1: SX.xLdkE + 2.73, // 9.10
+    z0: 3.64 - 1.11, // 2.53
+    z1: 3.64,
+    width: 2.73,
+    depth: 1.11,
+  },
+  east: {
+    x0: SX.xLdkE + 2.73, // 9.10
+    x1: SX.xEast, // 10.92
+    z0: 3.64 - 0.91, // 2.73
+    z1: 3.64,
+    width: 1.82,
+    depth: 0.91,
+  },
+  /** Rain cover past genkan south (m) */
+  genkanOverhang: 0.3,
+  /**
+   * Three recessed downlights under west soffit, aligned to genkan door bay.
+   * Y slightly below slab underside.
+   */
+  downlights: (() => {
+    const g0 = SX.xLdkE;
+    const g1 = SX.xGenkanE;
+    const mid = (g0 + g1) / 2;
+    const span = (g1 - g0) * 0.72;
+    const xs = [mid - span / 2, mid, mid + span / 2];
+    const z = (2.53 + SZ.recess) / 2; // mid of overhang band
+    const y = FLOOR_LEVELS["2f"] - BUILDING.slabThickness - 0.02;
+    return xs.map((x, i) => ({
+      id: `balc-dl-${i}`,
+      position: [x, y, z] as [number, number, number],
+      intensity: 0.55,
+      distance: 3.2,
+      color: "#fff0d8",
+    }));
+  })(),
+  /**
+   * European wall sconce east of genkan door (on SCL south face).
+   * Position: just east of door, ~1.7 m AFFL, proud of wall.
+   */
+  sconce: {
+    x: SX.xGenkanE + 0.18,
+    y: FLOOR_LEVELS["1f"] + 1.65,
+    z: SZ.recess - BUILDING.wallThickness / 2 - 0.08,
+    colorMetal: "#1a1a1a",
+    colorGlass: "#fff6e8",
+    intensity: 0.65,
+    distance: 4,
+  },
+} as const;
+
+/**
  * All 1F interior finished-floor height (m).
  * = genkan sill / top of exterior steps (0.5).
  * Standing eye Y = INTERIOR_FLOOR_Y + PLAYER.eyeHeight = 0.5 + 1.5 = 2.0.
@@ -1613,6 +1673,16 @@ export const Z2 = {
   corrN: IR.north - 1.82, // 4.55
   /** @deprecated old misread “room north”; use corrN for corridor north */
   sRoomN: IR.north - 1.82, // 4.55
+  /**
+   * NE 南牆線 (= clN). Balcony hangs south of this.
+   * West bay NS 1.11 → south 2.53; east bay NS 0.91 → south 2.73.
+   */
+  balcN: IR.north - 2.73, // 3.64 (= clN)
+  /** West balcony south (deeper — 30 cm past genkan z=2.83) */
+  balcWestS: IR.north - 2.73 - 1.11, // 2.53
+  /** East balcony south (shallower, ~UB line) */
+  balcEastS: IR.north - 2.73 - 0.91, // 2.73
+  /** @deprecated use balcEastS / balcWestS */
   balcS: IR.north - 2.73 - 0.91, // 2.73
   north: IR.north, // 6.37
   /** South-wing bedroom NS (includes full CL stack) */
@@ -1680,14 +1750,38 @@ export const FLOORS_2F: FloorSlab[] = [
     label: "2F洋室6(中央)",
     color: "#cfc9be",
   },
+  /**
+   * 2F NE balcony — two adjacent rectangles (south of G2 @ clN=3.64):
+   *  West: EW 2.73 × NS 1.11 (over genkan/SCL; south 2.53 → 30 cm past genkan face)
+   *  East: EW 1.82 × NS 0.91 (over UB side; south 2.73)
+   */
   {
-    id: "2f-balcony",
+    id: "2f-balcony-w",
     floor: "2f",
     y: Y2,
-    rect: { x: IR.genkanW, z: Z2.balcS, width: 2.73, depth: 0.91 },
+    rect: {
+      x: IR.genkanW, // 6.37
+      z: Z2.balcWestS, // 2.53
+      width: 2.73,
+      depth: 1.11,
+    },
     thickness: T2,
-    label: "2Fバルコニー",
-    color: "#a8b0a4",
+    label: "2F陽台西 2.73×1.11",
+    color: "#b5b0a6",
+  },
+  {
+    id: "2f-balcony-e",
+    floor: "2f",
+    y: Y2,
+    rect: {
+      x: IR.genkanW + 2.73, // 9.10
+      z: Z2.balcEastS, // 2.73
+      width: 1.82,
+      depth: 0.91,
+    },
+    thickness: T2,
+    label: "2F陽台東 1.82×0.91",
+    color: "#b5b0a6",
   },
   /**
    * 0.91 corridor: west façade at 1.82 (jog) → 6.37; SW door stays indoors.
@@ -2395,8 +2489,10 @@ export const COLORS = {
   yakiSugi: "#2a2420",
   /** Default interior floor (warm light wood) */
   floor: "#c9b59a",
-  /** Outdoor slab / balcony concrete */
-  floorOutdoor: "#a8a69e",
+  /** Outdoor slab / balcony concrete (warm grey) */
+  floorOutdoor: "#b5b0a6",
+  /** Balcony soffit underside (warm ivory-grey) */
+  balconySoffit: "#e8e4dc",
   /** Stair deck / mid landings (slightly darker wood) */
   floorStair: "#b59a78",
   slabEdge: "#9a948a",

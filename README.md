@@ -58,7 +58,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 | 2F 西北凸角 | 0.91×1.365；西牆 @1.82；與トイレ **實牆無門**；北牆簡易洗手台 |
 | 2F NE 洋室 | West door @ x=6.37（廊道帶）；G2 **4.55 m** |
 | 2F トイレ | 廊道北側 z=4.55 開門（井西） |
-| Balcony | Slab visible; no parapet; access door deferred |
+| Balcony | Dual slabs S of NE: W **2.73×1.11**, E **1.82×0.91**; 30 cm over genkan; soffit lights + door-east sconce; no parapet/door yet |
 | 1F ceiling | Soffit Y=2.5; open over stair well |
 | 2F ceiling | Soffit Y=5.2 over indoor rooms/corridor/toilet/NE; **no** slab on balcony or stair well |
 | PH / 3F | L 梯 + **ph-stair-deck** 蓋井 z4.55–6.37；廊 0.91→南門→陽台 6.37×3.64 @ Y=5.4；矮牆 **1.4 m** |

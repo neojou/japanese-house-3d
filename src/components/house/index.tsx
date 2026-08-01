@@ -5,6 +5,7 @@ import { Walls } from "./Walls";
 import { Stairs } from "./Stairs";
 import { Doors } from "./Doors";
 import { GenkanEntry } from "./GenkanEntry";
+import { BalconyExterior } from "./BalconyExterior";
 import { Ceilings } from "./Ceilings";
 import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
@@ -37,6 +38,7 @@ export function House() {
       <Stairs />
       <Doors />
       <GenkanEntry />
+      <BalconyExterior />
       <Props />
       <PlanLabels />
       <Compass />
@@ -51,6 +53,7 @@ export {
   Stairs,
   Doors,
   GenkanEntry,
+  BalconyExterior,
   Props,
   PlanLabels,
   Compass,

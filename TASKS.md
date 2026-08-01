@@ -92,7 +92,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | West wall | x = 6.37 (stair \| room); door in **0.91** hall band (z 3.64–4.55); hinge S / handle N; open into room (+X) |
 | North / East | Solid exterior |
 | South G2 | Floor-to-ceiling glass **4.55 m** = 2.73 + 1.82, z = mid (3.64), west 6.37 → east **10.92** (meets east wall) |
-| Balcony | Slab kept (visual); **no parapet**; **no door** (access deferred) |
+| Balcony | **Two rects** south of NE G2: west **2.73×1.11** (z 2.53–3.64), east **1.82×0.91** (z 2.73–3.64); west overhangs genkan **0.30 m**; warm-grey slab + soffit; 3 downlights + door-east sconce; **no parapet**; **no door** (T-202 deferred) |
 | 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** (rooms + corridor + north wing); stair well NS 1.82 → corridor = 2.73−1.82 |
 | South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (3.64)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
 | Corridor | z **3.64–4.55**, x **1.82–6.37** (west jog 0.91), slab Y=2.7; SW door → indoors |
@@ -330,3 +330,4 @@ Every task also satisfies:
 | 2026-08-01 | L1 façade: procedural ivory stucco (albedo/normal/rough) + yaki-sugi on `1f-jog-ldk-east` only |
 | 2026-08-01 | DESIGN.md added (aesthetics); AGENTS/README/TASKS point agents to it for look work |
 | 2026-08-01 | Genkan: flush yaki-sugi door+portal (L/R/top), matte-black vertical handle; plan walls unchanged |
+| 2026-08-01 | 2F NE balcony dual slabs (W 2.73×1.11 / E 1.82×0.91); soffit 3× downlight + genkan-east sconce |

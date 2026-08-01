@@ -66,7 +66,7 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 | 1 | **玄関駐車凹口** 左壁 | **Done** — `1f-jog-ldk-east` |
 | 1b | **玄関大门立面**（凹口背面） | **Done** — `1f-south-genkan-door` + flush yaki leaf |
 | 1c | **凹口頂 / 右頰**（portal soffit + east cheek） | **Done** — cladding in `GenkanEntry` (no plan wall change) |
-| 2 | 陽台內側、屋簷／天花下緣 | Planned — add wall ids when owner approves |
+| 2 | 陽台內側、屋簷／天花下緣 | Partial: NE balcony dual slab + genkan soffit lights (no yaki on balc yet) |
 | 3 | 其他凹入（門廊、局部 jog） | Only with explicit owner list |
 
 ### 2.6 玄関大门（外牆即大門）
@@ -165,6 +165,7 @@ When changing look, verify in first-person:
 | 2026-08-01 | DESIGN.md created: subtractive warm-white + yaki-sugi, 70/25/5, L1 maps, genkan recess first hang-point |
 | 2026-08-01 | Genkan door: flush yaki-sugi portal (3 faces + leaf), matte-black vertical bar handle |
 | 2026-08-01 | Yaki readability: brighter maps, genkan lights, env micro-specular (not pure black) |
+| 2026-08-01 | 2F NE balcony: dual rect layout; warm-grey deck; soffit ivory; 3 downlights; Euro sconce E of door |
 
 ---
 

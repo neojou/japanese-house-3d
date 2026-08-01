@@ -20,7 +20,7 @@ function floorLook(slab: FloorSlab): {
     id.includes("parking")
   ) {
     return {
-      color: COLORS.floorOutdoor,
+      color: slab.color ?? COLORS.floorOutdoor,
       ...MATERIAL_PRESETS.floorOutdoor,
     };
   }
