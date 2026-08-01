@@ -140,7 +140,8 @@ export function Walls() {
           wall.id.includes("west") ||
           wall.id.includes("north") ||
           wall.id.includes("jog") ||
-          wall.id.startsWith("2f-");
+          wall.id.startsWith("2f-") ||
+          wall.id.startsWith("ph-");
         const pieces = solidPiecesForWall(wall);
         return (
           <Fragment key={wall.id}>

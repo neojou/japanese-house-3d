@@ -3,18 +3,22 @@ import {
   BUILDING,
   GENKAN_ENTRY,
   INTERIOR_FLOOR_Y,
+  STAIR_2F_PH,
   STAIR_U,
   STAIRS,
 } from "@/data/dimensions";
 
 /**
  * Allow 0 → 0.5 interior floor and stair risers.
- * 2F slabs ignored until feetY is high enough.
+ * Higher story slabs ignored until feetY is high enough.
  */
 export const MAX_STEP_UP = 0.55;
 export const MAX_STEP_DOWN = 0.35;
 export const FEET_Y_IGNORE_2F_BELOW = 2.0;
+/** Ignore PH / roof slabs while still on 2F climb. */
+export const FEET_Y_IGNORE_PH_BELOW = 4.0;
 const Y_2F_SLAB_MIN = 2.5;
+const Y_PH_SLAB_MIN = 5.0;
 
 /** Horizontal padding on stair tread / width hitboxes (m). */
 const STAIR_PAD = 0.08;
@@ -28,10 +32,14 @@ function collectSurfaces(
 ): SurfaceHit[] {
   const hits: SurfaceHit[] = [{ y: 0, kind: "grade" }];
   const ignore2f = feetY < FEET_Y_IGNORE_2F_BELOW;
+  const ignorePh = feetY < FEET_Y_IGNORE_PH_BELOW;
 
   for (const slab of ALL_FLOOR_SLABS) {
     const { rect, y, floor } = slab;
-    if (ignore2f && (floor === "2f" || y >= Y_2F_SLAB_MIN)) {
+    if (ignore2f && (floor === "2f" || (y >= Y_2F_SLAB_MIN && y < Y_PH_SLAB_MIN))) {
+      continue;
+    }
+    if (ignorePh && (floor === "ph" || y >= Y_PH_SLAB_MIN)) {
       continue;
     }
     if (
@@ -41,7 +49,10 @@ function collectSurfaces(
       planZ <= rect.z + rect.depth
     ) {
       const kind =
-        Math.abs(y - STAIR_U.landing.y) < 0.05 ? "landing" : "slab";
+        Math.abs(y - STAIR_U.landing.y) < 0.05 ||
+        Math.abs(y - STAIR_2F_PH.landing.y) < 0.05
+          ? "landing"
+          : "slab";
       hits.push({ y, kind });
     }
   }
@@ -68,6 +79,11 @@ function collectSurfaces(
   // Mid landing insurance (turn pad at Y=1.7)
   if (isOnMidLanding(planX, planZ) && feetY >= 1.4) {
     hits.push({ y: STAIR_U.landing.y, kind: "landing" });
+  }
+
+  // 2F→PH mid landing insurance
+  if (isOnPhMidLanding(planX, planZ) && feetY >= 3.5) {
+    hits.push({ y: STAIR_2F_PH.landing.y, kind: "landing" });
   }
 
   // Stair flights (widened pads)
@@ -109,6 +125,17 @@ function collectSurfaces(
 function isOnMidLanding(planX: number, planZ: number): boolean {
   const L = STAIR_U.landing;
   // Generous pad so turn movement stays on Y=1.7
+  const pad = 0.1;
+  return (
+    planX >= L.x0 - pad &&
+    planX <= L.x1 + pad &&
+    planZ >= L.z0 - pad &&
+    planZ <= L.z1 + pad
+  );
+}
+
+function isOnPhMidLanding(planX: number, planZ: number): boolean {
+  const L = STAIR_2F_PH.landing;
   const pad = 0.1;
   return (
     planX >= L.x0 - pad &&

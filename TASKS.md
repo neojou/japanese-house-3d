@@ -69,7 +69,9 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 - South façade chain: 2.175 + 4.195 + 1.520 (genkan) + 1.210 (SCL) + 1.820 (UB) = **10.92**
 - Parking recess 内縮 2.755; genkan door + exterior steps (0.25 × 2) → sill / interior floor **0.5**
 - Interior 0.91 module grid (CL / stairs / rooms)
-- U-stair open to LDK (no stair south wall)
+- U-stair: **west bay south open** to LDK (climb); **east wall mid→north** + **南東灣 @ stairS** screen LDK|玄関 door from seeing stairs
+- 1F トイレ: **1.82×0.91** @ x 6.37–8.19, z 5.46–6.37; sit toilet west half facing east; south wall + east **0.7** passage with **double curtains** (no door)
+- 1F 洗面: **EW 2.73** @ x 8.19–10.92 (abut toilet); NS 1.82; west wall south **0.91** door (hinge S, handle N, open +X)
 - 1F ceiling soffit Y=2.5 over indoor envelope; **stair well open**
 
 ### Stairs 1F → 2F
@@ -94,6 +96,10 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
 | トイレ | North of corridor; door @ **corrN (4.55)** from corridor |
 | 2F ceiling | Soffit **Y=5.2** (2.7+2.5); indoor slabs only; balcony + stair well open |
+| PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37; 4 walls + ceiling; south door → roof |
+| PH layout | **廊 0.91** (z 3.64–4.55) + **梯井 NS 1.82** (z 4.55–6.37, same as 1F→2F) |
+| PH stair | U in well only, 12×0.225, mid Y=4.05; top → PH corridor; top Y=5.4 |
+| PH balcony | x 0–6.37, z **0–3.64**, Y=5.4; parapet **1.4 m** (N only west of hall) |
 | Plan CL between stair\|NE | **Not built** (locked: stair\|room direct @ x=6.37) |
 
 ### Height sampling (`src/lib/height.ts`)
@@ -118,12 +124,12 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M3** | U-stair + height | `done` | Climbable 1F→2F, landing overlaps, corridors A/B |
 | **M4** | 2F shell + NE room | `done` | Floors/walls, stair well 1.82, NE G2 4.55, balcony slab |
 | **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access optional |
-| **M6** | PH / roof | `todo` | Third plan massing |
+| **M6** | PH / roof | `done` | 2F→PH stair, hall, roof balcony + parapet 1.4 |
 | **M7** | Materials + light | `todo` | Basic materials, lighting (still Phase-style) |
 | **M8** | Furniture | `todo` | Sparse props from plan |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
-**Current milestone:** **M5** (south wing partitions done; balcony T-202 deferred).
+**Current milestone:** **M6 done** (PH stair + roof balcony). Next: materials / T-202 / polish.
 
 ---
 
@@ -198,21 +204,12 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 ---
 
-#### T-203 · PH / roof massing · `todo` · M6
+#### T-203 · PH / roof massing · `done` · M6
 
-**Goal:** ThirdFloor plan as walkable or viewable roof/PH shell.
-
-**DoD**
-
-- [ ] Floors/walls from plan dims in `dimensions.ts`
-- [ ] Access path defined (stair 2F→PH or temporary teleport — decide in plan)
-- [ ] First-person can stand on PH without falling through
-
-**Grok Build prompt**
-
-```text
-@TASKS.md implement T-203 PH/roof from docs/2d-floors/ThirdFloor.jpeg. Plan access path first, then implement. No furniture.
-```
+- Stair hall 1.82×2.73; **well NS 1.82** + **door corridor 0.91** (like 2F)
+- U-stair 2F→PH in well only: 12×0.225 m; mid Y=4.05; exit onto PH corr
+- ルーフバルコニー x 0–6.37, z 0–3.64, Y=5.4; parapet **1.4 m**
+- height: ignore PH slabs while feetY &lt; 4.0
 
 ---
 
@@ -300,3 +297,8 @@ Every task also satisfies:
 | 2026-08-01 | Fix: corridor 0.91 restored (rooms 2.73); doors @ clN; トイレ @ corrN; SW door east to CL |
 | 2026-08-01 | NW jog: west wall @1.82, NS 1.365; solid to toilet; Phase-1 sink prop |
 | 2026-08-01 | 2F ceilings: soffit 5.2; indoor blocks; no balcony/stair-well slab |
+| 2026-08-01 | 1F stair screen: east wall mid→north + 南東灣; west bay open to LDK |
+| 2026-08-01 | T-203 PH: 2F→PH U-stair, hall, roof balcony z0–3.64 parapet 1.4m |
+| 2026-08-01 | PH stair well NS 1.82 + door corridor 0.91 (align 1F→2F / 2F corr) |
+| 2026-08-01 | 1F toilet 1.82×0.91; east-facing sit toilet; south wall + 0.7 double curtains |
+| 2026-08-01 | 1F 洗面 EW 2.73 abut toilet; west door south 0.91 hinge S open in |

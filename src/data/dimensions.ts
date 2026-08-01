@@ -555,6 +555,72 @@ const WIN_H = 1.0;
 const WIN_SILL = INTERIOR_FLOOR_Y + 0.9;
 
 /**
+ * 1F トイレ — NS 0.91 × EW 1.82, north strip.
+ * West half: sit toilet facing east; south wall solid + east passage with curtains (no door).
+ */
+export const TOILET_1F = {
+  x0: IR.genkanW, // 6.37
+  x1: IR.genkanW + 1.82, // 8.19
+  z0: IR.north - 0.91, // 5.46
+  z1: IR.north, // 6.37
+  width: 1.82,
+  depth: 0.91,
+  /** South-wall east passage clear width (no leaf) */
+  passW: 0.7,
+  /** Solid south wall length from west (width − passW) */
+  solidW: 1.82 - 0.7, // 1.12
+} as const;
+
+/** Sit toilet placeholder (west half, facing +X east) */
+export const PROP_1F_TOILET = {
+  floor: "1f" as FloorId,
+  /** Bowl/tank group center */
+  x: TOILET_1F.x0 + 0.91 * 0.45, // west half
+  z: (TOILET_1F.z0 + TOILET_1F.z1) / 2,
+  y: INTERIOR_FLOOR_Y,
+  /** Local size: depth along face direction (east), width N-S */
+  width: 0.4,
+  depth: 0.65,
+  seatH: 0.4,
+  tankH: 0.75,
+  tankD: 0.2,
+  label: "1Fトイレ便器",
+} as const;
+
+/** Double center-split curtains in south passage (no swing door) */
+export const PROP_1F_TOILET_CURTAIN = {
+  floor: "1f" as FloorId,
+  /** Passage center X */
+  x: TOILET_1F.x0 + TOILET_1F.solidW + TOILET_1F.passW / 2,
+  z: TOILET_1F.z0,
+  y: INTERIOR_FLOOR_Y,
+  passW: TOILET_1F.passW,
+  height: 1.9,
+  panelGap: 0.02,
+  thickness: 0.02,
+  label: "1Fトイレ門簾",
+} as const;
+
+/**
+ * 1F 洗面 — EW 2.73 west-abutting toilet; NS 1.82 north strip.
+ * West wall south 0.91 bay + door (hinge S, handle N, open into room +X).
+ */
+export const SENMEN_1F = {
+  x0: TOILET_1F.x1, // 8.19
+  x1: IR.east, // 10.92
+  z0: IR.stairS, // 4.55
+  z1: IR.north, // 6.37
+  width: 2.73,
+  depth: 1.82,
+  doorBay: 0.91,
+  doorW: 0.8,
+  /** fromStart on west wall from min Z (south), centered in 0.91 bay */
+  doorFrom: (0.91 - 0.8) / 2,
+} as const;
+
+const SENMEN_DOOR_FROM = SENMEN_1F.doorFrom;
+
+/**
  * Interior partitions. Passages omit doors; swing doors listed in SWING_DOORS.
  */
 export const WALLS_1F_INTERIOR: WallSegment[] = [
@@ -612,15 +678,25 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     label: "CL東|階段",
   },
 
-  // ── 階段 east wall: from north south 1.82 (x = genkanW − 0.91) ──
+  // ── 階段 east wall: mid → north (extends south of stairS to screen LDK door) ──
+  // Door @ genkanW is ~0.91 m east; this wall blocks sightline into stair from entry.
   {
     id: "1f-int-stair-e",
-    ...wallNS(IR.stairE, IR.stairS, IR.north),
+    ...wallNS(IR.stairE, IR.mid, IR.north),
     floor: "1f",
-    label: "階段東 1.82",
+    label: "階段東 mid→北",
   },
 
-  // 階段南：開放接 LDK（可從 LDK 走上樓）— 無南牆
+  // ── 階段南東灣：z=stairS, x stairE→genkanW（封門側南口）──
+  // West bay x clE–stairE remains open south so LDK can still climb.
+  {
+    id: "1f-int-stair-s-east",
+    ...wallEW(IR.stairE, IR.genkanW, IR.stairS),
+    floor: "1f",
+    label: "階段南東灣",
+  },
+
+  // 階段南西灣：開放接 LDK（可從 LDK 走上樓）
 
   // ── LDK | 玄関 south segment: solid wall ──
   {
@@ -661,30 +737,46 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     label: "SCL東",
   },
 
-  // ── トイレ: open south (no door); N window; E/W closed ──
+  // ── トイレ 0.91×1.82: 西半馬桶朝東; 南牆東側 0.7 通道+雙片門簾 ──
   {
     id: "1f-int-toilet-w",
-    ...wallNS(IR.genkanW, IR.wetS, IR.north),
+    ...wallNS(TOILET_1F.x0, TOILET_1F.z0, TOILET_1F.z1),
     floor: "1f",
     label: "トイレ西",
   },
   {
     id: "1f-int-toilet-e",
-    ...wallNS(IR.genkanE, IR.wetS, IR.north),
+    ...wallNS(TOILET_1F.x1, TOILET_1F.z0, TOILET_1F.z1),
     floor: "1f",
     label: "トイレ東",
   },
+  {
+    id: "1f-int-toilet-s",
+    ...wallEW(TOILET_1F.x0, TOILET_1F.x1, TOILET_1F.z0),
+    floor: "1f",
+    label: "トイレ南(東通道)",
+    openings: [
+      {
+        id: "1f-pass-toilet-s",
+        fromStart: TOILET_1F.solidW, // east side
+        width: TOILET_1F.passW,
+        height: INT_DOOR_H,
+        sill: INT_SILL,
+        type: "passage",
+      },
+    ],
+  },
 
-  // ── 洗面 west + door; south to UB + door ──
+  // ── 洗面 west (abut toilet east) + south 0.91 door bay ──
   {
     id: "1f-int-senmen-w",
-    ...wallNS(IR.sclE, IR.wetS, IR.north),
+    ...wallNS(SENMEN_1F.x0, SENMEN_1F.z0, SENMEN_1F.z1),
     floor: "1f",
-    label: "洗面西",
+    label: "洗面西 2.73房",
     openings: [
       {
         id: "1f-door-senmen",
-        fromStart: 0.4,
+        fromStart: SENMEN_DOOR_FROM,
         width: INT_DOOR_W,
         height: INT_DOOR_H,
         sill: INT_SILL,
@@ -692,15 +784,16 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
       },
     ],
   },
+  // 洗面南 | UB 北（UB 西界仍 sclE）
   {
     id: "1f-int-senmen-ub",
-    ...wallEW(IR.sclE, IR.east, IR.wetS),
+    ...wallEW(SENMEN_1F.x0, IR.east, IR.wetS),
     floor: "1f",
     label: "洗面|UB",
     openings: [
       {
         id: "1f-door-ub",
-        fromStart: 0.5,
+        fromStart: IR.sclE - SENMEN_1F.x0 + 0.5,
         width: INT_DOOR_W,
         height: INT_DOOR_H,
         sill: INT_SILL,
@@ -709,7 +802,7 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     ],
   },
 
-  // ── UB west ──
+  // ── UB west（維持 x=9.10）──
   {
     id: "1f-int-ub-w",
     ...wallNS(IR.sclE, IR.ubS, IR.wetS),
@@ -764,9 +857,9 @@ export const WALLS_1F_NORTH: WallSegment[] = [
   },
   {
     id: "1f-north-toilet",
-    ...wallEW(IR.genkanW, IR.genkanE, IR.north),
+    ...wallEW(TOILET_1F.x0, TOILET_1F.x1, IR.north),
     floor: "1f",
-    label: "北外牆 トイレ",
+    label: "北外牆 トイレ 1.82",
     openings: [
       {
         id: "1f-win-toilet",
@@ -779,16 +872,10 @@ export const WALLS_1F_NORTH: WallSegment[] = [
     ],
   },
   {
-    id: "1f-north-mono",
-    ...wallEW(IR.genkanE, IR.sclE, IR.north),
-    floor: "1f",
-    label: "北外牆 物入帯",
-  },
-  {
     id: "1f-north-senmen",
-    ...wallEW(IR.sclE, IR.east, IR.north),
+    ...wallEW(SENMEN_1F.x0, IR.east, IR.north),
     floor: "1f",
-    label: "北外牆 洗面",
+    label: "北外牆 洗面 2.73",
   },
 ];
 
@@ -833,14 +920,15 @@ export const SWING_DOORS: SwingDoorDef[] = [
   {
     id: "swing-senmen",
     openingId: "1f-door-senmen",
-    wallX: IR.sclE,
+    wallX: TOILET_1F.x1, // 8.19 senmen west
     wallZ: 0,
-    alongMin: IR.wetS + 0.4,
-    alongMax: IR.wetS + 0.4 + INT_DOOR_W,
+    // South 0.91 bay on wall z 4.55–6.37
+    alongMin: IR.stairS + SENMEN_DOOR_FROM,
+    alongMax: IR.stairS + SENMEN_DOOR_FROM + INT_DOOR_W,
     axis: "ns",
     sill: INT_SILL,
     height: INT_DOOR_H,
-    // From genkan/hall into 洗面; hinge south, open into 洗面 (+X)
+    // Hinge south (min), handle north; open into 洗面 (+X)
     hingeAt: "min",
     openSign: 1,
     openAngleDeg: 90,
@@ -933,6 +1021,23 @@ export const SWING_DOORS: SwingDoorDef[] = [
     label: "2Fトイレ",
   },
   // Balcony access door deferred (south wall is fixed G2 glass for now)
+  // ── PH stair hall → roof balcony ──
+  {
+    id: "swing-ph-balcony",
+    openingId: "ph-door-balcony",
+    wallX: 0,
+    wallZ: IR.mid, // hall south = balcony north = 3.64
+    alongMin: IR.clE + (1.82 - 0.8) / 2,
+    alongMax: IR.clE + (1.82 - 0.8) / 2 + 0.8,
+    axis: "ew",
+    sill: 0,
+    height: 1.95,
+    hingeAt: "min",
+    openSign: -1, // open onto balcony (−Z)
+    openAngleDeg: 90,
+    floor: "ph",
+    label: "PH陽台",
+  },
 ];
 
 /** Exterior shell without the old single north wall (replaced by WALLS_1F_NORTH). */
@@ -1041,7 +1146,7 @@ export const STAIRS: StairFlight[] = [
   },
 ];
 
-/** Mid-level turning platform Y=1.7 */
+/** Mid-level turning platform Y=1.7 (1F→2F) */
 export const FLOOR_STAIR_MID_LANDING: FloorSlab = {
   id: "stair-mid-landing",
   floor: "1f",
@@ -1056,6 +1161,314 @@ export const FLOOR_STAIR_MID_LANDING: FloorSlab = {
   label: "階段轉折平台",
   color: "#9a958c",
 };
+
+// ─────────────────────────────────────────────────────────────
+// Stairs 2F → PH + PH 楼梯间 + ルーフバルコニー
+// Hall shell 1.82 × 2.73 (x 4.55–6.37, z 3.64–6.37)
+// Inside: south corridor 0.91 (like 2F) + stair well NS 1.82 (= 1F→2F)
+//   corr: z 3.64–4.55 | well: z 4.55–6.37
+// Rise 2.7 m: 12 × 0.225; U in well only
+// Balcony: x 0–6.37, z 0–3.64
+// ─────────────────────────────────────────────────────────────
+
+const PH_TREAD = 0.22;
+const PH_RISER = 0.225; // 12 × 0.225 = 2.7
+const PH_LOWER_N = 6;
+const PH_UPPER_N = 6;
+const PH_OVERLAP = 0.05;
+const PH_BASE_Y = FLOOR_LEVELS["2f"]; // 2.7
+const PH_TOP_Y = FLOOR_LEVELS.ph; // 5.4
+const PH_LAND_Y = PH_BASE_Y + PH_LOWER_N * PH_RISER; // 4.05
+const PH_LOWER_RUN = PH_LOWER_N * PH_TREAD; // 1.32
+const PH_UPPER_RUN = PH_UPPER_N * PH_TREAD; // 1.32
+
+/** PH stair hall outer shell (walls + ceiling) */
+export const PH_HALL = {
+  x0: IR.clE, // 4.55
+  x1: IR.genkanW, // 6.37
+  z0: IR.mid, // 3.64 — south wall / door to balcony
+  z1: IR.north, // 6.37
+  width: IR.genkanW - IR.clE, // 1.82
+  depth: IR.north - IR.mid, // 2.73
+  /** South corridor band (door → well), NS 0.91 */
+  corrZ0: IR.mid, // 3.64
+  corrZ1: IR.stairS, // 4.55
+  corrDepth: M91, // 0.91
+  /** Stair well NS 1.82 (same as 1F→2F) */
+  wellZ0: IR.stairS, // 4.55
+  wellZ1: IR.north, // 6.37
+  wellDepth: M182, // 1.82
+} as const;
+
+const PH_MID_X = (PH_HALL.x0 + PH_HALL.x1) / 2; // 5.46
+
+/**
+ * U-stair entirely inside well z 4.55–6.37 (NS 1.82).
+ * lower run 1.32 + upper run 1.32 fold at north landing (overlap).
+ * Upper south end = well south → step onto PH corridor 0.91.
+ */
+const PH_LOWER_Z0 = PH_HALL.wellZ0; // 4.55
+const PH_LOWER_END = PH_LOWER_Z0 + PH_LOWER_RUN; // 5.87
+const PH_LAND_Z0 = PH_LOWER_END - PH_OVERLAP; // 5.82
+const PH_LAND_Z1 = PH_HALL.wellZ1; // 6.37
+const PH_UPPER_Z_N = PH_LAND_Z0 + PH_OVERLAP; // 5.87
+const PH_UPPER_Z_S = PH_UPPER_Z_N - PH_UPPER_RUN; // 4.55 = well south
+
+export const STAIR_2F_PH = {
+  lower: {
+    x0: PH_HALL.x0,
+    x1: PH_MID_X,
+    z0: PH_LOWER_Z0,
+    z1: PH_LOWER_END,
+    steps: PH_LOWER_N,
+  },
+  landing: {
+    x0: PH_HALL.x0,
+    x1: PH_HALL.x1,
+    z0: PH_LAND_Z0,
+    z1: PH_LAND_Z1,
+    y: PH_LAND_Y,
+  },
+  upper: {
+    x0: PH_MID_X,
+    x1: PH_HALL.x1,
+    zNorth: PH_UPPER_Z_N,
+    zSouth: PH_UPPER_Z_S,
+    steps: PH_UPPER_N,
+  },
+  tread: PH_TREAD,
+  riser: PH_RISER,
+  overlap: PH_OVERLAP,
+  baseY: PH_BASE_Y,
+  topY: PH_TOP_Y,
+  /** Well band only (not the 0.91 PH corridor) */
+  well: {
+    x0: PH_HALL.x0,
+    x1: PH_HALL.x1,
+    z0: PH_HALL.wellZ0,
+    z1: PH_HALL.wellZ1,
+  },
+  /** PH door-front corridor (like 2F corr) */
+  corridor: {
+    x0: PH_HALL.x0,
+    x1: PH_HALL.x1,
+    z0: PH_HALL.corrZ0,
+    z1: PH_HALL.corrZ1,
+  },
+} as const;
+
+/** Mid landing 2F→PH */
+export const FLOOR_STAIR_PH_MID: FloorSlab = {
+  id: "stair-ph-mid-landing",
+  floor: "2f",
+  y: STAIR_2F_PH.landing.y,
+  rect: {
+    x: STAIR_2F_PH.landing.x0,
+    z: STAIR_2F_PH.landing.z0,
+    width: STAIR_2F_PH.landing.x1 - STAIR_2F_PH.landing.x0,
+    depth: STAIR_2F_PH.landing.z1 - STAIR_2F_PH.landing.z0,
+  },
+  thickness: 0.15,
+  label: "2F→PH 轉折平台",
+  color: "#8a8580",
+};
+
+/** Append 2F→PH flights onto STAIRS */
+STAIRS.push(
+  {
+    id: "stair-2f-ph-lower",
+    fromFloor: "2f",
+    x: (STAIR_2F_PH.lower.x0 + STAIR_2F_PH.lower.x1) / 2,
+    z: STAIR_2F_PH.lower.z0,
+    direction: "north",
+    stepCount: STAIR_2F_PH.lower.steps,
+    treadDepth: STAIR_2F_PH.tread,
+    riserHeight: STAIR_2F_PH.riser,
+    width: STAIR_2F_PH.lower.x1 - STAIR_2F_PH.lower.x0,
+    baseY: STAIR_2F_PH.baseY,
+    topY: STAIR_2F_PH.landing.y,
+    label: "2F→PH平台(北上)",
+  },
+  {
+    id: "stair-ph-upper",
+    fromFloor: "2f",
+    x: (STAIR_2F_PH.upper.x0 + STAIR_2F_PH.upper.x1) / 2,
+    z: STAIR_2F_PH.upper.zNorth,
+    direction: "south",
+    stepCount: STAIR_2F_PH.upper.steps,
+    treadDepth: STAIR_2F_PH.tread,
+    riserHeight: STAIR_2F_PH.riser,
+    width: STAIR_2F_PH.upper.x1 - STAIR_2F_PH.upper.x0,
+    baseY: STAIR_2F_PH.landing.y,
+    topY: STAIR_2F_PH.topY,
+    label: "平台→PH(南上)",
+  },
+);
+
+/** Roof balcony parapet height (m) */
+export const PH_PARAPET_H = 1.4;
+
+/** PH ルーフバルコニー */
+export const PH_BALCONY = {
+  x0: 0,
+  x1: 6.37,
+  z0: 0,
+  z1: IR.mid, // 3.64 — north edge meets stair hall south
+  y: FLOOR_LEVELS.ph,
+  width: 6.37,
+  depth: 3.64,
+} as const;
+
+const Y_PH = FLOOR_LEVELS.ph;
+const T_PH = BUILDING.slabThickness;
+
+export const FLOORS_PH: FloorSlab[] = [
+  {
+    id: "ph-balcony",
+    floor: "ph",
+    y: Y_PH,
+    rect: {
+      x: PH_BALCONY.x0,
+      z: PH_BALCONY.z0,
+      width: PH_BALCONY.width,
+      depth: PH_BALCONY.depth,
+    },
+    thickness: T_PH,
+    label: "PHルーフバルコニー",
+    color: "#a8b0a4",
+  },
+  /**
+   * PH corridor NS 0.91 (z 3.64–4.55) — door front, like 2F corridor.
+   * Open north into stair well (no partition wall).
+   */
+  {
+    id: "ph-corridor",
+    floor: "ph",
+    y: Y_PH,
+    rect: {
+      x: PH_HALL.x0,
+      z: PH_HALL.corrZ0,
+      width: PH_HALL.width,
+      depth: PH_HALL.corrDepth, // 0.91
+    },
+    thickness: T_PH,
+    label: "PH廊道0.91",
+    color: "#b0aaa0",
+  },
+  // Top of north turning pad (walkable at PH after climb)
+  {
+    id: "ph-hall-landing-top",
+    floor: "ph",
+    y: Y_PH,
+    rect: {
+      x: PH_HALL.x0,
+      z: PH_LAND_Z0,
+      width: PH_HALL.width,
+      depth: Math.max(PH_LAND_Z1 - PH_LAND_Z0, 0.2),
+    },
+    thickness: T_PH,
+    label: "PH梯間北平台面",
+    color: "#b8b4ac",
+  },
+];
+
+const PH_DOOR_W = 0.8;
+const PH_DOOR_H = 1.95;
+const PH_DOOR_FROM = (PH_HALL.width - PH_DOOR_W) / 2;
+
+export const WALLS_PH: WallSegment[] = [
+  // Stair hall — four walls, full height
+  {
+    id: "ph-hall-n",
+    ...wallEW(PH_HALL.x0, PH_HALL.x1, PH_HALL.z1),
+    floor: "ph",
+    label: "PH梯間北",
+  },
+  {
+    id: "ph-hall-w",
+    ...wallNS(PH_HALL.x0, PH_HALL.z0, PH_HALL.z1),
+    floor: "ph",
+    label: "PH梯間西",
+  },
+  {
+    id: "ph-hall-e",
+    ...wallNS(PH_HALL.x1, PH_HALL.z0, PH_HALL.z1),
+    floor: "ph",
+    label: "PH梯間東",
+  },
+  {
+    id: "ph-hall-s",
+    ...wallEW(PH_HALL.x0, PH_HALL.x1, PH_HALL.z0),
+    floor: "ph",
+    label: "PH梯間南→陽台",
+    openings: [
+      {
+        id: "ph-door-balcony",
+        fromStart: PH_DOOR_FROM,
+        width: PH_DOOR_W,
+        height: PH_DOOR_H,
+        sill: 0,
+        type: "door",
+      },
+    ],
+  },
+  // Balcony parapets 1.4 m (north only west of stair hall)
+  {
+    id: "ph-balc-s",
+    ...wallEW(PH_BALCONY.x0, PH_BALCONY.x1, PH_BALCONY.z0),
+    floor: "ph",
+    height: PH_PARAPET_H,
+    label: "PH陽台南矮牆",
+  },
+  {
+    id: "ph-balc-w",
+    ...wallNS(PH_BALCONY.x0 + halfT, PH_BALCONY.z0, PH_BALCONY.z1),
+    floor: "ph",
+    height: PH_PARAPET_H,
+    label: "PH陽台西矮牆",
+  },
+  {
+    id: "ph-balc-e",
+    ...wallNS(PH_BALCONY.x1 - halfT, PH_BALCONY.z0, PH_BALCONY.z1),
+    floor: "ph",
+    height: PH_PARAPET_H,
+    label: "PH陽台東矮牆",
+  },
+  {
+    id: "ph-balc-n",
+    ...wallEW(PH_BALCONY.x0, PH_HALL.x0, PH_BALCONY.z1),
+    floor: "ph",
+    height: PH_PARAPET_H,
+    label: "PH陽台北矮牆(西段)",
+  },
+];
+
+export const CEILING_PH = {
+  soffitY: FLOOR_LEVELS.ph + BUILDING.wallHeight, // 7.9
+  thickness: 0.12,
+} as const;
+
+const CEIL_PH_TOP = CEILING_PH.soffitY + CEILING_PH.thickness;
+const CEIL_PH_T = CEILING_PH.thickness;
+
+/** PH stair hall ceiling only (balcony open to sky) */
+export const CEILINGS_PH: FloorSlab[] = [
+  {
+    id: "ceil-ph-hall",
+    floor: "ph",
+    y: CEIL_PH_TOP,
+    rect: {
+      x: PH_HALL.x0,
+      z: PH_HALL.z0,
+      width: PH_HALL.width,
+      depth: PH_HALL.depth,
+    },
+    thickness: CEIL_PH_T,
+    label: "天花 PH梯間",
+    color: "#ddd8d0",
+  },
+];
+
 
 /** @deprecated alias */
 export const FLOOR_2F_LANDING = FLOOR_STAIR_MID_LANDING;
@@ -1318,6 +1731,8 @@ export const ALL_FLOOR_SLABS: FloorSlab[] = [
   ...FLOORS_1F_NORTH_SPLIT,
   FLOOR_STAIR_MID_LANDING,
   ...FLOORS_2F,
+  FLOOR_STAIR_PH_MID,
+  ...FLOORS_PH,
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -1480,6 +1895,7 @@ export const CEILINGS_2F: FloorSlab[] = [
     label: "天花 2F中央洋室",
     color: CEIL2_COLOR,
   },
+  // Corridor ceiling west of stair shaft only (x 4.55–6.37 open for 2F→PH)
   {
     id: "ceil-2f-corridor",
     floor: "2f",
@@ -1487,7 +1903,7 @@ export const CEILINGS_2F: FloorSlab[] = [
     rect: {
       x: X2_NW_JOG,
       z: Z2.clN,
-      width: IR.genkanW - X2_NW_JOG,
+      width: IR.clE - X2_NW_JOG, // 1.82 → 4.55
       depth: Z2.corrDepth,
     },
     thickness: CEIL2_T,
@@ -1539,7 +1955,11 @@ export const CEILINGS_2F: FloorSlab[] = [
 ];
 
 /** All ceiling slabs for rendering (not walkable). */
-export const ALL_CEILINGS: FloorSlab[] = [...CEILINGS_1F, ...CEILINGS_2F];
+export const ALL_CEILINGS: FloorSlab[] = [
+  ...CEILINGS_1F,
+  ...CEILINGS_2F,
+  ...CEILINGS_PH,
+];
 
 // ─────────────────────────────────────────────────────────────
 // 2F walls (base Y = 2.7)
@@ -1802,6 +2222,7 @@ export const WALLS: WallSegment[] = [
   ...WALLS_1F_NORTH,
   ...WALLS_1F_INTERIOR,
   ...WALLS_2F,
+  ...WALLS_PH,
 ];
 
 // ─────────────────────────────────────────────────────────────
