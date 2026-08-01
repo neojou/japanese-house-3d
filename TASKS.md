@@ -68,7 +68,9 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 ### 1F architecture
 
 - South façade chain: 2.175 + 4.195 + 1.520 (genkan) + 1.210 (SCL) + 1.820 (UB) = **10.92**
-- Parking recess 内縮 2.755; genkan door + exterior steps (0.25 × 2) → sill / interior floor **0.5**
+- Genkan/SCL 南 **z=2.83** (= 洗面南 4.55 − NS 1.72); UB 南仍 **2.72**; genkan door + steps → sill **0.5**
+- **SCL**: EW **1.21** × NS **1.72**; 北貼／共用洗面南 (東段); 南與玄関切齊; 東貼 UB 西; 西牆通道 **0.9**（無門）; 無中隔
+- **玄関**: 同南北帶 z 2.83–4.55 (NS 1.72); 北牆 @4.55 有通道
 - Interior 0.91 module grid (CL / stairs / rooms)
 - L-stair **0.91 + 0.91** (1F→2F & 2F→PH): straight + **90° winders**; **2f-stair-deck** Y=2.7 over well (x4.55–6.37, z4.55–6.37) joins corridor + NE room
 - LDK door @ genkanW **z 4.55–5.46** (0.91), abut toilet west wall south
@@ -322,3 +324,5 @@ Every task also satisfies:
 | 2026-08-01 | Controls: A/D (←→) back to ±10° turn; W/S move only; mouse look kept |
 | 2026-08-01 | T-202 remains deferred (owner 暫緩); T-301 materials + lighting done (M7) |
 | 2026-08-01 | Door click priority: raycast door → no pointer lock; empty click locks |
+| 2026-08-01 | 1F SCL: west wall+passage 0.7; merge east with UB; NS≈0.885 (not 1.82) |
+| 2026-08-01 | SCL+玄関 NS **1.72** (z 2.83–4.55); 北貼洗面南; EW 1.21; 西通道 0.9; wetS=stairS=4.55 |

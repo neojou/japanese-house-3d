@@ -12,12 +12,14 @@
  *
  * South façade chain (bottom of plan, W→E) — user-specified:
  *   2.175 + 4.195  LDK 南牆 at z = 0
- *   内縮 2.755     parking recess depth → genkan/SCL face at z = 2.755
+ *   内縮 → genkan/SCL 南面 (NS 1.72 自洗面南 4.55 反推 → z ≈ 2.83)
  *   1.520          玄関大门
  *   1.210          SCL 南牆
  *   外推 → z=2.720 UB 南面 (right-side chain 2,720)
  *   1.820          UB 南牆
  *   Sum: 2.175+4.195+1.520+1.210+1.820 = 10.920 ✓
+ *
+ * SCL / 玄関: EW SCL=1.21; NS=1.72; 北貼洗面南 (4.55); 南與玄関切齊.
  */
 
 // ─────────────────────────────────────────────────────────────
@@ -240,14 +242,22 @@ export const SX = {
 
 /**
  * South façade depth planes (Z).
- * 内縮 2.755 = genkan / SCL door wall plane.
- * 外推 to 2.720 = UB south plane (right-side chain).
+ * Genkan/SCL 南 = 洗面南(4.55) − NS(1.72) = 2.83（大门立面）.
+ * 外推 2.720 = UB south plane (right-side chain).
  */
+/** Genkan + SCL north-south clear depth (owner lock). */
+export const GENKAN_SCL_NS = 1.72;
+/** 洗面南 / 廊帶南 (= north − 1.82). Genkan+SCL 北緣. */
+export const SENMEN_SOUTH_Z = 6.37 - 1.82; // 4.55
+
 export const SZ = {
   /** Outermost south (LDK 南外牆) */
   outer: 0,
-  /** 内縮 — 玄関・SCL 南面 */
-  recess: 2.755,
+  /**
+   * 内縮 — 玄関・SCL 南面（大门）.
+   * = SENMEN_SOUTH_Z − GENKAN_SCL_NS = 4.55 − 1.72 = 2.83
+   */
+  recess: SENMEN_SOUTH_Z - GENKAN_SCL_NS, // 2.83
   /** 外推後 UB 南面 (right chain 2,720) */
   ubSouth: 2.72,
   /** LDK 北 / 北側房间 南 — left chain 3,640 */
@@ -360,19 +370,34 @@ export const FLOORS: FloorSlab[] = [
   // 1F north-of-mid floors: split later in ALL_FLOOR_SLABS to void the stair well
   // (see FLOORS_1F_NORTH_SPLIT). Placeholder removed — was covering entire stair U.
   {
-    id: "1f-genkan-scl",
+    id: "1f-genkan",
     floor: "1f",
     y: INTERIOR_FLOOR_Y,
-    // 玄関 + SCL above parking recess
+    // 玄関: NS 1.72 (recess → 洗面南 4.55)
     rect: {
       x: SX.xLdkE,
       z: SZ.recess,
-      width: SX.xSclE - SX.xLdkE,
-      depth: SZ.mid - SZ.recess,
+      width: SX.xGenkanE - SX.xLdkE,
+      depth: GENKAN_SCL_NS,
     },
     thickness: INTERIOR_SLAB_THICKNESS,
-    label: "玄関/SCL",
+    label: "玄関",
     color: "#b8b2a8",
+  },
+  {
+    id: "1f-scl",
+    floor: "1f",
+    y: INTERIOR_FLOOR_Y,
+    // SCL: EW 1.21 × NS 1.72, west of UB, north flush 洗面
+    rect: {
+      x: SX.xGenkanE,
+      z: SZ.recess,
+      width: SOUTH_FACADE.sclSouth,
+      depth: GENKAN_SCL_NS,
+    },
+    thickness: INTERIOR_SLAB_THICKNESS,
+    label: "SCL",
+    color: "#b0aaa0",
   },
   {
     id: "1f-east-wing",
@@ -393,12 +418,12 @@ export const FLOORS: FloorSlab[] = [
     id: "1f-hall-north-east",
     floor: "1f",
     y: INTERIOR_FLOOR_Y,
-    // Corridor / wet north of genkan to mid-east
+    // North of genkan/SCL band (z ≥ 4.55) toward トイレ／洗面
     rect: {
       x: SX.xLdkE,
-      z: SZ.mid,
+      z: SENMEN_SOUTH_Z,
       width: SX.xEast - SX.xLdkE,
-      depth: SZ.north - SZ.mid,
+      depth: SZ.north - SENMEN_SOUTH_Z,
     },
     thickness: INTERIOR_SLAB_THICKNESS,
     label: "北側東",
@@ -432,15 +457,15 @@ export const WALLS_1F: WallSegment[] = [
     label: "LDK南 4.195",
   },
 
-  // 内縮 return: LDK 東外牆 (臨駐車) z: 0 → 2.755
+  // 内縮 return: LDK 東外牆 (臨駐車) z: 0 → genkan/SCL 南
   {
     id: "1f-jog-ldk-east",
     ...wallNS(SX.xLdkE, SZ.outer, SZ.recess),
     floor: "1f",
-    label: "内縮西壁 2.755",
+    label: "内縮西壁→玄関南",
   },
 
-  // 玄関大门牆 1.520 at z=2.755 — full-bay opening; frame/leaf in GenkanEntry
+  // 玄関大门牆 1.520 at genkan/SCL 南 — full-bay opening; frame/leaf in GenkanEntry
   {
     id: "1f-south-genkan-door",
     ...wallEW(SX.xLdkE, SX.xGenkanE, SZ.recess),
@@ -458,7 +483,7 @@ export const WALLS_1F: WallSegment[] = [
     ],
   },
 
-  // SCL 南牆 1.210 at z=2.755
+  // SCL 南牆 1.210（與玄関南切齊）
   {
     id: "1f-south-scl",
     ...wallEW(SX.xGenkanE, SX.xSclE, SZ.recess),
@@ -466,12 +491,12 @@ export const WALLS_1F: WallSegment[] = [
     label: "SCL南 1.210",
   },
 
-  // 外推 return: z 2.755 → 2.720 at x = SCL east (tiny step south)
+  // 外推 return: UB 南 2.72 → genkan/SCL 南 2.83 at x = SCL east
   {
     id: "1f-jog-scl-ub",
     ...wallNS(SX.xSclE, SZ.ubSouth, SZ.recess),
     floor: "1f",
-    label: "外推 2.755→2.720",
+    label: "外推 UB南→SCL南",
   },
 
   // UB 南牆 1.820 at z=2.720
@@ -558,13 +583,15 @@ export const IR = {
   east: SX.xEast,
   south: SZ.outer,
   ubS: SZ.ubSouth, // 2.72
-  recess: SZ.recess, // 2.755
+  /** Genkan / SCL south (doors) = 4.55 − 1.72 */
+  recess: SZ.recess, // 2.83
   mid: SZ.mid, // 3.64 = north − 2.73
-  /** South end of stair-east wall (north − 1.82) */
+  /** South end of stair / 洗面南 / genkan+SCL 北 (= north − 1.82) */
   stairS: SZ.north - M182, // 4.55
   /** LDK pocket south of CL (0.91 × 0.91 under CL) */
   clPocketS: SZ.mid - M91, // 2.73
-  wetS: SZ.ubSouth + 1.82, // 4.54
+  /** Unified with stairS (was ubS+1.82=4.54) */
+  wetS: SZ.north - M182, // 4.55
   north: SZ.north,
   module: M91,
 } as const;
@@ -643,6 +670,25 @@ export const SENMEN_1F = {
 const SENMEN_DOOR_FROM = SENMEN_1F.doorFrom;
 
 /**
+ * 1F SCL — EW 1.21 × NS 1.72.
+ * 南=玄関南(2.83); 北=洗面南(4.55，東段與洗面南牆共用);
+ * 東=UB 西; 西=玄関（中段通道無門）; 室內無中隔.
+ */
+const SCL_PASS_W = 0.9;
+const SCL_PASS_FROM = (GENKAN_SCL_NS - SCL_PASS_W) / 2;
+
+export const SCL_1F = {
+  x0: IR.genkanE, // 7.89
+  x1: IR.sclE, // 9.10
+  z0: IR.recess, // 2.83
+  z1: IR.stairS, // 4.55 = 洗面南
+  width: SOUTH_FACADE.sclSouth, // 1.21
+  depth: GENKAN_SCL_NS, // 1.72
+  passW: SCL_PASS_W,
+  passFrom: SCL_PASS_FROM,
+} as const;
+
+/**
  * Interior partitions. Passages omit doors; swing doors listed in SWING_DOORS.
  */
 export const WALLS_1F_INTERIOR: WallSegment[] = [
@@ -703,19 +749,12 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
   // L 形梯：無 180° 中隔；井壁 = CL 東 + 外框
   // 直段南口開放接 LDK（z=4.55 南）
 
-  // ── LDK | 玄関 south segment: solid wall ──
+  // ── LDK | 玄関：南→北 全高實牆（玄関 NS 1.72）──
   {
     id: "1f-int-ldk-genkan",
-    ...wallNS(IR.genkanW, IR.recess, IR.mid),
+    ...wallNS(IR.genkanW, IR.recess, IR.stairS),
     floor: "1f",
     label: "LDK|玄関(壁)",
-  },
-  // ── LDK|玄関 mid→stairS：實牆（門已北移）──
-  {
-    id: "1f-int-ldk-e-hall",
-    ...wallNS(IR.genkanW, IR.mid, IR.stairS),
-    floor: "1f",
-    label: "LDK|玄関 mid→4.55",
   },
   // ── LDK 門：z 4.55–5.46 (0.91)，緊貼トイレ西牆南側 ──
   {
@@ -735,19 +774,33 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     ],
   },
 
-  // ── SCL: open west to 玄関; N/E/S closed (S = exterior already) ──
+  // ── SCL: EW 1.21 × NS 1.72; 四邊牆、室內無中隔 ──
+  // 南=外牆; 東=1f-int-scl-ub-w; 北西段(7.89–8.19); 北東段與洗面南共用
+  // 西靠玄関：中段通道 0.9、無門
   {
-    id: "1f-int-scl-n",
-    ...wallEW(IR.genkanE, IR.sclE, IR.mid),
+    id: "1f-int-scl-n-west",
+    // 洗面以西：x genkanE → トイレ東/洗面西 (8.19)
+    ...wallEW(IR.genkanE, TOILET_1F.x1, IR.stairS),
     floor: "1f",
-    label: "SCL北",
+    label: "SCL北(西段)",
   },
   {
-    id: "1f-int-scl-e",
-    ...wallNS(IR.sclE, IR.recess, IR.mid),
+    id: "1f-int-scl-w",
+    ...wallNS(IR.genkanE, IR.recess, IR.stairS),
     floor: "1f",
-    label: "SCL東",
+    label: "SCL西|玄関(通道)",
+    openings: [
+      {
+        id: "1f-pass-scl-w",
+        fromStart: SCL_PASS_FROM,
+        width: SCL_PASS_W,
+        height: INT_DOOR_H,
+        sill: INT_SILL,
+        type: "passage",
+      },
+    ],
   },
+  // East: x=sclE ubS→wetS (SCL+UB); north east 8.19–9.10 = 洗面南 (senmen-ub)
 
   // ── トイレ 0.91×1.82: 西半馬桶朝東; 南牆東側 0.7 通道+雙片門簾 ──
   {
@@ -814,18 +867,18 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     ],
   },
 
-  // ── UB west（維持 x=9.10）──
+  // ── SCL東|UB西 單線 x=sclE（ubS→wetS = 洗面南，含 SCL 全高）──
   {
-    id: "1f-int-ub-w",
+    id: "1f-int-scl-ub-w",
     ...wallNS(IR.sclE, IR.ubS, IR.wetS),
     floor: "1f",
-    label: "UB西",
+    label: "SCL東|UB西",
   },
 
-  // ── 玄関北 (passage to トイレ) ──
+  // ── 玄関北 @ 洗面南線 (passage to 北側廊／トイレ) ──
   {
     id: "1f-int-genkan-n",
-    ...wallEW(IR.genkanW, IR.genkanE, IR.mid),
+    ...wallEW(IR.genkanW, IR.genkanE, IR.stairS),
     floor: "1f",
     label: "玄関北",
     openings: [
@@ -1860,7 +1913,7 @@ export const CEILINGS_1F: FloorSlab[] = [
     label: "天花 梯南走廊",
     color: CEIL_COLOR,
   },
-  // Genkan + SCL band
+  // Genkan + SCL band (NS 1.72 → 洗面南)
   {
     id: "ceil-1f-genkan-scl",
     floor: "1f",
@@ -1869,7 +1922,7 @@ export const CEILINGS_1F: FloorSlab[] = [
       x: SX.xLdkE,
       z: SZ.recess,
       width: SX.xSclE - SX.xLdkE,
-      depth: SZ.mid - SZ.recess,
+      depth: GENKAN_SCL_NS,
     },
     thickness: CEIL_T,
     label: "天花 玄関SCL",
@@ -1890,16 +1943,16 @@ export const CEILINGS_1F: FloorSlab[] = [
     label: "天花 東側",
     color: CEIL_COLOR,
   },
-  // North-east hall / wet (east of stair void)
+  // North of genkan/SCL (z ≥ 4.55)
   {
     id: "ceil-1f-n-east",
     floor: "1f",
     y: CEIL_TOP_Y,
     rect: {
       x: SX.xLdkE,
-      z: SZ.mid,
+      z: SENMEN_SOUTH_Z,
       width: SX.xEast - SX.xLdkE,
-      depth: SZ.north - SZ.mid,
+      depth: SZ.north - SENMEN_SOUTH_Z,
     },
     thickness: CEIL_T,
     label: "天花 北側東",

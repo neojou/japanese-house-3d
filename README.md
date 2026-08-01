@@ -47,6 +47,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 | Units / axes | Meters; plan origin SW; +X east, +Z north, +Y up |
 | Display | House X-mirrored so north view matches the PDF (LDK left) |
 | 1F floor | Raised interior **0.5 m**; genkan steps 0.25 × 2 |
+| 1F SCL / 玄関 | NS **1.72** (z 2.83–4.55); SCL EW **1.21** 西通道無門; 北貼洗面南 |
 | Stairs | **L 形**：直線 0.91 + **90° 踢步** 0.91；轉完＝2F；**2f-stair-deck** 蓋滿井 x4.55–6.37×z4.55–6.37 接廊道／東北室 |
 | 1F トイレ | **1.82×0.91**（x 6.37–8.19, z 5.46–6.37）；西半坐便朝東；南牆東側 0.7 通道 + **雙片門簾**（無門） |
 | 1F 洗面 | **EW 2.73**（x 8.19–10.92, 西貼トイレ）；NS 1.82；西牆**南側 0.91** 門（鉸鏈南／把手北，開進室內） |
