@@ -14,6 +14,9 @@ import {
   createStuccoAlbedoMap,
   createStuccoNormalMap,
   createStuccoRoughnessMap,
+  createTrenchCoatAlbedoMap,
+  createTrenchCoatNormalMap,
+  createTrenchCoatRoughnessMap,
   createYakiSugiAlbedoMap,
   createYakiSugiNormalMap,
   createYakiSugiRoughnessMap,
@@ -125,6 +128,9 @@ let woodAlbedo: THREE.Texture;
 let woodNormal: THREE.Texture;
 let slateAlbedo: THREE.Texture;
 let slateNormal: THREE.Texture;
+let trenchAlbedo: THREE.Texture;
+let trenchNormal: THREE.Texture;
+let trenchRough: THREE.Texture;
 
 export type TextureLoadProgress = {
   /** 0–1 */
@@ -238,6 +244,27 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
       step: "落塵區板岩法線…",
       run: () => {
         slateNormal = createSlateNormalMap(512, 4);
+      },
+    },
+    {
+      weight: 10,
+      step: "SCL 風衣（albedo）…",
+      run: () => {
+        trenchAlbedo = createTrenchCoatAlbedoMap(1024);
+      },
+    },
+    {
+      weight: 6,
+      step: "SCL 風衣（法線）…",
+      run: () => {
+        trenchNormal = createTrenchCoatNormalMap(512);
+      },
+    },
+    {
+      weight: 4,
+      step: "SCL 風衣（roughness）…",
+      run: () => {
+        trenchRough = createTrenchCoatRoughnessMap(512);
       },
     },
   ];
@@ -426,6 +453,39 @@ export function createRevealMaterial(): THREE.MeshStandardMaterial {
     metalness: 0,
   });
 }
+
+/**
+ * Hero prop: honey-gold trench (procedural maps, alpha cutout).
+ * Generic Chelsea-inspired — no brand marks.
+ */
+export function createTrenchCoatMaterial(): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !trenchAlbedo) {
+    return new THREE.MeshStandardMaterial({
+      color: "#c49252",
+      roughness: 0.68,
+      metalness: 0,
+      side: THREE.DoubleSide,
+      transparent: true,
+      alphaTest: 0.35,
+    });
+  }
+  return new THREE.MeshStandardMaterial({
+    color: "#f0e0c8",
+    map: trenchAlbedo,
+    normalMap: trenchNormal,
+    normalScale: new THREE.Vector2(0.85, 0.85),
+    roughnessMap: trenchRough,
+    roughness: 1,
+    metalness: 0.02,
+    envMapIntensity: 0.35,
+    side: THREE.DoubleSide,
+    transparent: true,
+    alphaTest: 0.4,
+    depthWrite: true,
+  });
+}
+
 
 export function createDoorFrameMaterial(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({

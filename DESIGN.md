@@ -116,6 +116,51 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 
 ---
 
+## 2.7 Hero props — style name **「Tokonoma Card」** / `tokonoma-card`
+
+> **Prompt keyword (use this name):**  
+> `tokonoma-card` · 中文可寫 **「床の間卡」** 或 **「Tokonoma Card 風格」**  
+> Example: *「在 2F 廊道掛一幅畫，照 tokonoma-card 呈現」*
+
+Not full furniture. A **hero prop** is a single intentional object that rewards close first-person viewing. Placeholder boxes (toilet, sink) stay crude; **Tokonoma Card** items get the full stack below.
+
+### Why this name
+
+Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one** object with restraint: wood backplane, quiet light, no brand noise.  
+**Card** = curved / low-poly display surface (not a full retail mannequin or game loot drop).
+
+Reference implementation: SCL 蜜金 trench → `CoatDisplay.tsx` + `PROP_1F_SCL_COAT`.
+
+### Recipe (must follow when prompt says `tokonoma-card`)
+
+| Layer | Spec |
+|-------|------|
+| **1. Intent** | One focal object per zone; subtractive — silence around it |
+| **2. Endscape** | Small **wood backboard / shallow niche** (5% wood accent), optional thin charcoal reveal — **not** full-wall cladding |
+| **3. Standoff** | Object **3–5 cm** off wall (or off board) so shadow / depth reads |
+| **4. Form** | Prefer **curved card** or light low-poly over flat billboard if player can walk **beside** it; soft silhouette taper OK |
+| **5. Surface** | Albedo (+ normal / roughness when it helps); 1–2k enough; alpha cutout OK; procedural or `public/props/<id>/` |
+| **6. Light** | **One** short-range warm key; weak residential; **must not** wash genkan yaki or whole room |
+| **7. Brands** | **No trademarks / logos** — generic or “inspired” only |
+| **8. Data / code** | Placement in `dimensions.ts` (`PROP_*`, hero id); mesh under `src/components/house/`; join preload if new procedural maps |
+| **9. Plan lock** | Never move plan walls; finishes + additive meshes only |
+
+### Not Tokonoma Card (use crude props or different style)
+
+- Utility placeholders (toilet bowl, curtain panels, sink boxes)
+- Whole-room furniture sets, physics toys, neon/game pickups
+- Flat photo posters with no standoff / no light when viewed in-room from the side
+
+### Current hang-points
+
+| Id | Location | Style | Status |
+|----|----------|-------|--------|
+| `hero-1f-scl-trench` | 1F SCL 東牆 — 蜜金 trench | `tokonoma-card` | **Done** |
+
+Future art / lamp / ceramic: same style name + this table row + owner OK.
+
+---
+
 ## 3. Material system (engineering map)
 
 | Layer | Meaning | Code |
@@ -192,7 +237,8 @@ When changing look, verify in first-person:
 2. Geometry / walkability / tasks → still **`TASKS.md`**.  
 3. Prefer plan → owner confirm when adding new wood hang-points or L2 features.  
 4. After look changes: update this file if the **principle or hang-point list** changes; update `TASKS.md` changelog for ship status; keep code constants in sync with §2–3.  
-5. Cite principles in PR / task notes when relevant (e.g. “70/25/5”, “texture over swatch”).
+5. Cite principles in PR / task notes when relevant (e.g. “70/25/5”, “texture over swatch”, **`tokonoma-card`**).  
+6. When the owner says **tokonoma-card** / 床の間卡 → implement §2.7 recipe; do not invent a parallel hero style.
 
 ---
 
@@ -208,6 +254,8 @@ When changing look, verify in first-person:
 | 2026-08-01 | Genkan-n: clear passage 1.15 m; remove full-width wood seal; side stubs only |
 | 2026-08-01 | Genkan interior: slate dust (genkan+SCL), N/S cove wash, flat iron sconce E-south |
 | 2026-08-01 | Loading: real texture-step progress bar + step names; show scene when ready |
+| 2026-08-01 | §2.7 Hero props; SCL honey-gold trench (curved card + wood endscape + weak key) |
+| 2026-08-02 | Named style **Tokonoma Card** / `tokonoma-card` (床の間卡); prompt keyword + recipe |
 
 ---
 

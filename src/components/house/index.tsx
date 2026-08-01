@@ -11,11 +11,13 @@ import { InteriorFinishes } from "./InteriorFinishes";
 import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
 import { Props } from "./Props";
+import { CoatDisplay } from "./CoatDisplay";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
 /**
  * House shell — floors / walls / stairs / genkan / ceilings / sparse props.
  * Exterior L1 + interior 70/25/5 (DESIGN.md / houseMaterials).
+ * M8 hero props mount via Props (e.g. SCL trench).
  */
 export function House() {
   return (
@@ -58,6 +60,7 @@ export {
   BalconyExterior,
   InteriorFinishes,
   Props,
+  CoatDisplay,
   PlanLabels,
   Compass,
 };

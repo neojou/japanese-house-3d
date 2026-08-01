@@ -78,6 +78,8 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 **Code:** `houseMaterials.ts`, `surfaceTextures.ts`, `InteriorFinishes.tsx`; see **`DESIGN.md`**.
 
+**Hero prop style (M8):** **`tokonoma-card`** / 床の間卡 — wood endscape + standoff + curved card + weak key. Spec: **DESIGN.md §2.7**; example: SCL trench / `CoatDisplay.tsx`.
+
 ---
 
 ## Stack

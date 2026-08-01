@@ -131,10 +131,10 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access deferred |
 | **M6** | PH / roof | `done` | 2F→PH stair, hall, roof balcony + parapet 1.4 |
 | **M7** | Materials + light | `done` | L1 façade: ivory stucco maps + genkan yaki-sugi; fills (T-301→L1) |
-| **M8** | Furniture | `todo` | Sparse props from plan |
+| **M8** | Furniture | `in_progress` | Hero-prop conventions + SCL trench; rest of sparse set todo |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
-**Current milestone:** **M7 done** (basic materials + lighting). Next: T-401 furniture, or T-501 deploy. T-202 balcony remains deferred.
+**Current milestone:** **M8 in progress** (SCL coat hero done). Next: more T-401 sparse furniture or T-501 deploy. T-202 balcony remains deferred.
 
 ---
 
@@ -239,9 +239,21 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 ---
 
-#### T-401 · Furniture sparse set · `todo` · M8
+#### T-401 · Furniture sparse set · `in_progress` · M8
 
 **DoD:** Key rooms have simple placeholder furniture aligned to plan; no collision required.
+
+**Hero style name:** **`tokonoma-card`** / 床の間卡 — full recipe in **DESIGN.md §2.7** (curved card, wood endscape, standoff, one weak key, no brands).
+
+**Done so far**
+- [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
+- [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
+
+**Grok Build prompt**
+
+```text
+@TASKS.md @DESIGN.md continue T-401. New close-up object: use tokonoma-card (床の間卡) style. No brand trademarks. No new major deps.
+```
 
 ---
 
@@ -340,3 +352,5 @@ Every task also satisfies:
 | 2026-08-01 | Fix NS swing doors: baseYaw −π/2 + open angle (senmen closed leaf on opening) |
 | 2026-08-01 | 2F regrid: south z=0 flush 1F; 2.73+0.91+2.73; remove SW 0.91 exterior notch |
 | 2026-08-01 | NE south = clN 2.73 (align corridor/south rooms); corridor east → NE door not balcony |
+| 2026-08-01 | M8 hero props: SCL east honey-gold trench (curved card, wood endscape, weak key); DESIGN §2.7 |
+| 2026-08-02 | Style named **tokonoma-card** / 床の間卡; AGENTS + DESIGN prompt keyword |

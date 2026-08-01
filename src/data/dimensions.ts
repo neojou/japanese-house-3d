@@ -747,6 +747,63 @@ export const PROP_1F_TOILET_CURTAIN = {
 } as const;
 
 /**
+ * M8 hero prop — style **tokonoma-card** (床の間卡). Full recipe: DESIGN.md §2.7.
+ * - Curved card / low-poly + wood endscape + 3–5 cm standoff + one weak warm key
+ * - No brand marks; data here; mesh under house/; plan walls unchanged
+ *
+ * 1F SCL east wall: honey-gold trench (Chelsea-inspired silhouette).
+ * Wall face (into SCL) ≈ sclE − halfT; coat standoff 4 cm west.
+ */
+export const PROP_1F_SCL_COAT = {
+  id: "hero-1f-scl-trench",
+  /** Named presentation style — agents: match DESIGN §2.7 */
+  style: "tokonoma-card" as const,
+  floor: "1f" as FloorId,
+  label: "SCL蜜金風衣",
+  /** East wall plan centerline X */
+  wallX: SX.xSclE, // 9.10
+  /** SCL NS mid */
+  z: (SZ.recess + SENMEN_SOUTH_Z) / 2, // ≈ 3.69
+  /** Interior face of east wall (west-facing) */
+  wallFaceX: SX.xSclE - BUILDING.wallThickness / 2,
+  /** Coat center standoff from wall face (into room, −X) */
+  standoff: 0.04,
+  /** Coat card size (m) — Chelsea length */
+  coatW: 0.58,
+  coatH: 1.05,
+  /** Parabolic bow into room (side-view thickness cue) */
+  sagitta: 0.055,
+  /** Shoulder height above finished floor (hook line) */
+  shoulderY: 1.62,
+  /** Slim waist pinch (0–1 scale at waist) */
+  waistScale: 0.88,
+  /** Wood endscape / shallow niche board */
+  board: {
+    width: 0.78,
+    height: 1.42,
+    thickness: 0.022,
+    /** Board proud of wall face into room */
+    standoff: 0.006,
+  },
+  /** Weak residential key — south-west of coat, short range */
+  light: {
+    /** Offset from coat center (plan) */
+    dx: -0.28,
+    dy: 0.12,
+    dz: -0.22,
+    intensity: 0.32,
+    distance: 1.85,
+    color: "#fff0d8",
+  },
+  hanger: {
+    wood: "#c4a574",
+    metal: "#2a2826",
+    barW: 0.42,
+    barT: 0.012,
+  },
+} as const;
+
+/**
  * 1F 洗面 — EW 2.73 west-abutting toilet; NS 1.82 north strip.
  * West wall south 0.91 bay + door (hinge S, handle N, open into room +X).
  */
@@ -2661,6 +2718,14 @@ export const LIGHTING = {
     // PH hall
     { id: "fill-ph", position: [5.4, 6.5, 5.0] as [number, number, number], intensity: 0.4, distance: 5, color: "#fff8f0" },
   ],
+  /**
+   * Hero-prop local keys (plan space, live inside house group).
+   * Keep weak — must not wash genkan yaki or whole dust zone.
+   * Primary placement also on PROP_1F_SCL_COAT.light; this is documentation mirror.
+   */
+  heroPropKeys: {
+    sclCoat: "see PROP_1F_SCL_COAT.light",
+  },
 } as const;
 
 /** Ground markers for plan comparison (world positions). */

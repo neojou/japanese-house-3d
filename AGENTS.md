@@ -10,6 +10,7 @@ Coding rules and conventions for AI agents working in this repo.
 
 **Tasks / phases / DoD / milestones / Grok prompts:** **[`TASKS.md`](./TASKS.md)** (source of truth)  
 **Visual / material aesthetics:** **[`DESIGN.md`](./DESIGN.md)** (how the house should look and feel)  
+**Hero object style:** **`tokonoma-card`** / 床の間卡 → **[`DESIGN.md` §2.7](./DESIGN.md)**  
 **Human product overview:** **[`README.md`](./README.md)**
 
 ---
@@ -21,6 +22,7 @@ Coding rules and conventions for AI agents working in this repo.
 3. If geometry is ambiguous, **plan first** and wait for owner confirmation when the task says so.
 4. Prefer `@TASKS.md` + task id in Grok prompts so status stays aligned.
 5. When changing **materials, colours, lighting, façade finishes, or wood hang-points**, read **`DESIGN.md`** first and keep 70/25/5, warm ivory, texture-over-swatch, and subtractive wood pockets.
+6. When the owner asks for a close-up display object **in Tokonoma Card style**, follow **`DESIGN.md` §2.7** (`tokonoma-card` / 床の間卡). Reference: `CoatDisplay.tsx` + `PROP_1F_SCL_COAT`.
 
 ---
 
@@ -52,6 +54,7 @@ Do **not** add major dependencies unless the owner explicitly requests them.
 | Coordinates | Plan: +X east, +Z north, +Y up; origin SW. Display may X-mirror the house (`src/lib/coords.ts`) |
 | Geometry | Simple `Box` walls/floors; L1 façade via `houseMaterials` (stucco maps + yaki-sugi ids) |
 | Look & feel | Follow **`DESIGN.md`** (subtractive warm white, 70/25/5, yaki-sugi only via approved hang-points) |
+| Hero props | Style name **`tokonoma-card`** (床の間卡) — curved card + wood endscape + weak key; see DESIGN §2.7 |
 | Components | Small, single-responsibility under `src/components/house/` |
 | Height / walk | Use `src/lib/height.ts` + slabs/stairs in dimensions; respect stair-well voids |
 | Run | Must stay runnable with `npm install && npm run dev` |
@@ -79,6 +82,7 @@ Do **not** add major dependencies unless the owner explicitly requests them.
 - Façade ~**70%** warm ivory stucco, ~**25%** wood/yaki pockets, ~**5%** dark accent
 - Texture (grit / grain) over flat swatches; raking light should read
 - Yaki-sugi only on listed hang-points (`YAKI_SUGI_WALL_IDS`); expand only with owner OK + DESIGN.md update
+- Hero displays: **`tokonoma-card`** only (do not invent ad-hoc “premium prop” stacks)
 
 ---
 

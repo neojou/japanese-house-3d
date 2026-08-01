@@ -9,9 +9,11 @@ import {
   PROP_2F_SINK,
 } from "@/data/dimensions";
 import * as THREE from "three";
+import { CoatDisplay } from "./CoatDisplay";
 
 /**
- * Sparse Phase-1 placeholders (not full furniture).
+ * Sparse props + M8 hero displays (not full furniture set).
+ * Hero style name: **tokonoma-card** (床の間卡) — DESIGN.md §2.7.
  */
 export function Props() {
   return (
@@ -19,6 +21,7 @@ export function Props() {
       <Sink2F />
       <Toilet1F />
       <ToiletCurtain1F />
+      <CoatDisplay />
     </group>
   );
 }

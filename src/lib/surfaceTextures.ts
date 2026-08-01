@@ -542,3 +542,240 @@ export function createSlateNormalMap(size = 512, tiles = 4): THREE.CanvasTexture
   return canvasToTexture(canvas);
 }
 
+// ─────────────────────────────────────────────────────────────
+// Hero prop: generic honey-gold trench coat (no brand marks)
+// ─────────────────────────────────────────────────────────────
+
+function trenchSilhouettePath(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+) {
+  const cx = w * 0.5;
+  ctx.beginPath();
+  ctx.moveTo(cx - w * 0.22, h * 0.1);
+  ctx.lineTo(cx - w * 0.42, h * 0.18);
+  ctx.lineTo(cx - w * 0.46, h * 0.42);
+  ctx.lineTo(cx - w * 0.34, h * 0.44);
+  ctx.lineTo(cx - w * 0.2, h * 0.48);
+  ctx.lineTo(cx - w * 0.17, h * 0.55);
+  ctx.lineTo(cx - w * 0.2, h * 0.92);
+  ctx.quadraticCurveTo(cx, h * 0.96, cx + w * 0.2, h * 0.92);
+  ctx.lineTo(cx + w * 0.17, h * 0.55);
+  ctx.lineTo(cx + w * 0.2, h * 0.48);
+  ctx.lineTo(cx + w * 0.34, h * 0.44);
+  ctx.lineTo(cx + w * 0.46, h * 0.42);
+  ctx.lineTo(cx + w * 0.42, h * 0.18);
+  ctx.lineTo(cx + w * 0.22, h * 0.1);
+  ctx.lineTo(cx + w * 0.08, h * 0.14);
+  ctx.lineTo(cx, h * 0.22);
+  ctx.lineTo(cx - w * 0.08, h * 0.14);
+  ctx.closePath();
+}
+
+/**
+ * Procedural honey-gold trench albedo with alpha silhouette.
+ * Generic Chelsea-inspired cut — no logos / brand marks.
+ */
+export function createTrenchCoatAlbedoMap(size = 1024): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  ctx.clearRect(0, 0, size, size);
+
+  const w = size;
+  const h = size;
+  const cx = w * 0.5;
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0x7e11);
+
+  ctx.save();
+  trenchSilhouettePath(ctx, w, h);
+  ctx.fillStyle = "rgba(20,16,12,0.18)";
+  ctx.filter = `blur(${Math.round(size * 0.012)}px)`;
+  ctx.fill();
+  ctx.restore();
+  ctx.filter = "none";
+
+  trenchSilhouettePath(ctx, w, h);
+  const bodyGrad = ctx.createLinearGradient(
+    cx - w * 0.2,
+    h * 0.1,
+    cx + w * 0.25,
+    h * 0.95,
+  );
+  bodyGrad.addColorStop(0, "#e8c48a");
+  bodyGrad.addColorStop(0.35, "#d4a86a");
+  bodyGrad.addColorStop(0.65, "#c49252");
+  bodyGrad.addColorStop(1, "#b07e42");
+  ctx.fillStyle = bodyGrad;
+  ctx.fill();
+
+  ctx.save();
+  trenchSilhouettePath(ctx, w, h);
+  ctx.clip();
+
+  const img = ctx.getImageData(0, 0, size, size);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4;
+      if (img.data[i + 3] < 8) continue;
+      const u = x / size;
+      const v = y / size;
+      const twill = Math.sin((u * 90 + v * 90) * Math.PI * 2) * 0.5 + 0.5;
+      const n = fbm(u * 18, v * 28, 4, cache, rand);
+      const fold =
+        Math.exp(-((u - 0.5) ** 2) / 0.08) * Math.sin(v * Math.PI * 3.2) * 0.08;
+      const shade = (twill * 0.08 + n * 0.12 + fold) * 255;
+      img.data[i] = Math.min(255, Math.max(0, img.data[i] + shade * 0.35));
+      img.data[i + 1] = Math.min(
+        255,
+        Math.max(0, img.data[i + 1] + shade * 0.28),
+      );
+      img.data[i + 2] = Math.min(
+        255,
+        Math.max(0, img.data[i + 2] + shade * 0.18),
+      );
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+
+  ctx.fillStyle = "rgba(120, 82, 40, 0.28)";
+  ctx.beginPath();
+  ctx.moveTo(cx - w * 0.07, h * 0.14);
+  ctx.lineTo(cx, h * 0.22);
+  ctx.lineTo(cx - w * 0.02, h * 0.48);
+  ctx.lineTo(cx - w * 0.14, h * 0.42);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx + w * 0.07, h * 0.14);
+  ctx.lineTo(cx, h * 0.22);
+  ctx.lineTo(cx + w * 0.02, h * 0.48);
+  ctx.lineTo(cx + w * 0.14, h * 0.42);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(90, 62, 30, 0.45)";
+  ctx.lineWidth = size * 0.008;
+  ctx.beginPath();
+  ctx.moveTo(cx - w * 0.12, h * 0.12);
+  ctx.quadraticCurveTo(cx, h * 0.08, cx + w * 0.12, h * 0.12);
+  ctx.stroke();
+
+  const beltY = h * 0.54;
+  const beltH = h * 0.045;
+  ctx.fillStyle = "rgba(100, 70, 34, 0.55)";
+  ctx.fillRect(cx - w * 0.18, beltY - beltH / 2, w * 0.36, beltH);
+  ctx.fillStyle = "rgba(60, 48, 32, 0.75)";
+  ctx.fillRect(cx - w * 0.03, beltY - beltH * 0.55, w * 0.06, beltH * 1.1);
+  ctx.strokeStyle = "rgba(200, 170, 110, 0.5)";
+  ctx.lineWidth = size * 0.003;
+  ctx.strokeRect(cx - w * 0.028, beltY - beltH * 0.5, w * 0.056, beltH);
+
+  ctx.fillStyle = "rgba(55, 42, 28, 0.85)";
+  for (const by of [0.28, 0.36, 0.44, 0.62, 0.72]) {
+    ctx.beginPath();
+    ctx.arc(cx, h * by, size * 0.008, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.strokeStyle = "rgba(70, 50, 28, 0.35)";
+  ctx.lineWidth = size * 0.004;
+  ctx.strokeRect(cx - w * 0.16, h * 0.64, w * 0.1, h * 0.08);
+  ctx.strokeRect(cx + w * 0.06, h * 0.64, w * 0.1, h * 0.08);
+
+  ctx.beginPath();
+  ctx.moveTo(cx, h * 0.24);
+  ctx.lineTo(cx, h * 0.92);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(cx - w * 0.2, h * 0.12);
+  ctx.lineTo(cx - w * 0.12, h * 0.16);
+  ctx.moveTo(cx + w * 0.2, h * 0.12);
+  ctx.lineTo(cx + w * 0.12, h * 0.16);
+  ctx.stroke();
+
+  ctx.restore();
+
+  const tex = canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
+/** Fabric twill + soft fold normals for trench card. */
+export function createTrenchCoatNormalMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0xc0a7);
+  const strength = 0.9;
+
+  const heightAt = (u: number, v: number) => {
+    const twill = Math.sin((u + v) * Math.PI * 48) * 0.35;
+    const n = fbm(u * 22, v * 30, 4, cache, rand);
+    const fold =
+      Math.exp(-((u - 0.5) ** 2) / 0.07) * Math.sin(v * Math.PI * 3) * 0.45;
+    const waist = Math.exp(-((v - 0.54) ** 2) / 0.004) * 0.25;
+    return twill * 0.25 + n * 0.45 + fold + waist;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 3.5;
+      const dy = (hy - h0) * strength * 3.5;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = canvasToTexture(canvas);
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
+/** Gabardine: mid roughness with smoother belt band. */
+export function createTrenchCoatRoughnessMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(0x5a17);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const n = fbm(u * 16, v * 20, 3, cache, rand);
+      const belt = Math.exp(-((v - 0.54) ** 2) / 0.003) * 0.2;
+      const r = 0.62 + n * 0.18 - belt;
+      const i = (y * size + x) * 4;
+      const g = Math.round(Math.min(1, Math.max(0.25, r)) * 255);
+      img.data[i] = g;
+      img.data[i + 1] = g;
+      img.data[i + 2] = g;
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = canvasToTexture(canvas);
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
