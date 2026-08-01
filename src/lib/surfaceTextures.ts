@@ -465,3 +465,80 @@ export function createInteriorWoodNormalMap(size = 512): THREE.CanvasTexture {
   return canvasToTexture(canvas);
 }
 
+/**
+ * Dark slate / 板岩 tile albedo — grid joints + fire-face grit.
+ * Mid-dark (not pure black) so genkan dust zone stays readable.
+ */
+export function createSlateAlbedoMap(size = 512, tiles = 4): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(707);
+  const joint = 0.04; // fraction of tile as joint
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const tx = (u * tiles) % 1;
+      const ty = (v * tiles) % 1;
+      const onJoint = tx < joint || ty < joint || tx > 1 - joint * 0.5 || ty > 1 - joint * 0.5;
+      const n = fbm(u * 18, v * 18, 4, cache, rand);
+      const g = fbm(u * 55, v * 55, 2, cache, rand);
+      // Body ~0.22–0.32 luminance; joint darker
+      const body = 0.2 + n * 0.1 + (g - 0.5) * 0.04;
+      const tone = onJoint ? 0.08 + n * 0.03 : body;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(tone * 255 * 1.05);
+      img.data[i + 1] = Math.round(tone * 255 * 1.0);
+      img.data[i + 2] = Math.round(tone * 255 * 0.95);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+export function createSlateNormalMap(size = 512, tiles = 4): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(808);
+  const strength = 0.85;
+  const joint = 0.04;
+
+  const heightAt = (u: number, v: number) => {
+    const tx = (u * tiles) % 1;
+    const ty = (v * tiles) % 1;
+    const onJoint =
+      tx < joint || ty < joint || tx > 1 - joint * 0.5 || ty > 1 - joint * 0.5;
+    const n = fbm(u * 20, v * 20, 3, cache, rand);
+    return (onJoint ? 0.15 : 0.55) + n * 0.35;
+  };
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h) * strength * 4;
+      const dy = (hy - h) * strength * 4;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+

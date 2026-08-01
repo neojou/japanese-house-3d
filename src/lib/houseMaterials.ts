@@ -9,6 +9,8 @@ import {
   createInteriorWarmGrayAlbedoMap,
   createInteriorWoodAlbedoMap,
   createInteriorWoodNormalMap,
+  createSlateAlbedoMap,
+  createSlateNormalMap,
   createStuccoAlbedoMap,
   createStuccoNormalMap,
   createStuccoRoughnessMap,
@@ -121,6 +123,8 @@ let grayAlbedo: THREE.Texture;
 let grayNormal: THREE.Texture;
 let woodAlbedo: THREE.Texture;
 let woodNormal: THREE.Texture;
+let slateAlbedo: THREE.Texture;
+let slateNormal: THREE.Texture;
 
 export function ensureFaçadeTextures(): void {
   if (_ready || typeof document === "undefined") return;
@@ -136,6 +140,8 @@ export function ensureFaçadeTextures(): void {
   grayNormal = createInteriorPlasterNormalMap(512, 0.48);
   woodAlbedo = createInteriorWoodAlbedoMap(512);
   woodNormal = createInteriorWoodNormalMap(512);
+  slateAlbedo = createSlateAlbedoMap(512, 4);
+  slateNormal = createSlateNormalMap(512, 4);
   _ready = true;
 }
 
@@ -286,6 +292,36 @@ export function createDoorFrameMaterial(): THREE.MeshStandardMaterial {
     color: INTERIOR.accent,
     roughness: 0.78,
     metalness: 0.05,
+  });
+}
+
+/**
+ * Genkan/SCL 落塵区 slate — tile grid + fire-face grit.
+ * Tint near mid-gray so map stays one step brighter than pure yaki black.
+ */
+export function createGenkanSlateMaterial(
+  sizeX: number,
+  sizeZ: number,
+  tileM = 0.38,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready) {
+    return new THREE.MeshStandardMaterial({
+      color: "#4a4642",
+      roughness: 0.92,
+    });
+  }
+  const repU = Math.max(sizeX / tileM, 1);
+  const repV = Math.max(sizeZ / tileM, 1);
+  const maps = cloneMaps(slateAlbedo, slateNormal, null, repU, repV);
+  return new THREE.MeshStandardMaterial({
+    color: "#c4c0ba",
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.75, 0.75),
+    roughness: 0.9,
+    metalness: 0.03,
+    envMapIntensity: 0.2,
   });
 }
 

@@ -80,6 +80,16 @@ Implementation may use **procedural maps** (preferred for zero asset pipeline) o
 | **Layout lock** | Never move plan walls; finishes only |
 | **Never seal openings** | Decorative panels must leave door/passage clear (genkan-n wood = side stubs only) |
 
+### 2.4c 玄関落塵區（室內焦點）
+
+| Element | Spec |
+|---------|------|
+| **Floor** | Genkan **+ SCL** dark **slate grid** (one step lighter than pure yaki black) |
+| **Walls / ceiling** | Oat main + grit; N-wall wood **stubs** only |
+| **Cove** | **N + S only** under soffit, 2700K-ish warm, **low** intensity |
+| **Sconce** | **East wall, south** (near door), **flat** matte-black iron (vs exterior lantern) |
+| **Contrast** | Dark floor cuts “outside”; warm white above opens the volume |
+
 ### 2.5 木質掛點策略（局部、可擴）
 
 Wood is for **warmth in shadow volumes**, not cladding the whole house.
@@ -196,6 +206,7 @@ When changing look, verify in first-person:
 | 2026-08-01 | 2F NE balcony: dual rect layout; warm-grey deck; soffit ivory; 3 downlights; Euro sconce E of door |
 | 2026-08-01 | Interior walls: 70/25/5 oat/warm-gray/charcoal; plaster grit; ceiling shadow-gaps; wood accents |
 | 2026-08-01 | Genkan-n: clear passage 1.15 m; remove full-width wood seal; side stubs only |
+| 2026-08-01 | Genkan interior: slate dust (genkan+SCL), N/S cove wash, flat iron sconce E-south |
 
 ---
 

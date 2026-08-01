@@ -375,6 +375,42 @@ export const BALCONY_2F = {
 } as const;
 
 /**
+ * 玄関 + SCL interior finish (落塵區). Plan walls unchanged.
+ * Floor: dark slate (same darkness family as yaki, one step brighter).
+ * Cove: N/S only, warm 2700K-ish, low intensity.
+ * Sconce: east wall (SCL side), south — near main door, flat iron (vs exterior lantern).
+ */
+export const GENKAN_INTERIOR = {
+  /** Dust zone = genkan + SCL slabs */
+  floorIds: ["1f-genkan", "1f-scl"] as const,
+  /** Slightly lighter than pure yaki charcoal so grain/joints read */
+  floorColor: "#4a4642",
+  jointColor: "#1c1a18",
+  tileM: 0.38,
+  /** N/S cove strips under 1F soffit (no E/W full U) */
+  cove: {
+    y: 2.5 - 0.035,
+    inset: 0.05,
+    stripW: 0.018,
+    stripH: 0.012,
+    color: "#ffe4c0",
+    emissiveIntensity: 0.45,
+    lightIntensity: 0.22,
+    lightDistance: 2.8,
+  },
+  /** Flat matte-black iron sconce on genkan east wall, south (near door) */
+  sconce: {
+    x: SX.xGenkanE - BUILDING.wallThickness / 2 - 0.04,
+    y: FLOOR_LEVELS["1f"] + GENKAN_ENTRY.sill + 1.45,
+    z: SZ.recess + 0.32,
+    metal: "#1a1a1a",
+    glow: "#fff0d8",
+    intensity: 0.4,
+    distance: 3.2,
+  },
+} as const;
+
+/**
  * All 1F interior finished-floor height (m).
  * = genkan sill / top of exterior steps (0.5).
  * Standing eye Y = INTERIOR_FLOOR_Y + PLAYER.eyeHeight = 0.5 + 1.5 = 2.0.
@@ -442,7 +478,7 @@ export const FLOORS: FloorSlab[] = [
     },
     thickness: INTERIOR_SLAB_THICKNESS,
     label: "玄関",
-    color: "#b8b2a8",
+    color: GENKAN_INTERIOR.floorColor,
   },
   {
     id: "1f-scl",
@@ -457,7 +493,7 @@ export const FLOORS: FloorSlab[] = [
     },
     thickness: INTERIOR_SLAB_THICKNESS,
     label: "SCL",
-    color: "#b0aaa0",
+    color: GENKAN_INTERIOR.floorColor,
   },
   {
     id: "1f-east-wing",
