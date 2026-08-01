@@ -59,9 +59,10 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 
 | Action | Binding |
 |--------|---------|
-| Move | W / S |
-| Turn | A / D (±10° per press) |
-| Doors | Click leaf open/close (no pointer-lock mouse look) |
+| Move | W / S (or ↑↓) — `moveSpeed` forward/back |
+| Turn | A / D (or ←→) — ±`turnDegrees` (10°) per keypress |
+| Look | Click canvas → Pointer Lock; mouse look; Esc unlock |
+| Doors | Unlock (Esc) then click leaf |
 | Position | HUD: plan X / Z / eye Y |
 
 ### 1F architecture
@@ -249,7 +250,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 | ID | Item | Reason |
 |----|------|--------|
 | T-X01 | Top-down camera + mode switch | Owner cancelled; first-person + HUD only |
-| T-X02 | Pointer-lock mouse look | Interfered with door click; A/D turn kept |
+| ~~T-X02~~ | ~~Remove pointer-lock~~ | **Superseded**: pointer lock kept; A/D are discrete turn (not strafe); doors after Esc |
 
 ---
 
@@ -308,3 +309,5 @@ Every task also satisfies:
 | 2026-08-01 | Fix L-join: pivot≈5.15, startAngle WNW, rInner 0.05, straight/winder overlap |
 | 2026-08-01 | 2f-stair-deck full well so post-climb walk (e.g. 5.63,5.23) stays Y=2.7 |
 | 2026-08-01 | ph-stair-deck full well so post-climb (e.g. 5.92,4.8) stays Y=5.4 |
+| 2026-08-01 | Controls: Pointer Lock look + WASD/arrows strafe (same moveSpeed); Esc then click doors |
+| 2026-08-01 | Controls: A/D (←→) back to ±10° turn; W/S move only; mouse look kept |

@@ -2290,8 +2290,11 @@ export const WALLS: WallSegment[] = [
 
 export const PLAYER = {
   eyeHeight: 1.5,
+  /** Horizontal walk speed (m/s) for W/S forward-back */
   moveSpeed: 2.0,
-  /** A / D discrete yaw step (degrees). A = left, D = right. */
+  /** Pointer-lock look sensitivity (rad per pixel) */
+  lookSensitivity: 0.002,
+  /** A / D (and ← / →) discrete yaw step (degrees). A = left, D = right. */
   turnDegrees: 10,
   /**
    * Spawn at z = -2.8 m (south of building), centered on genkan door bay X.

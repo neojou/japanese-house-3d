@@ -30,9 +30,10 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Action | Control |
 |--------|---------|
-| Move | W / S |
-| Turn | A / D (±10° per key) |
-| Doors | Click leaf to open / close |
+| Move | **W / S** (or ↑↓) — forward / back |
+| Turn | **A / D** (or ←→) — ±10° per keypress |
+| Look | **Click canvas** to pointer-lock; move mouse; **Esc** to unlock |
+| Doors | After **Esc**, click door leaf |
 | Position | Top-right HUD (plan X east, Z north, Y eye height, m) |
 
 ---

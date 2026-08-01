@@ -11,12 +11,10 @@ import { useViewerStore } from "@/store/useViewerStore";
 const _forward = new THREE.Vector3();
 const _move = new THREE.Vector3();
 
-const TURN_RAD = THREE.MathUtils.degToRad(PLAYER.turnDegrees);
-
 /**
- * First-person controls + ground height follow (steps / raised genkan).
- *   W/S move · A/D turn 10°
- * Eye Y = groundHeight + eyeHeight (1.5 outside → 1.75 / 2.00 on steps)
+ * First-person walk: W/S (or ↑↓) forward/back only.
+ * A/D turn is handled by FirstPersonCamera (discrete yaw steps).
+ * Look: Pointer Lock in FirstPersonCamera.
  */
 export function Player() {
   const { camera } = useThree();
@@ -25,19 +23,10 @@ export function Player() {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.code === "KeyA" || e.code === "ArrowLeft") {
-        e.preventDefault();
-        camera.rotation.order = "YXZ";
-        camera.rotation.y += TURN_RAD;
-        return;
-      }
-      if (e.code === "KeyD" || e.code === "ArrowRight") {
-        e.preventDefault();
-        camera.rotation.order = "YXZ";
-        camera.rotation.y -= TURN_RAD;
-        return;
-      }
       keys.current[e.code] = true;
+      if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+        e.preventDefault();
+      }
     };
     const up = (e: KeyboardEvent) => {
       keys.current[e.code] = false;
@@ -50,24 +39,27 @@ export function Player() {
       window.removeEventListener("keyup", up);
       keys.current = {};
     };
-  }, [camera]);
+  }, []);
 
   useFrame((_, delta) => {
     camera.getWorldDirection(_forward);
     _forward.y = 0;
-    if (_forward.lengthSq() > 1e-6) {
+    if (_forward.lengthSq() < 1e-6) {
+      const e = new THREE.Euler().setFromQuaternion(camera.quaternion, "YXZ");
+      _forward.set(-Math.sin(e.y), 0, -Math.cos(e.y));
+    } else {
       _forward.normalize();
-      _move.set(0, 0, 0);
-      if (keys.current["KeyW"] || keys.current["ArrowUp"]) _move.add(_forward);
-      if (keys.current["KeyS"] || keys.current["ArrowDown"]) _move.sub(_forward);
-
-      if (_move.lengthSq() > 0) {
-        _move.normalize().multiplyScalar(PLAYER.moveSpeed * delta);
-        camera.position.add(_move);
-      }
     }
 
-    // Multi-level ground: filter by current feet Y so 2F slabs don't steal 1F
+    _move.set(0, 0, 0);
+    if (keys.current["KeyW"] || keys.current["ArrowUp"]) _move.add(_forward);
+    if (keys.current["KeyS"] || keys.current["ArrowDown"]) _move.sub(_forward);
+
+    if (_move.lengthSq() > 0) {
+      _move.normalize().multiplyScalar(PLAYER.moveSpeed * delta);
+      camera.position.add(_move);
+    }
+
     const planX = worldToPlanX(camera.position.x);
     const feetY = camera.position.y - PLAYER.eyeHeight;
     const groundY = getGroundHeight(planX, camera.position.z, feetY);
