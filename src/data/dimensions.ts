@@ -86,6 +86,36 @@ export type SwingDoorDef = {
   label?: string;
 };
 
+/**
+ * Sliding door / shower screen (tokonoma-card wet variant).
+ * Leaves translate along the wall — no quarter-arc into the room.
+ */
+export type SlideDoorDef = {
+  id: string;
+  openingId: string;
+  style: "tokonoma-card";
+  wallX: number;
+  wallZ: number;
+  alongMin: number;
+  alongMax: number;
+  axis: "ew" | "ns";
+  sill: number;
+  height: number;
+  /**
+   * Open travel toward alongMin ("min") or alongMax ("max").
+   * Dual bypass panels both stack this side.
+   */
+  openToward: "min" | "max";
+  /** 1 = single leaf; 2 = bypass pair (both stack openToward) */
+  panels: 1 | 2;
+  floor?: FloorId;
+  label?: string;
+  /** Frosted glass look */
+  glassColor?: string;
+  glassOpacity?: number;
+  frameColor?: string;
+};
+
 export type WallSegment = {
   id: string;
   x: number;
@@ -1114,7 +1144,7 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
       },
     ],
   },
-  // 洗面南 | UB 北（UB 西界仍 sclE）
+  // 洗面南 | UB 北（UB 西界仍 sclE）— opening is shower slide (not swing)
   {
     id: "1f-int-senmen-ub",
     ...wallEW(SENMEN_1F.x0, IR.east, IR.wetS),
@@ -1125,7 +1155,8 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
         id: "1f-door-ub",
         fromStart: IR.sclE - SENMEN_1F.x0 + 0.5,
         width: INT_DOOR_W,
-        height: INT_DOOR_H,
+        /** Near full clear to ceiling (sill 0.5 + 2.0 → top 2.5) */
+        height: 2.0,
         sill: INT_SILL,
         type: "door",
       },
@@ -1264,22 +1295,7 @@ export const SWING_DOORS: SwingDoorDef[] = [
     openAngleDeg: 90,
     label: "洗面",
   },
-  {
-    id: "swing-ub",
-    openingId: "1f-door-ub",
-    wallX: 0,
-    wallZ: IR.wetS,
-    alongMin: IR.sclE + 0.5,
-    alongMax: IR.sclE + 0.5 + INT_DOOR_W,
-    axis: "ew",
-    sill: INT_SILL,
-    height: INT_DOOR_H,
-    // From 洗面 into UB (south); hinge east, open into UB (−Z)
-    hingeAt: "max",
-    openSign: -1,
-    openAngleDeg: 90,
-    label: "UB",
-  },
+  // UB shower: see SLIDE_DOORS (no swing — does not arc into UB/洗面)
   // ── 2F NE west door (wall from clN=2.73; door centered in corridor 2.73–3.64) ──
   {
     id: "swing-2f-ne",
@@ -1364,6 +1380,34 @@ export const SWING_DOORS: SwingDoorDef[] = [
     openAngleDeg: 90,
     floor: "ph",
     label: "PH陽台",
+  },
+];
+
+/**
+ * Sliding doors (tokonoma-card wet / space-saving).
+ * UB|洗面: dual frosted panels both stack west (openToward min) — no swing arc.
+ */
+export const SLIDE_DOORS: SlideDoorDef[] = [
+  {
+    id: "slide-ub-shower",
+    openingId: "1f-door-ub",
+    style: "tokonoma-card",
+    wallX: 0,
+    wallZ: IR.wetS,
+    alongMin: IR.sclE + 0.5, // ≈ 9.60
+    alongMax: IR.sclE + 0.5 + INT_DOOR_W, // ≈ 10.40
+    axis: "ew",
+    sill: INT_SILL,
+    /** Near ceiling: sill 0.5 + 2.0 = wall top 2.5 */
+    height: 2.0,
+    /** Stack west along 洗面南 wall (longer pocket than east) */
+    openToward: "min",
+    panels: 2,
+    floor: "1f",
+    label: "UB淋浴拉門",
+    glassColor: "#f2ebe0",
+    glassOpacity: 0.42,
+    frameColor: "#2c2824",
   },
 ];
 

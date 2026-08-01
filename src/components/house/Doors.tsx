@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, type RefObject } from "react";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -9,9 +9,11 @@ import {
   FLOOR_LEVELS,
   INTERIOR_FLOOR_Y,
   MATERIAL_PRESETS,
+  SLIDE_DOORS,
   SWING_DOORS,
   WALLS,
   type Opening,
+  type SlideDoorDef,
   type SwingDoorDef,
   type WallSegment,
 } from "@/data/dimensions";
@@ -19,6 +21,8 @@ import { INTERIOR } from "@/lib/houseMaterials";
 
 const LEAF_T = 0.04;
 const FRAME_T = 0.05;
+const SLIDE_LEAF_T = 0.028;
+const SLIDE_FRAME = 0.028;
 
 /**
  * Clickable interior swing door — quarter-circle open (default 90°).
@@ -265,9 +269,286 @@ function WindowPanel({
   );
 }
 
+/**
+ * Tokonoma-card sliding shower / pocket door.
+ * Leaves translate along the wall (no quarter-arc into the room).
+ * Dual bypass: both panels stack toward openToward when open.
+ */
+function SlideDoor({ def }: { def: SlideDoorDef }) {
+  const [open, setOpen] = useState(false);
+  const tRef = useRef(0); // 0 closed → 1 open
+  const leafA = useRef<THREE.Group>(null);
+  const leafB = useRef<THREE.Group>(null);
+
+  const openingW = Math.abs(def.alongMax - def.alongMin);
+  const n = def.panels;
+  const overlap = 0.04;
+  const leafW =
+    n === 2 ? (openingW + overlap) / 2 + 0.01 : openingW - 0.02;
+  const leafH = def.height - 0.04;
+  const baseY = FLOOR_LEVELS[def.floor ?? "1f"];
+  const sillY = baseY + def.sill;
+  const dir = def.openToward === "min" ? -1 : 1;
+
+  // Closed centers along wall
+  const closedA =
+    n === 2
+      ? def.alongMin + leafW / 2 - overlap * 0.25
+      : (def.alongMin + def.alongMax) / 2;
+  const closedB =
+    n === 2
+      ? def.alongMax - leafW / 2 + overlap * 0.25
+      : closedA;
+
+  // Open: stack west of opening (for openToward min)
+  // Lead leaf (B, was east) travels farther; trail leaf (A) parks just west of opening
+  const openTravelA = leafW * 0.88;
+  const openTravelB = leafW * 0.88 + leafW * 0.72;
+
+  const frameColor = def.frameColor ?? INTERIOR.accent;
+  const glassColor = def.glassColor ?? "#f2ebe0";
+  const glassOpacity = def.glassOpacity ?? 0.42;
+
+  // Track offset: dual on parallel rails slightly toward UB (−Z for ew wall)
+  const railOffA = def.axis === "ew" ? 0.012 : 0;
+  const railOffB = def.axis === "ew" ? -0.018 : 0;
+
+  const onClick = useCallback((e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    setOpen((v) => !v);
+  }, []);
+
+  useFrame((_, dt) => {
+    const target = open ? 1 : 0;
+    tRef.current = THREE.MathUtils.damp(tRef.current, target, 8, dt);
+    const t = tRef.current;
+    if (leafA.current) {
+      const along = closedA + dir * openTravelA * t;
+      if (def.axis === "ew") {
+        leafA.current.position.x = along;
+        leafA.current.position.z = def.wallZ + railOffA;
+      } else {
+        leafA.current.position.z = along;
+        leafA.current.position.x = def.wallX + railOffA;
+      }
+    }
+    if (leafB.current && n === 2) {
+      const along = closedB + dir * openTravelB * t;
+      if (def.axis === "ew") {
+        leafB.current.position.x = along;
+        leafB.current.position.z = def.wallZ + railOffB;
+      } else {
+        leafB.current.position.z = along;
+        leafB.current.position.x = def.wallX + railOffB;
+      }
+    }
+  });
+
+  const ptr = {
+    onClick,
+    onPointerOver: () => {
+      document.body.style.cursor = "pointer";
+    },
+    onPointerOut: () => {
+      document.body.style.cursor = "auto";
+    },
+  };
+
+  const midAlong = (def.alongMin + def.alongMax) / 2;
+  const topY = sillY + def.height;
+  const midY = sillY + def.height / 2;
+
+  const post = (along: number, key: string) => {
+    const pos: [number, number, number] =
+      def.axis === "ew"
+        ? [along, midY, def.wallZ]
+        : [def.wallX, midY, along];
+    const size: [number, number, number] =
+      def.axis === "ew"
+        ? [SLIDE_FRAME, def.height, BUILDING.wallThickness * 0.95]
+        : [BUILDING.wallThickness * 0.95, def.height, SLIDE_FRAME];
+    return (
+      <mesh key={key} position={pos} userData={{ interactable: "door" }} {...ptr}>
+        <boxGeometry args={size} />
+        <meshStandardMaterial color={frameColor} roughness={0.55} metalness={0.25} />
+      </mesh>
+    );
+  };
+
+  const leaf = (
+    groupRef: RefObject<THREE.Group | null>,
+    along0: number,
+    zOff: number,
+    key: string,
+  ) => {
+    const pos: [number, number, number] =
+      def.axis === "ew"
+        ? [along0, sillY + 0.02, def.wallZ + zOff]
+        : [def.wallX + zOff, sillY + 0.02, along0];
+    return (
+      <group
+        key={key}
+        ref={groupRef}
+        position={pos}
+        userData={{ interactable: "door" }}
+      >
+        {/* Glass pane */}
+        <mesh
+          position={[0, leafH / 2, 0]}
+          castShadow
+          userData={{ interactable: "door" }}
+          {...ptr}
+        >
+          <boxGeometry
+            args={
+              def.axis === "ew"
+                ? [leafW - SLIDE_FRAME * 2, leafH - SLIDE_FRAME * 2, 0.01]
+                : [0.01, leafH - SLIDE_FRAME * 2, leafW - SLIDE_FRAME * 2]
+            }
+          />
+          <meshStandardMaterial
+            color={glassColor}
+            transparent
+            opacity={glassOpacity}
+            roughness={0.72}
+            metalness={0.05}
+            depthWrite={false}
+          />
+        </mesh>
+        {/* Frame rails / stiles */}
+        {(
+          [
+            [0, leafH - SLIDE_FRAME / 2, leafW, SLIDE_FRAME],
+            [0, SLIDE_FRAME / 2, leafW, SLIDE_FRAME],
+            [
+              -(leafW / 2 - SLIDE_FRAME / 2),
+              leafH / 2,
+              SLIDE_FRAME,
+              leafH,
+            ],
+            [
+              leafW / 2 - SLIDE_FRAME / 2,
+              leafH / 2,
+              SLIDE_FRAME,
+              leafH,
+            ],
+          ] as const
+        ).map(([lx, ly, sx, sy], i) => (
+          <mesh
+            key={`${key}-f${i}`}
+            position={
+              def.axis === "ew"
+                ? [lx, ly, 0]
+                : [0, ly, lx]
+            }
+            userData={{ interactable: "door" }}
+            {...ptr}
+          >
+            <boxGeometry
+              args={
+                def.axis === "ew"
+                  ? [sx, sy, SLIDE_LEAF_T]
+                  : [SLIDE_LEAF_T, sy, sx]
+              }
+            />
+            <meshStandardMaterial
+              color={frameColor}
+              roughness={0.5}
+              metalness={0.3}
+            />
+          </mesh>
+        ))}
+        {/* Vertical handle bar */}
+        <mesh
+          position={
+            def.axis === "ew"
+              ? [leafW * 0.28 * (key === "B" ? -1 : 1), leafH * 0.45, SLIDE_LEAF_T * 0.6]
+              : [SLIDE_LEAF_T * 0.6, leafH * 0.45, leafW * 0.28]
+          }
+          userData={{ interactable: "door" }}
+          {...ptr}
+        >
+          <boxGeometry args={[0.012, 0.28, 0.014]} />
+          <meshStandardMaterial
+            color="#3a3632"
+            roughness={0.4}
+            metalness={0.45}
+          />
+        </mesh>
+      </group>
+    );
+  };
+
+  return (
+    <group name={def.id} userData={{ interactable: "door" }}>
+      {/* Side posts */}
+      {post(def.alongMin + SLIDE_FRAME / 2, "post-min")}
+      {post(def.alongMax - SLIDE_FRAME / 2, "post-max")}
+      {/* Top rail */}
+      <mesh
+        position={
+          def.axis === "ew"
+            ? [midAlong, topY - 0.015, def.wallZ]
+            : [def.wallX, topY - 0.015, midAlong]
+        }
+        userData={{ interactable: "door" }}
+        {...ptr}
+      >
+        <boxGeometry
+          args={
+            def.axis === "ew"
+              ? [openingW + 0.06, 0.03, 0.06]
+              : [0.06, 0.03, openingW + 0.06]
+          }
+        />
+        <meshStandardMaterial color={frameColor} roughness={0.5} metalness={0.28} />
+      </mesh>
+      {/* Floor track + low threshold */}
+      <mesh
+        position={
+          def.axis === "ew"
+            ? [midAlong, sillY + 0.008, def.wallZ]
+            : [def.wallX, sillY + 0.008, midAlong]
+        }
+        receiveShadow
+      >
+        <boxGeometry
+          args={
+            def.axis === "ew"
+              ? [openingW + 0.08, 0.016, 0.055]
+              : [0.055, 0.016, openingW + 0.08]
+          }
+        />
+        <meshStandardMaterial color="#3a3632" roughness={0.65} metalness={0.2} />
+      </mesh>
+      {/* Dual track grooves (visual) */}
+      <mesh
+        position={
+          def.axis === "ew"
+            ? [midAlong, sillY + 0.012, def.wallZ + railOffA]
+            : [def.wallX + railOffA, sillY + 0.012, midAlong]
+        }
+      >
+        <boxGeometry
+          args={
+            def.axis === "ew"
+              ? [openingW + leafW + 0.15, 0.004, 0.012]
+              : [0.012, 0.004, openingW + leafW + 0.15]
+          }
+        />
+        <meshStandardMaterial color="#1a1816" roughness={0.8} />
+      </mesh>
+
+      {leaf(leafA, closedA, railOffA, "A")}
+      {n === 2 && leaf(leafB, closedB, railOffB, "B")}
+    </group>
+  );
+}
+
 const SKIP_OPENING_IDS = new Set([
   "1f-door-genkan-main", // GenkanEntry
   ...SWING_DOORS.map((d) => d.openingId),
+  ...SLIDE_DOORS.map((d) => d.openingId),
 ]);
 
 export function Doors() {
@@ -284,6 +565,9 @@ export function Doors() {
     <group name="doors">
       {SWING_DOORS.map((def) => (
         <SwingDoor key={def.id} def={def} />
+      ))}
+      {SLIDE_DOORS.map((def) => (
+        <SlideDoor key={def.id} def={def} />
       ))}
       {windows.map(({ wall, opening }) => (
         <WindowPanel

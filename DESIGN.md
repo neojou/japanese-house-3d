@@ -202,6 +202,17 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`
 
+### Sliding wet door variant (淋浴拉門)
+
+When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
+
+- **Translate along the wall** only — never quarter-arc swing into the room  
+- Prefer **dual bypass** panels that **stack to the side with longer wall pocket** (UB|洗面: both west)  
+- Tokonoma-card look: **charcoal slim frame + frosted warm glass**, top rail, floor track + low threshold  
+- Click open/close with damped slide; `userData.interactable = "door"`  
+- Height may approach ceiling (within wall shell); data in `SLIDE_DOORS`  
+- Reference: `slide-ub-shower` in `SLIDE_DOORS` + `SlideDoor` in `Doors.tsx`
+
 ### Current hang-points
 
 | Id | Location | Style | Status |
@@ -209,6 +220,7 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 | `hero-1f-scl-trench` | 1F SCL 東牆 — 蜜金 trench | `tokonoma-card` | **Done** |
 | `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
+| `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -315,6 +327,7 @@ When changing look, verify in first-person:
 | 2026-08-02 | Getabako refine: cabriole legs, rounded top + gold corners, dual frame-panel doors, stiletto mesh pair |
 | 2026-08-02 | tokonoma-card ethos: 高貴典雅 + 細節優先 (noble elegant, detail-first); quality bar vs 組合木板 |
 | 2026-08-02 | 1F toilet tokonoma-card: boutique lathe bowl, wood endscape, lid ajar; wet-fixture variant |
+| 2026-08-02 | UB\|洗面 shower slide: dual bypass west stack, frosted glass, no swing arc |
 
 ---
 
