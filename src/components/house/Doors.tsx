@@ -8,6 +8,7 @@ import {
   COLORS,
   FLOOR_LEVELS,
   INTERIOR_FLOOR_Y,
+  MATERIAL_PRESETS,
   SWING_DOORS,
   WALLS,
   type Opening,
@@ -79,13 +80,21 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
             position={[def.alongMin + FRAME_T / 2, sillY + def.height / 2, def.wallZ]}
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
-            <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoorFrame}
+              roughness={MATERIAL_PRESETS.doorFrame.roughness}
+              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+            />
           </mesh>
           <mesh
             position={[def.alongMax - FRAME_T / 2, sillY + def.height / 2, def.wallZ]}
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
-            <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoorFrame}
+              roughness={MATERIAL_PRESETS.doorFrame.roughness}
+              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+            />
           </mesh>
           <mesh
             position={[
@@ -97,7 +106,11 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
             <boxGeometry
               args={[leafW + 0.02, FRAME_T, BUILDING.wallThickness]}
             />
-            <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoorFrame}
+              roughness={MATERIAL_PRESETS.doorFrame.roughness}
+              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+            />
           </mesh>
         </>
       ) : (
@@ -106,13 +119,21 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
             position={[def.wallX, sillY + def.height / 2, def.alongMin + FRAME_T / 2]}
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
-            <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoorFrame}
+              roughness={MATERIAL_PRESETS.doorFrame.roughness}
+              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+            />
           </mesh>
           <mesh
             position={[def.wallX, sillY + def.height / 2, def.alongMax - FRAME_T / 2]}
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
-            <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoorFrame}
+              roughness={MATERIAL_PRESETS.doorFrame.roughness}
+              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+            />
           </mesh>
           <mesh
             position={[
@@ -124,7 +145,11 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
             <boxGeometry
               args={[BUILDING.wallThickness, FRAME_T, leafW + 0.02]}
             />
-            <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoorFrame}
+              roughness={MATERIAL_PRESETS.doorFrame.roughness}
+              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+            />
           </mesh>
         </>
       )}
@@ -137,7 +162,11 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           {...ptr}
         >
           <boxGeometry args={[leafW, leafH, LEAF_T]} />
-          <meshStandardMaterial color={COLORS.genkanDoor} roughness={0.75} />
+          <meshStandardMaterial
+            color={COLORS.genkanDoor}
+            roughness={MATERIAL_PRESETS.doorWood.roughness}
+            metalness={MATERIAL_PRESETS.doorWood.metalness}
+          />
         </mesh>
         {/* Handle near free edge */}
         <mesh
@@ -145,7 +174,11 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           {...ptr}
         >
           <boxGeometry args={[0.02, 0.12, 0.03]} />
-          <meshStandardMaterial color="#b8b8b8" metalness={0.7} roughness={0.3} />
+          <meshStandardMaterial
+            color="#b8b8b8"
+            metalness={MATERIAL_PRESETS.handle.metalness}
+            roughness={MATERIAL_PRESETS.handle.roughness}
+          />
         </mesh>
       </group>
     </group>
@@ -179,11 +212,11 @@ function WindowPanel({
       <mesh position={[x, y, z]}>
         <boxGeometry args={[sizeX, opening.height * 0.92, sizeZ]} />
         <meshStandardMaterial
-          color="#a8c8e0"
-          transparent
-          opacity={0.35}
-          roughness={0.1}
-          metalness={0.1}
+          color={COLORS.glass}
+          transparent={MATERIAL_PRESETS.glass.transparent}
+          opacity={MATERIAL_PRESETS.glass.opacity}
+          roughness={MATERIAL_PRESETS.glass.roughness}
+          metalness={MATERIAL_PRESETS.glass.metalness}
         />
       </mesh>
       {/* Simple frame */}

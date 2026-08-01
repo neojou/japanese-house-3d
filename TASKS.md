@@ -125,13 +125,13 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M2** | 1F interior + doors | `done` | Partitions, swing doors, 0.91 grid |
 | **M3** | U-stair + height | `done` | Climbable 1F→2F, landing overlaps, corridors A/B |
 | **M4** | 2F shell + NE room | `done` | Floors/walls, stair well 1.82, NE G2 4.55, balcony slab |
-| **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access optional |
+| **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access deferred |
 | **M6** | PH / roof | `done` | 2F→PH stair, hall, roof balcony + parapet 1.4 |
-| **M7** | Materials + light | `todo` | Basic materials, lighting (still Phase-style) |
+| **M7** | Materials + light | `done` | Flat materials + sun/hemi/interior fills (T-301) |
 | **M8** | Furniture | `todo` | Sparse props from plan |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
-**Current milestone:** **M6 done** (PH stair + roof balcony). Next: materials / T-202 / polish.
+**Current milestone:** **M7 done** (basic materials + lighting). Next: T-401 furniture, or T-501 deploy. T-202 balcony remains deferred.
 
 ---
 
@@ -192,6 +192,8 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 **Goal:** Walk from NE room onto balcony.
 
+**Status note (owner):** **暫緩** — do not implement until unblocked.
+
 **DoD (when unblocked)**
 
 - [ ] Opening + swing (or sliding) on G2; open onto balcony (−Z)
@@ -215,9 +217,16 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 ---
 
-#### T-301 · Basic materials + lighting · `todo` · M7
+#### T-301 · Basic materials + lighting · `done` · M7
 
 **DoD:** Distinct floor/wall/stair materials; readable interior light; still simple (no heavy post).
+
+- [x] Palette + `MATERIAL_PRESETS` / `LIGHTING` in `dimensions.ts`
+- [x] Floors: indoor wood / outdoor concrete / stair deck
+- [x] Walls: interior vs exterior (fixed exterior detection)
+- [x] Stairs, ceilings, doors, glass, ground
+- [x] Sun + hemi + soft interior point fills; ACES tone mapping
+- [x] No new deps; geometry unchanged
 
 **Grok Build prompt**
 
@@ -311,3 +320,4 @@ Every task also satisfies:
 | 2026-08-01 | ph-stair-deck full well so post-climb (e.g. 5.92,4.8) stays Y=5.4 |
 | 2026-08-01 | Controls: Pointer Lock look + WASD/arrows strafe (same moveSpeed); Esc then click doors |
 | 2026-08-01 | Controls: A/D (←→) back to ±10° turn; W/S move only; mouse look kept |
+| 2026-08-01 | T-202 remains deferred (owner 暫緩); T-301 materials + lighting done (M7) |

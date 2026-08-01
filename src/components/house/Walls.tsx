@@ -5,6 +5,7 @@ import {
   BUILDING,
   COLORS,
   FLOOR_LEVELS,
+  MATERIAL_PRESETS,
   WALLS,
   type Opening,
   type WallSegment,
@@ -108,6 +109,20 @@ function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
   return pieces;
 }
 
+/** Exterior shell vs interior partition (T-301 distinct wall materials). */
+function isExteriorWall(id: string): boolean {
+  if (id.includes("-int-")) return false;
+  if (id.includes("-ext-") || id.includes("parapet") || id.includes("balc")) {
+    return true;
+  }
+  // 1F outer envelope (no -ext- prefix historically)
+  if (/^1f-(south|east|north|west|jog)/.test(id)) return true;
+  // PH hall shell + NE south glass wall (façade)
+  if (id.startsWith("ph-hall-") || id.startsWith("ph-balc-")) return true;
+  if (id === "2f-ne-room-s") return true;
+  return false;
+}
+
 function WallMesh({
   piece,
   exterior,
@@ -115,13 +130,16 @@ function WallMesh({
   piece: SolidPiece;
   exterior: boolean;
 }) {
+  const preset = exterior
+    ? MATERIAL_PRESETS.wallExterior
+    : MATERIAL_PRESETS.wallInterior;
   return (
     <mesh position={[piece.x, piece.y, piece.z]} castShadow receiveShadow>
       <boxGeometry args={[piece.sizeX, piece.sizeY, piece.sizeZ]} />
       <meshStandardMaterial
         color={exterior ? COLORS.wallExterior : COLORS.wall}
-        roughness={0.85}
-        metalness={0.02}
+        roughness={preset.roughness}
+        metalness={preset.metalness}
       />
     </mesh>
   );
@@ -131,17 +149,7 @@ export function Walls() {
   return (
     <group name="walls">
       {WALLS.map((wall) => {
-        const exterior =
-          wall.id.includes("ext") ||
-          wall.id.includes("parapet") ||
-          wall.id.includes("balc") ||
-          wall.id.includes("south") ||
-          wall.id.includes("east") ||
-          wall.id.includes("west") ||
-          wall.id.includes("north") ||
-          wall.id.includes("jog") ||
-          wall.id.startsWith("2f-") ||
-          wall.id.startsWith("ph-");
+        const exterior = isExteriorWall(wall.id);
         const pieces = solidPiecesForWall(wall);
         return (
           <Fragment key={wall.id}>

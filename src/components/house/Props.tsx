@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  COLORS,
   FLOOR_LEVELS,
   INTERIOR_FLOOR_Y,
   PROP_1F_TOILET,
@@ -34,7 +35,7 @@ function Sink2F() {
         receiveShadow
       >
         <boxGeometry args={[s.width, cabinetH, s.depth]} />
-        <meshStandardMaterial color="#c4b8a8" roughness={0.75} />
+        <meshStandardMaterial color={COLORS.propCabinet} roughness={0.75} />
       </mesh>
       <mesh
         position={[s.x, baseY + cabinetH + s.basinH / 2, s.z]}
@@ -43,7 +44,7 @@ function Sink2F() {
       >
         <boxGeometry args={[s.width * 0.92, s.basinH, s.depth * 0.85]} />
         <meshStandardMaterial
-          color="#e8eef2"
+          color={COLORS.propBasin}
           roughness={0.25}
           metalness={0.05}
         />
@@ -74,7 +75,7 @@ function Toilet1F() {
         receiveShadow
       >
         <boxGeometry args={[tankD, tankH, tankW]} />
-        <meshStandardMaterial color="#f0f2f4" roughness={0.4} />
+        <meshStandardMaterial color={COLORS.propPorcelain} roughness={0.4} />
       </mesh>
       {/* Bowl / seat */}
       <mesh
@@ -83,7 +84,7 @@ function Toilet1F() {
         receiveShadow
       >
         <boxGeometry args={[bowlD, seatH, tankW * 0.95]} />
-        <meshStandardMaterial color="#f5f7f8" roughness={0.35} />
+        <meshStandardMaterial color={COLORS.propPorcelain} roughness={0.35} />
       </mesh>
     </group>
   );
@@ -99,7 +100,7 @@ function ToiletCurtain1F() {
   const z = c.z + c.thickness; // slightly inside room (+Z)
 
   const curtainMat = {
-    color: "#5c4a6a",
+    color: COLORS.propCurtain,
     roughness: 0.9,
     transparent: true,
     opacity: 0.55,

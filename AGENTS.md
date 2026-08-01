@@ -48,7 +48,7 @@ Do **not** add major dependencies unless the owner explicitly requests them.
 | Units | Meters everywhere |
 | Dimensions | Centralize in `src/data/dimensions.ts`; change data before hardcoding mesh sizes |
 | Coordinates | Plan: +X east, +Z north, +Y up; origin SW. Display may X-mirror the house (`src/lib/coords.ts`) |
-| Geometry (Phase 1 style) | Simple `Box` walls/floors; `MeshStandardMaterial` flat colors |
+| Geometry (Phase 1 style) | Simple `Box` walls/floors; `MeshStandardMaterial` flat colors via `COLORS` / `MATERIAL_PRESETS` |
 | Components | Small, single-responsibility under `src/components/house/` |
 | Height / walk | Use `src/lib/height.ts` + slabs/stairs in dimensions; respect stair-well voids |
 | Run | Must stay runnable with `npm install && npm run dev` |

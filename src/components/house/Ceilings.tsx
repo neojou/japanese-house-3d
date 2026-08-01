@@ -5,12 +5,13 @@ import {
   CEILING_1F,
   CEILING_2F,
   COLORS,
+  MATERIAL_PRESETS,
 } from "@/data/dimensions";
 import * as THREE from "three";
 
 /**
- * 1F + 2F ceiling slabs — soffit at each story wall top.
- * Stair well and 2F balcony have no ceiling (open in data layout).
+ * 1F + 2F (+ PH hall) ceiling slabs — soffit at each story wall top.
+ * Stair well and outdoor balcony have no ceiling (open in data layout).
  */
 export function Ceilings() {
   return (
@@ -30,9 +31,9 @@ export function Ceilings() {
           >
             <boxGeometry args={[rect.width, thickness, rect.depth]} />
             <meshStandardMaterial
-              color={color ?? COLORS.wall}
-              roughness={0.95}
-              metalness={0}
+              color={color ?? COLORS.ceiling}
+              roughness={MATERIAL_PRESETS.ceiling.roughness}
+              metalness={MATERIAL_PRESETS.ceiling.metalness}
               side={THREE.DoubleSide}
             />
           </mesh>

@@ -8,6 +8,7 @@ import {
   COLORS,
   FLOOR_LEVELS,
   GENKAN_ENTRY,
+  MATERIAL_PRESETS,
   PARKING_1F,
   SOUTH_FACADE,
   SX,
@@ -82,7 +83,11 @@ export function GenkanEntry() {
         receiveShadow
       >
         <planeGeometry args={[PARKING_1F.width, PARKING_1F.depth]} />
-        <meshStandardMaterial color={COLORS.parking} roughness={0.95} />
+        <meshStandardMaterial
+          color={COLORS.parking}
+          roughness={MATERIAL_PRESETS.parking.roughness}
+          metalness={MATERIAL_PRESETS.parking.metalness}
+        />
       </mesh>
 
       {/* LDK south dimension ticks */}
@@ -125,7 +130,11 @@ export function GenkanEntry() {
             receiveShadow
           >
             <boxGeometry args={[g.stepWidth, g.stepHeight, g.stepDepth]} />
-            <meshStandardMaterial color={COLORS.step} roughness={0.9} />
+            <meshStandardMaterial
+              color={COLORS.step}
+              roughness={MATERIAL_PRESETS.step.roughness}
+              metalness={MATERIAL_PRESETS.step.metalness}
+            />
           </mesh>
         );
       })}
@@ -137,7 +146,11 @@ export function GenkanEntry() {
         receiveShadow
       >
         <boxGeometry args={[ft, oh, fd]} />
-        <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.75} />
+        <meshStandardMaterial
+          color={COLORS.genkanDoorFrame}
+          roughness={MATERIAL_PRESETS.doorFrame.roughness}
+          metalness={MATERIAL_PRESETS.doorFrame.metalness}
+        />
       </mesh>
       <mesh
         position={[g.x1 - ft / 2, frameBaseY + oh / 2, wallZ]}
@@ -145,7 +158,11 @@ export function GenkanEntry() {
         receiveShadow
       >
         <boxGeometry args={[ft, oh, fd]} />
-        <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.75} />
+        <meshStandardMaterial
+          color={COLORS.genkanDoorFrame}
+          roughness={MATERIAL_PRESETS.doorFrame.roughness}
+          metalness={MATERIAL_PRESETS.doorFrame.metalness}
+        />
       </mesh>
       <mesh
         position={[midX, frameBaseY + oh - ft / 2, wallZ]}
@@ -153,7 +170,11 @@ export function GenkanEntry() {
         receiveShadow
       >
         <boxGeometry args={[frameInnerW, ft, fd]} />
-        <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.75} />
+        <meshStandardMaterial
+          color={COLORS.genkanDoorFrame}
+          roughness={MATERIAL_PRESETS.doorFrame.roughness}
+          metalness={MATERIAL_PRESETS.doorFrame.metalness}
+        />
       </mesh>
       {/* Threshold on sill */}
       <mesh
@@ -162,7 +183,11 @@ export function GenkanEntry() {
         receiveShadow
       >
         <boxGeometry args={[frameInnerW, 0.03, fd * 1.05]} />
-        <meshStandardMaterial color={COLORS.genkanDoorFrame} roughness={0.8} />
+        <meshStandardMaterial
+          color={COLORS.genkanDoorFrame}
+          roughness={MATERIAL_PRESETS.doorFrame.roughness}
+          metalness={MATERIAL_PRESETS.doorFrame.metalness}
+        />
       </mesh>
 
       {/* Door leaf — hinge east, handle west (LDK) */}
@@ -178,7 +203,11 @@ export function GenkanEntry() {
           {...doorPointer}
         >
           <boxGeometry args={[leafW, leafH * 0.72, g.leafThickness]} />
-          <meshStandardMaterial color={COLORS.genkanDoor} roughness={0.7} />
+          <meshStandardMaterial
+            color={COLORS.genkanDoor}
+            roughness={MATERIAL_PRESETS.doorWood.roughness}
+            metalness={MATERIAL_PRESETS.doorWood.metalness}
+          />
         </mesh>
         <mesh
           position={[-leafW / 2, leafH * 0.84, 0]}
@@ -189,11 +218,11 @@ export function GenkanEntry() {
             args={[leafW * 0.92, leafH * 0.24, g.leafThickness * 0.6]}
           />
           <meshStandardMaterial
-            color="#c5d8e8"
-            transparent
+            color={COLORS.glass}
+            transparent={MATERIAL_PRESETS.glass.transparent}
             opacity={0.45}
-            roughness={0.12}
-            metalness={0.05}
+            roughness={MATERIAL_PRESETS.glass.roughness}
+            metalness={MATERIAL_PRESETS.glass.metalness}
           />
         </mesh>
         <mesh
@@ -207,8 +236,8 @@ export function GenkanEntry() {
           <boxGeometry args={[0.025, 0.14, 0.035]} />
           <meshStandardMaterial
             color="#b0b0b0"
-            metalness={0.75}
-            roughness={0.25}
+            metalness={MATERIAL_PRESETS.handle.metalness}
+            roughness={MATERIAL_PRESETS.handle.roughness}
           />
         </mesh>
         <mesh
@@ -222,8 +251,8 @@ export function GenkanEntry() {
           <boxGeometry args={[0.025, 0.14, 0.035]} />
           <meshStandardMaterial
             color="#b0b0b0"
-            metalness={0.75}
-            roughness={0.25}
+            metalness={MATERIAL_PRESETS.handle.metalness}
+            roughness={MATERIAL_PRESETS.handle.roughness}
           />
         </mesh>
       </group>

@@ -2,6 +2,7 @@
 
 import {
   COLORS,
+  MATERIAL_PRESETS,
   STAIRS,
   STAIR_WINDERS,
   type Cardinal,
@@ -50,8 +51,8 @@ function StairFlightMesh({ flight }: { flight: StairFlight }) {
         <boxGeometry args={[sizeX, flight.riserHeight, sizeZ]} />
         <meshStandardMaterial
           color={COLORS.stair}
-          roughness={0.9}
-          metalness={0}
+          roughness={MATERIAL_PRESETS.stair.roughness}
+          metalness={MATERIAL_PRESETS.stair.metalness}
         />
       </mesh>,
     );
@@ -94,8 +95,8 @@ function StairWinderMesh({ winder }: { winder: StairWinder }) {
         <boxGeometry args={[chord, winder.riserHeight, radial]} />
         <meshStandardMaterial
           color={COLORS.stair}
-          roughness={0.9}
-          metalness={0}
+          roughness={MATERIAL_PRESETS.stair.roughness}
+          metalness={MATERIAL_PRESETS.stair.metalness}
         />
       </mesh>,
     );

@@ -8,26 +8,48 @@ import { House } from "@/components/house";
 import { Player } from "@/components/Player";
 import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
 import { PositionHud } from "@/components/ui/PositionHud";
-import { BUILDING, PLAYER, SOUTH_FACADE, SZ } from "@/data/dimensions";
+import { BUILDING, LIGHTING, PLAYER } from "@/data/dimensions";
 import { planToWorldX } from "@/lib/coords";
 
 function Lights() {
+  const sun = LIGHTING.sun;
   return (
     <>
-      <ambientLight intensity={0.6} />
+      <ambientLight intensity={LIGHTING.ambient} />
+      <hemisphereLight
+        args={[LIGHTING.hemiSky, LIGHTING.hemiGround, LIGHTING.hemiIntensity]}
+      />
       <directionalLight
         castShadow
-        intensity={1.15}
-        position={[14, 22, 10]}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={60}
-        shadow-camera-left={-18}
-        shadow-camera-right={18}
-        shadow-camera-top={18}
-        shadow-camera-bottom={-18}
+        color={sun.color}
+        intensity={sun.intensity}
+        position={sun.position}
+        shadow-mapSize-width={sun.shadowMap}
+        shadow-mapSize-height={sun.shadowMap}
+        shadow-camera-far={sun.shadowFar}
+        shadow-camera-left={-sun.shadowExtent}
+        shadow-camera-right={sun.shadowExtent}
+        shadow-camera-top={sun.shadowExtent}
+        shadow-camera-bottom={-sun.shadowExtent}
+        shadow-bias={-0.0002}
       />
-      <hemisphereLight args={["#e8f0ff", "#6a7a5a", 0.35]} />
+      {/* Soft interior fills under roofs (plan-space; house group is X-mirrored) */}
+      <group
+        name="interior-fills"
+        scale={[-1, 1, 1]}
+        position={[BUILDING.width, 0, 0]}
+      >
+        {LIGHTING.interiorFills.map((f) => (
+          <pointLight
+            key={f.id}
+            position={f.position}
+            intensity={f.intensity}
+            distance={f.distance}
+            decay={2}
+            color={f.color}
+          />
+        ))}
+      </group>
     </>
   );
 }
@@ -37,8 +59,11 @@ function SceneContent() {
 
   return (
     <>
-      <color attach="background" args={["#c5d4e0"]} />
-      <fog attach="fog" args={["#c5d4e0", 40, 90]} />
+      <color attach="background" args={[LIGHTING.background]} />
+      <fog
+        attach="fog"
+        args={[LIGHTING.background, LIGHTING.fogNear, LIGHTING.fogFar]}
+      />
       <Lights />
 
       <PerspectiveCamera
@@ -121,7 +146,12 @@ export function Scene() {
       <Canvas
         shadows={{ type: THREE.PCFShadowMap }}
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: false }}
+        gl={{
+          antialias: true,
+          alpha: false,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.05,
+        }}
         className="h-full w-full touch-none"
       >
         <Suspense fallback={null}>

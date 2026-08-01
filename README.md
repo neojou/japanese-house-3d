@@ -66,6 +66,12 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 ---
 
+## Materials & light (T-301)
+
+Flat **MeshStandard** materials (no textures / post-processing): warm interior floors, cooler outdoor slabs, darker stair wood, plaster walls vs exterior stucco, bright ceilings, glass openings. Lighting: ambient + hemisphere + sun shadows + soft interior point fills. Tune palette / knobs in `src/data/dimensions.ts` (`COLORS`, `MATERIAL_PRESETS`, `LIGHTING`).
+
+---
+
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS

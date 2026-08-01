@@ -1,6 +1,46 @@
 "use client";
 
-import { ALL_FLOOR_SLABS, COLORS } from "@/data/dimensions";
+import {
+  ALL_FLOOR_SLABS,
+  COLORS,
+  MATERIAL_PRESETS,
+  type FloorSlab,
+} from "@/data/dimensions";
+
+/** Category materials (T-301) — distinct indoor wood / outdoor / stair. */
+function floorLook(slab: FloorSlab): {
+  color: string;
+  roughness: number;
+  metalness: number;
+} {
+  const id = slab.id;
+  if (
+    id.includes("balc") ||
+    id.includes("balcony") ||
+    id.includes("parking")
+  ) {
+    return {
+      color: COLORS.floorOutdoor,
+      ...MATERIAL_PRESETS.floorOutdoor,
+    };
+  }
+  if (
+    id.includes("stair") ||
+    id.includes("deck") ||
+    id.includes("landing") ||
+    id.includes("approach")
+  ) {
+    return {
+      color: COLORS.floorStair,
+      ...MATERIAL_PRESETS.floorStair,
+    };
+  }
+  // Optional per-slab tint still allowed via slab.color; default warm wood
+  return {
+    color: slab.color && slab.color !== "#d4d0c8" ? slab.color : COLORS.floor,
+    ...MATERIAL_PRESETS.floorInterior,
+  };
+}
 
 /**
  * Renders each floor slab as a thin box.
@@ -10,10 +50,11 @@ export function Floors() {
   return (
     <group name="floors">
       {ALL_FLOOR_SLABS.map((slab) => {
-        const { rect, thickness, y, id, color } = slab;
+        const { rect, thickness, y, id } = slab;
         const centerX = rect.x + rect.width / 2;
         const centerZ = rect.z + rect.depth / 2;
         const centerY = y - thickness / 2;
+        const mat = floorLook(slab);
 
         return (
           <mesh
@@ -24,9 +65,9 @@ export function Floors() {
           >
             <boxGeometry args={[rect.width, thickness, rect.depth]} />
             <meshStandardMaterial
-              color={color ?? COLORS.floor}
-              roughness={0.9}
-              metalness={0.05}
+              color={mat.color}
+              roughness={mat.roughness}
+              metalness={mat.metalness}
             />
           </mesh>
         );

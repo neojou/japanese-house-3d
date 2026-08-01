@@ -1524,7 +1524,7 @@ export const CEILINGS_PH: FloorSlab[] = [
     },
     thickness: CEIL_PH_T,
     label: "天花 PH梯間",
-    color: "#ddd8d0",
+    color: "#f7f5f0",
   },
 ];
 
@@ -1808,7 +1808,7 @@ export const CEILING_1F = {
 /** Top of ceiling box (soffit = top − thickness). */
 const CEIL_TOP_Y = CEILING_1F.soffitY + CEILING_1F.thickness;
 const CEIL_T = CEILING_1F.thickness;
-const CEIL_COLOR = "#ddd8d0";
+const CEIL_COLOR = "#f7f5f0";
 
 /**
  * 1F ceiling slabs following indoor exterior envelope.
@@ -1920,7 +1920,7 @@ export const CEILING_2F = {
 
 const CEIL2_TOP_Y = CEILING_2F.soffitY + CEILING_2F.thickness; // 5.32
 const CEIL2_T = CEILING_2F.thickness;
-const CEIL2_COLOR = "#e4dfd6";
+const CEIL2_COLOR = "#f7f5f0";
 
 /**
  * 2F ceiling slabs aligned with indoor floors.
@@ -2329,23 +2329,92 @@ export const CAMERA = {
   },
 } as const;
 
+/**
+ * Phase-style palette (T-301). Flat MeshStandard colors — no textures / heavy PBR.
+ * Components pick roughness/metalness via MATERIAL_PRESETS.
+ */
 export const COLORS = {
-  wall: "#e8e4dc",
-  wallExterior: "#d4cfc6",
-  floor: "#d4d0c8",
-  slabEdge: "#b0aaa0",
-  stair: "#a09888",
+  /** Interior plaster */
+  wall: "#f2efe8",
+  /** Exterior stucco / cladding */
+  wallExterior: "#cfc8bc",
+  /** Default interior floor (warm light wood) */
+  floor: "#c9b59a",
+  /** Outdoor slab / balcony concrete */
+  floorOutdoor: "#a8a69e",
+  /** Stair deck / mid landings (slightly darker wood) */
+  floorStair: "#b59a78",
+  slabEdge: "#9a948a",
+  /** Stair treads / risers */
+  stair: "#8f7a5e",
+  /** Ceiling soffit (brighter than walls) */
+  ceiling: "#f7f5f0",
   doorFill: "#8a8580",
   genkanDoor: "#a0673a",
   genkanDoorFrame: "#5c4030",
+  glass: "#9ec4dc",
   parking: "#5a5a5a",
   parkingLine: "#d0d0d0",
-  ground: "#6a7a5a",
+  ground: "#6d7d5c",
   accent: "#2b6cb0",
   step: "#9a9590",
   labelLdk: "#3d6b3d",
   labelGenkan: "#6b3d3d",
   labelEast: "#3d4d6b",
+  propCabinet: "#c4b8a8",
+  propBasin: "#e8eef2",
+  propPorcelain: "#f2f4f6",
+  propCurtain: "#5c4a6a",
+} as const;
+
+/** Shared MeshStandardMaterial knobs (no textures). */
+export const MATERIAL_PRESETS = {
+  wallInterior: { roughness: 0.92, metalness: 0.0 },
+  wallExterior: { roughness: 0.88, metalness: 0.02 },
+  floorInterior: { roughness: 0.72, metalness: 0.0 },
+  floorOutdoor: { roughness: 0.95, metalness: 0.0 },
+  floorStair: { roughness: 0.78, metalness: 0.0 },
+  stair: { roughness: 0.82, metalness: 0.0 },
+  ceiling: { roughness: 0.96, metalness: 0.0 },
+  doorWood: { roughness: 0.7, metalness: 0.0 },
+  doorFrame: { roughness: 0.78, metalness: 0.02 },
+  glass: { roughness: 0.08, metalness: 0.15, transparent: true, opacity: 0.38 },
+  ground: { roughness: 1.0, metalness: 0.0 },
+  parking: { roughness: 0.95, metalness: 0.0 },
+  step: { roughness: 0.9, metalness: 0.0 },
+  handle: { roughness: 0.3, metalness: 0.7 },
+} as const;
+
+/** Scene lighting (T-301) — simple, no post-processing. */
+export const LIGHTING = {
+  background: "#b8c9d8",
+  fogNear: 45,
+  fogFar: 100,
+  ambient: 0.42,
+  hemiSky: "#e8f0ff",
+  hemiGround: "#6a7a5a",
+  hemiIntensity: 0.32,
+  sun: {
+    color: "#fff4e5",
+    intensity: 1.25,
+    position: [16, 24, 12] as [number, number, number],
+    shadowMap: 2048,
+    shadowFar: 70,
+    shadowExtent: 20,
+  },
+  /** Soft interior fills so rooms stay readable under roofs */
+  interiorFills: [
+    // 1F LDK approx center
+    { id: "fill-1f-ldk", position: [3.0, 2.1, 2.8] as [number, number, number], intensity: 0.55, distance: 8, color: "#fff8f0" },
+    // 1F genkan / east
+    { id: "fill-1f-east", position: [8.5, 2.1, 3.5] as [number, number, number], intensity: 0.4, distance: 6, color: "#f5f8ff" },
+    // 2F corridor / stair hall
+    { id: "fill-2f-hall", position: [5.4, 4.3, 4.2] as [number, number, number], intensity: 0.5, distance: 7, color: "#fff8f0" },
+    // 2F NE room
+    { id: "fill-2f-ne", position: [8.5, 4.3, 5.0] as [number, number, number], intensity: 0.45, distance: 6, color: "#f0f6ff" },
+    // PH hall
+    { id: "fill-ph", position: [5.4, 6.5, 5.0] as [number, number, number], intensity: 0.4, distance: 5, color: "#fff8f0" },
+  ],
 } as const;
 
 /** Ground markers for plan comparison (world positions). */
