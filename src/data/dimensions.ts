@@ -936,6 +936,7 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
   },
 
   // ── 玄関北 @ 洗面南線 (passage to 北側廊／トイレ) ──
+  // Passage ~1.15 m centered — clear view north (e.g. 7.1, 4.4); do not seal with cladding
   {
     id: "1f-int-genkan-n",
     ...wallEW(IR.genkanW, IR.genkanE, IR.stairS),
@@ -944,8 +945,8 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     openings: [
       {
         id: "1f-pass-toilet",
-        fromStart: 0.25,
-        width: 0.9,
+        fromStart: (IR.genkanE - IR.genkanW - 1.15) / 2,
+        width: 1.15,
         height: INT_DOOR_H,
         sill: INT_SILL,
         type: "passage",
@@ -1637,7 +1638,7 @@ export const CEILINGS_PH: FloorSlab[] = [
     },
     thickness: CEIL_PH_T,
     label: "天花 PH梯間",
-    color: "#f7f5f0",
+    color: "#f7f2e8",
   },
 ];
 
@@ -1955,7 +1956,7 @@ export const CEILING_1F = {
 /** Top of ceiling box (soffit = top − thickness). */
 const CEIL_TOP_Y = CEILING_1F.soffitY + CEILING_1F.thickness;
 const CEIL_T = CEILING_1F.thickness;
-const CEIL_COLOR = "#f7f5f0";
+const CEIL_COLOR = "#f7f2e8";
 
 /**
  * 1F ceiling slabs following indoor exterior envelope.
@@ -2067,7 +2068,7 @@ export const CEILING_2F = {
 
 const CEIL2_TOP_Y = CEILING_2F.soffitY + CEILING_2F.thickness; // 5.32
 const CEIL2_T = CEILING_2F.thickness;
-const CEIL2_COLOR = "#f7f5f0";
+const CEIL2_COLOR = "#f7f2e8";
 
 /**
  * 2F ceiling slabs aligned with indoor floors.
@@ -2477,15 +2478,18 @@ export const CAMERA = {
 } as const;
 
 /**
- * L1 palette — warm ivory main (~70%), wood/yaki pockets (~25%), dark accent (~5%).
- * Exterior stucco / yaki-sugi maps live in `src/lib/houseMaterials.ts`.
+ * L1 palette — exterior ivory/yaki + interior 70/25/5 (see DESIGN.md, INTERIOR in houseMaterials).
  */
 export const COLORS = {
-  /** Interior plaster (slightly cooler than façade ivory) */
-  wall: "#f0ebe3",
-  /** Exterior warm ivory (fallback if maps unavailable) */
+  /** Interior main ~70%: milk / oat */
+  wall: "#f7f2e8",
+  /** Exterior warm ivory */
   wallExterior: "#f3eee4",
-  /** Yaki-sugi / charred cedar accent */
+  /** Interior secondary ~25% warm gray */
+  wallSecondary: "#c9c3b8",
+  /** Interior accent ~5% charcoal */
+  wallAccent: "#2c2824",
+  /** Yaki-sugi / charred cedar exterior */
   yakiSugi: "#2a2420",
   /** Default interior floor (warm light wood) */
   floor: "#c9b59a",
@@ -2498,12 +2502,13 @@ export const COLORS = {
   slabEdge: "#9a948a",
   /** Stair treads / risers */
   stair: "#8f7a5e",
-  /** Ceiling soffit (brighter than walls) */
-  ceiling: "#faf7f1",
+  /** Ceiling oat (not pure white) */
+  ceiling: "#f7f2e8",
   doorFill: "#8a8580",
-  /** Genkan leaf/frame — light tint; grain comes from yaki maps */
+  /** Genkan leaf — light tint; grain from yaki maps */
   genkanDoor: "#c8c0b4",
-  genkanDoorFrame: "#c8c0b4",
+  /** Door frames — charcoal accent */
+  genkanDoorFrame: "#2c2824",
   glass: "#a8c4d4",
   parking: "#5a5a5a",
   parkingLine: "#d0d0d0",

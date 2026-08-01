@@ -7,6 +7,7 @@ import { Doors } from "./Doors";
 import { GenkanEntry } from "./GenkanEntry";
 import { BalconyExterior } from "./BalconyExterior";
 import { Ceilings } from "./Ceilings";
+import { InteriorFinishes } from "./InteriorFinishes";
 import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
 import { Props } from "./Props";
@@ -14,7 +15,7 @@ import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
 /**
  * House shell — floors / walls / stairs / genkan / ceilings / sparse props.
- * Façade L1: warm ivory stucco + yaki-sugi at genkan recess (`houseMaterials`).
+ * Exterior L1 + interior 70/25/5 (DESIGN.md / houseMaterials).
  */
 export function House() {
   return (
@@ -39,6 +40,7 @@ export function House() {
       <Doors />
       <GenkanEntry />
       <BalconyExterior />
+      <InteriorFinishes />
       <Props />
       <PlanLabels />
       <Compass />
@@ -54,6 +56,7 @@ export {
   Doors,
   GenkanEntry,
   BalconyExterior,
+  InteriorFinishes,
   Props,
   PlanLabels,
   Compass,

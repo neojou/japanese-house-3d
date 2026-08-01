@@ -70,11 +70,13 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 ## Materials & light (L1)
 
-**Façade:** warm ivory **stucco** (~70%) with procedural grit; **yaki-sugi** genkan recess (left wall + door bay + portal top/right cheeks) and **flush yaki-sugi main door** with matte-black vertical bar handle (DESIGN: 外牆即大門). Expand wood via `YAKI_SUGI_WALL_IDS`.  
+**Façade:** warm ivory **stucco**; **yaki-sugi** genkan portal + flush door (DESIGN).  
 
-**Lighting:** raking sun + hemi + soft interior fills; ACES tone mapping.  
+**Interior:** **70%** oat plaster (walls + ceilings), **25%** warm-gray (wet/CL/utility), **5%** charcoal (frames, 分模線, genkan 端景); micro grit normals; ceiling shadow-gaps; local light-wood accents.  
 
-**Code:** `src/lib/houseMaterials.ts`, `src/lib/surfaceTextures.ts`; palette / sun in `dimensions.ts` (`COLORS`, `LIGHTING`). No major new dependencies.
+**Lighting:** raking sun, genkan fills, weak Environment, ACES.  
+
+**Code:** `houseMaterials.ts`, `surfaceTextures.ts`, `InteriorFinishes.tsx`; see **`DESIGN.md`**.
 
 ---
 

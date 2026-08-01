@@ -1,6 +1,7 @@
 /**
- * Procedural surface maps for L1 façade quality (no external assets).
- * Stucco grit + yaki-sugi (charred cedar) grain / normal.
+ * Procedural surface maps (no external assets).
+ * Exterior: stucco grit + yaki-sugi.
+ * Interior: oat plaster, warm-gray secondary, light wood accents.
  */
 import * as THREE from "three";
 
@@ -304,3 +305,163 @@ export function createYakiSugiRoughnessMap(size = 512): THREE.CanvasTexture {
   ctx.putImageData(img, 0, 0);
   return canvasToTexture(canvas);
 }
+
+/** Soft diatomaceous / milk-oat plaster albedo (interior main ~70%). */
+export function createInteriorOatAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(301);
+  const br = 248,
+    bg = 243,
+    bb = 232;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const n = fbm(u * 10, v * 10, 4, cache, rand);
+      const g = fbm(u * 36, v * 36, 3, cache, rand);
+      const t = (n - 0.5) * 10 + (g - 0.5) * 5;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.min(255, Math.max(0, br + t));
+      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.9));
+      img.data[i + 2] = Math.min(255, Math.max(0, bb + t * 0.7));
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+/** Hand-troweled micro grit normal for interior plaster / 珪藻土感. */
+export function createInteriorPlasterNormalMap(
+  size = 512,
+  strength = 0.38,
+): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(77);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h =
+        fbm(u * 22, v * 22, 4, cache, rand) * 0.7 +
+        fbm(u * 70, v * 70, 2, cache, rand) * 0.3;
+      const hx =
+        fbm((u + 1 / size) * 22, v * 22, 4, cache, rand) * 0.7 +
+        fbm((u + 1 / size) * 70, v * 70, 2, cache, rand) * 0.3;
+      const hy =
+        fbm(u * 22, (v + 1 / size) * 22, 4, cache, rand) * 0.7 +
+        fbm(u * 70, (v + 1 / size) * 70, 2, cache, rand) * 0.3;
+      const dx = (hx - h) * strength * 4;
+      const dy = (hy - h) * strength * 4;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+
+/** Warm-gray secondary wall albedo (~25%). */
+export function createInteriorWarmGrayAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(404);
+  const br = 198,
+    bg = 192,
+    bb = 184;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const n = fbm(u * 14, v * 14, 4, cache, rand);
+      const t = (n - 0.5) * 12;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.min(255, Math.max(0, br + t));
+      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.95));
+      img.data[i + 2] = Math.min(255, Math.max(0, bb + t * 0.9));
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+/** Light interior wood (beam / endscape) — not yaki. */
+export function createInteriorWoodAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(505);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const grain =
+        fbm(u * 3, v * 50, 5, cache, rand) * 0.55 +
+        fbm(u * 10, v * 120, 3, cache, rand) * 0.45;
+      const tone = 0.55 + grain * 0.22;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.min(255, tone * 255 * 1.05 + 20);
+      img.data[i + 1] = Math.min(255, tone * 255 * 0.88 + 12);
+      img.data[i + 2] = Math.min(255, tone * 255 * 0.62 + 6);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+export function createInteriorWoodNormalMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(606);
+  const strength = 0.9;
+
+  const heightAt = (u: number, v: number) => fbm(u * 4, v * 60, 4, cache, rand);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h) * strength * 5;
+      const dy = (hy - h) * strength * 5;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
+}
+

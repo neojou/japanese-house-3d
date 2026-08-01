@@ -15,6 +15,7 @@ import {
   type SwingDoorDef,
   type WallSegment,
 } from "@/data/dimensions";
+import { INTERIOR } from "@/lib/houseMaterials";
 
 const LEAF_T = 0.04;
 const FRAME_T = 0.05;
@@ -81,7 +82,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
             <meshStandardMaterial
-              color={COLORS.genkanDoorFrame}
+              color={INTERIOR.accent}
               roughness={MATERIAL_PRESETS.doorFrame.roughness}
               metalness={MATERIAL_PRESETS.doorFrame.metalness}
             />
@@ -91,7 +92,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
             <meshStandardMaterial
-              color={COLORS.genkanDoorFrame}
+              color={INTERIOR.accent}
               roughness={MATERIAL_PRESETS.doorFrame.roughness}
               metalness={MATERIAL_PRESETS.doorFrame.metalness}
             />
@@ -107,7 +108,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               args={[leafW + 0.02, FRAME_T, BUILDING.wallThickness]}
             />
             <meshStandardMaterial
-              color={COLORS.genkanDoorFrame}
+              color={INTERIOR.accent}
               roughness={MATERIAL_PRESETS.doorFrame.roughness}
               metalness={MATERIAL_PRESETS.doorFrame.metalness}
             />
@@ -120,7 +121,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
             <meshStandardMaterial
-              color={COLORS.genkanDoorFrame}
+              color={INTERIOR.accent}
               roughness={MATERIAL_PRESETS.doorFrame.roughness}
               metalness={MATERIAL_PRESETS.doorFrame.metalness}
             />
@@ -130,7 +131,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
             <meshStandardMaterial
-              color={COLORS.genkanDoorFrame}
+              color={INTERIOR.accent}
               roughness={MATERIAL_PRESETS.doorFrame.roughness}
               metalness={MATERIAL_PRESETS.doorFrame.metalness}
             />
@@ -146,7 +147,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               args={[BUILDING.wallThickness, FRAME_T, leafW + 0.02]}
             />
             <meshStandardMaterial
-              color={COLORS.genkanDoorFrame}
+              color={INTERIOR.accent}
               roughness={MATERIAL_PRESETS.doorFrame.roughness}
               metalness={MATERIAL_PRESETS.doorFrame.metalness}
             />

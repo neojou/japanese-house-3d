@@ -29,13 +29,23 @@ Phase 1 geometry is largely complete; from L1 onward we optimise for **sensory q
 
 ### 2.2 色比黃金律 — 70% / 25% / 5%
 
-| Share | Role | Application (exterior + strong interior cues) |
-|------:|------|-----------------------------------------------|
-| **~70%** | Main | Warm ivory / milky **stucco** shell |
-| **~25%** | Secondary | **Wood / yaki-sugi** in recesses and selected inners only |
-| **~5%** | Accent | Dark door leaves / frames, metal handles, thin dark edges |
+**Exterior**
 
-Interior floors, stairs, and soft landscape ground support the same family (warm neutrals) without competing with the façade ratio.
+| Share | Role | Application |
+|------:|------|-------------|
+| **~70%** | Main | Warm ivory **stucco** shell |
+| **~25%** | Secondary | **Yaki-sugi** in recesses / portal |
+| **~5%** | Accent | Dark handles, thin metal edges |
+
+**Interior** (all rooms — no pure hospital white)
+
+| Share | Role | Application |
+|------:|------|-------------|
+| **~70%** | Main | **Oat / milk** plaster on main walls + ceilings |
+| **~25%** | Secondary | **Warm gray** wet rooms, CL, utility, PH hall |
+| **~5%** | Accent | **Charcoal** door frames, 分模線, genkan 端景 wall |
+
+Floors stay warm wood tones. Code: `INTERIOR` + finish sets in `houseMaterials.ts`.
 
 ### 2.3 暖白，不是醫院白
 
@@ -53,9 +63,22 @@ Colour sets mood; **micro-relief sells “real building.”**
 |---------|--------|
 | **Exterior stucco** | Elastic / sand-float paint: fine grit, soft undulation. Under **raking sun**, tiny shadows → stone-like warmth. |
 | **Yaki-sugi (燒杉)** | Fire-charred cedar: dark charcoal, vertical grain, board seams, matte variation—not flat black paint. |
-| **Interior plaster** | Quieter than exterior; less normal strength so rooms stay soft. |
+| **Interior oat plaster** | 珪藻土／乳漆感：柔和 micro grit；斜射暖光出陰影 |
+| **Interior warm gray** | 微水泥／大地灰：稍深、稍粗，層次不搶主牆 |
+| **Interior light wood** | 樑、端景板、窗台內緣 — 呼應室外木，非整面燒杉 |
 
 Implementation may use **procedural maps** (preferred for zero asset pipeline) or later hand-authored seamless maps; quality bar is the *look*, not the asset source.
+
+### 2.4b 室內牆面規則
+
+| Rule | Detail |
+|------|--------|
+| **No pure white** | Avoid `#fff` large fields; use oat / milk |
+| **Texture > swatch** | Main + secondary use plaster normals |
+| **Shadow gap** | Ceiling soffit perimeter 分模線 (`Ceilings.tsx`) — charcoal hairline |
+| **Wood continuity** | Local panels / beams (`InteriorFinishes.tsx`), not full-room cladding |
+| **Layout lock** | Never move plan walls; finishes only |
+| **Never seal openings** | Decorative panels must leave door/passage clear (genkan-n wood = side stubs only) |
 
 ### 2.5 木質掛點策略（局部、可擴）
 
@@ -93,11 +116,16 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 
 **Finishes on walls:**
 
-- `stucco` — default exterior shell  
-- `yakiSugi` — listed pocket ids only  
-- `interior` — partitions / indoors  
+| Finish | Use |
+|--------|-----|
+| `stucco` | Exterior shell |
+| `yakiSugi` | `YAKI_SUGI_WALL_IDS` |
+| `interiorMain` | Default indoor walls + ceilings (~70%) |
+| `interiorSecondary` | `INTERIOR_SECONDARY_WALL_IDS` (~25%) |
+| `interiorAccent` | `INTERIOR_ACCENT_WALL_IDS` (~5%) |
+| `interiorWood` | Optional full-wall wood (prefer panels) |
 
-Palette & sun knobs also live in `src/data/dimensions.ts` (`COLORS`, `LIGHTING`). Geometry stays in `dimensions.ts`; **do not** hardcode mesh sizes for “look.”
+Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in `dimensions.ts`. Geometry stays in `dimensions.ts`.
 
 ---
 
@@ -166,6 +194,8 @@ When changing look, verify in first-person:
 | 2026-08-01 | Genkan door: flush yaki-sugi portal (3 faces + leaf), matte-black vertical bar handle |
 | 2026-08-01 | Yaki readability: brighter maps, genkan lights, env micro-specular (not pure black) |
 | 2026-08-01 | 2F NE balcony: dual rect layout; warm-grey deck; soffit ivory; 3 downlights; Euro sconce E of door |
+| 2026-08-01 | Interior walls: 70/25/5 oat/warm-gray/charcoal; plaster grit; ceiling shadow-gaps; wood accents |
+| 2026-08-01 | Genkan-n: clear passage 1.15 m; remove full-width wood seal; side stubs only |
 
 ---
 
