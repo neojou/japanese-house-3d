@@ -73,6 +73,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 - **玄関**: 同南北帶 z 2.83–4.55 (NS 1.72); 北牆 @4.55 有通道
 - Interior 0.91 module grid (CL / stairs / rooms)
 - L-stair **0.91 + 0.91** (1F→2F & 2F→PH): straight + **90° winders**; **2f-stair-deck** Y=2.7 over well (x4.55–6.37, z4.55–6.37) joins corridor + NE room
+- **Stair east screen** @ **x=5.46** (`stairE`), z **4.55–6.37**, oat wall **solid** (no door-aligned pass — that opened a sightline to the stair); enter stair from LDK **south of z=4.55** (option A)
 - LDK door @ genkanW **z 4.55–5.46** (0.91), abut toilet west wall south
 - 1F トイレ: **1.82×0.91** @ x 6.37–8.19, z 5.46–6.37; sit toilet west half facing east; south wall + east **0.7** passage with **double curtains** (no door)
 - 1F 洗面: **EW 2.73** @ x 8.19–10.92 (abut toilet); NS 1.82; west wall south **0.91** door (hinge S, handle N, open +X)
@@ -255,6 +256,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `ub-bath-finish` — UB：南 seamless 深灰；東 hex 青拼布；地鵝黃珪藻土整片；浴缸實底＋龍頭
 - [x] `hero-1f-ub-bathmat` — 浴缸西側白羊毛腳踏（0.5×0.75）
 - [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
+- [x] `hero-1f-ldk-kitchen` — LDK 西 2.175 m 開放廚（南北島＋水槽、南冰箱、暖木淺石）
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -372,3 +374,6 @@ Every task also satisfies:
 | 2026-08-02 | UB east hex patchwork; large floor tiles; tub opaque basin + faucet assembly |
 | 2026-08-02 | UB floor diatom yellow seamless; wool bath mat west of tub |
 | 2026-08-02 | Toilet café curtains: upper 1/3 pink, dogs L/R, rod + rings |
+| 2026-08-02 | LDK open kitchen west 2.175 m (island NS, fridge, wood/stone, tokonoma-card) |
+| 2026-08-02 | 1F stair east screen @ x=5.46 z4.55–6.37; south 0.91 pass; genkan door sightline |
+| 2026-08-02 | Stair east screen: remove door-aligned pass (was see-through); solid wall; approach S of 4.55 |

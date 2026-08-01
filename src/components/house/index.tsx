@@ -16,6 +16,7 @@ import { GetabakoDisplay } from "./GetabakoDisplay";
 import { ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
+import { KitchenDisplay } from "./KitchenDisplay";
 import { BathFinishes } from "./BathFinishes";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 
@@ -71,6 +72,7 @@ export {
   ToiletDisplay,
   ToiletCurtainDisplay,
   TubDisplay,
+  KitchenDisplay,
   BathFinishes,
   PlanLabels,
   Compass,

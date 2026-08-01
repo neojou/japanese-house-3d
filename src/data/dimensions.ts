@@ -934,6 +934,74 @@ export const PROP_1F_TOILET_CURTAIN = {
 } as const;
 
 /**
+ * 1F LDK west open kitchen — tokonoma-card vignette (DESIGN.md §2.7).
+ * Zone x 0–2.175 (ldkA). Island on east of zone faces living (east);
+ * west wall: fridge (south) + tall storage + wall cabs.
+ */
+export const PROP_1F_LDK_KITCHEN = {
+  id: "hero-1f-ldk-kitchen",
+  style: "tokonoma-card" as const,
+  floor: "1f" as FloorId,
+  label: "LDK開放廚房",
+  /** Kitchen strip (south façade ldkA) */
+  x0: 0,
+  x1: SX.xLdkA, // 2.175
+  y: INTERIOR_FLOOR_Y,
+  /** Island: long N–S, short E–W, east edge near x1 */
+  island: {
+    length: 2.8, // NS
+    depth: 0.62, // EW
+    height: 0.9,
+    topT: 0.04,
+    /** Bar overhang toward LDK (+X) */
+    barOverhang: 0.12,
+    /** Island center z (south of mid, clear of 洋室) */
+    z: 1.55,
+    /** Island center x — leave ~0.8 m aisle to west wall gear */
+    x: 1.78,
+    wood: "#c4a882",
+    stone: "#e8e4dc",
+    handle: "#3a3632",
+  },
+  sink: {
+    w: 0.48,
+    d: 0.38,
+    depth: 0.16,
+  },
+  fridge: {
+    w: 0.7,
+    d: 0.68,
+    h: 1.92,
+    /** Center — south on west wall */
+    x: 0.04 + 0.68 / 2,
+    z: 0.12 + 0.7 / 2,
+    body: "#f0eeea",
+    door: "#e8e4de",
+    seal: "#2a2826",
+  },
+  /** Tall cabinet north of fridge */
+  tallCab: {
+    w: 0.6,
+    d: 0.58,
+    h: 2.15,
+  },
+  /** West wall uppers */
+  upper: {
+    depth: 0.35,
+    height: 0.72,
+    yBottom: 1.45,
+    /** NS span along west wall */
+    z0: 0.15,
+    z1: 2.95,
+  },
+  light: {
+    intensity: 0.32,
+    distance: 2.4,
+    color: "#fff0e0",
+  },
+} as const;
+
+/**
  * M8 hero prop — style **tokonoma-card** (床の間卡). Full recipe: DESIGN.md §2.7.
  * Ethos: 高貴典雅 + 細節優先 (noble elegant, detail-first) — not crude box stacks.
  * - Curved card / crafted form + wood endscape + 3–5 cm standoff + one weak warm key
@@ -1163,6 +1231,21 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
 
   // L 形梯：無 180° 中隔；井壁 = CL 東 + 外框
   // 直段南口開放接 LDK（z=4.55 南）
+
+  /**
+   * Stair east screen — blocks genkan→LDK door sightline into the well.
+   * x = stairE (5.46); z stairS→north (4.55–6.37); **solid full length**
+   * (no opening on this z-band — a south 0.91 pass aligned with the LDK door
+   * and let you look straight through to the stairs).
+   * Circulation: from LDK south of z=4.55 into lower flight (well option A).
+   * Finish: oat main (default).
+   */
+  {
+    id: "1f-int-stair-e-screen",
+    ...wallNS(IR.stairE, IR.stairS, IR.north),
+    floor: "1f",
+    label: "階段東屏(玄関視線)",
+  },
 
   // ── LDK | 玄関：南→北 全高實牆（玄関 NS 1.72）──
   {

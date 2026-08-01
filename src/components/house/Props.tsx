@@ -3,6 +3,7 @@
 import { COLORS, FLOOR_LEVELS, PROP_2F_SINK } from "@/data/dimensions";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
+import { KitchenDisplay } from "./KitchenDisplay";
 import { ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
@@ -20,6 +21,7 @@ export function Props() {
       <CoatDisplay />
       <GetabakoDisplay />
       <TubDisplay />
+      <KitchenDisplay />
     </group>
   );
 }

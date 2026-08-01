@@ -227,6 +227,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `ub-bath-finish` | 1F UB 牆 seamless／東 hex 青拼布／地鵝黃珪藻土整片 | `tokonoma-card` (濕區) | **Done** |
 | `hero-1f-ub-bathmat` | 1F UB 浴缸西側白羊毛腳踏 | `tokonoma-card` (配件) | **Done** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
+| `hero-1f-ldk-kitchen` | 1F LDK 西 2.175 m 開放廚（島台朝東＋西牆冰箱高櫃） | `tokonoma-card` (廚房 vignette) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -339,6 +340,7 @@ When changing look, verify in first-person:
 | 2026-08-02 | UB east hex cyan patchwork; floor 0.6 m tiles; tub solid bottom + denser water + full faucet |
 | 2026-08-02 | UB floor → goose-yellow seamless diatom; white wool bath mat west of tub |
 | 2026-08-02 | Toilet café curtains upper 1/3 pink; kawaii chihuahua / Pomeranian panels |
+| 2026-08-02 | LDK west open kitchen 2.175 m: NS island sink, fridge S, wood+stone, bar overhang |
 
 ---
 
