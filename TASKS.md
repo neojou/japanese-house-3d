@@ -69,7 +69,8 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 - South façade chain: 2.175 + 4.195 + 1.520 (genkan) + 1.210 (SCL) + 1.820 (UB) = **10.92**
 - Parking recess 内縮 2.755; genkan door + exterior steps (0.25 × 2) → sill / interior floor **0.5**
 - Interior 0.91 module grid (CL / stairs / rooms)
-- U-stair: **west bay south open** to LDK (climb); **east wall mid→north** + **南東灣 @ stairS** screen LDK|玄関 door from seeing stairs
+- L-stair **0.91 + 0.91** (1F→2F & 2F→PH): straight + **90° winders**; **2f-stair-deck** Y=2.7 over well (x4.55–6.37, z4.55–6.37) joins corridor + NE room
+- LDK door @ genkanW **z 4.55–5.46** (0.91), abut toilet west wall south
 - 1F トイレ: **1.82×0.91** @ x 6.37–8.19, z 5.46–6.37; sit toilet west half facing east; south wall + east **0.7** passage with **double curtains** (no door)
 - 1F 洗面: **EW 2.73** @ x 8.19–10.92 (abut toilet); NS 1.82; west wall south **0.91** door (hinge S, handle N, open +X)
 - 1F ceiling soffit Y=2.5 over indoor envelope; **stair well open**
@@ -97,8 +98,8 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | トイレ | North of corridor; door @ **corrN (4.55)** from corridor |
 | 2F ceiling | Soffit **Y=5.2** (2.7+2.5); indoor slabs only; balcony + stair well open |
 | PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37; 4 walls + ceiling; south door → roof |
-| PH layout | **廊 0.91** (z 3.64–4.55) + **梯井 NS 1.82** (z 4.55–6.37, same as 1F→2F) |
-| PH stair | U in well only, 12×0.225, mid Y=4.05; top → PH corridor; top Y=5.4 |
+| PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
+| PH stair | Same L as 1F→2F; exit onto deck → corr → balcony |
 | PH balcony | x 0–6.37, z **0–3.64**, Y=5.4; parapet **1.4 m** (N only west of hall) |
 | Plan CL between stair\|NE | **Not built** (locked: stair\|room direct @ x=6.37) |
 
@@ -302,3 +303,8 @@ Every task also satisfies:
 | 2026-08-01 | PH stair well NS 1.82 + door corridor 0.91 (align 1F→2F / 2F corr) |
 | 2026-08-01 | 1F toilet 1.82×0.91; east-facing sit toilet; south wall + 0.7 double curtains |
 | 2026-08-01 | 1F 洗面 EW 2.73 abut toilet; west door south 0.91 hinge S open in |
+| 2026-08-01 | Stair 0.91 module U + LDK door z4.55–5.46; 1F→2F & 2F→PH same pattern |
+| 2026-08-01 | L-stair: straight 0.91 + 90° winders 0.91 (no 180°); 1F→2F & 2F→PH |
+| 2026-08-01 | Fix L-join: pivot≈5.15, startAngle WNW, rInner 0.05, straight/winder overlap |
+| 2026-08-01 | 2f-stair-deck full well so post-climb walk (e.g. 5.63,5.23) stays Y=2.7 |
+| 2026-08-01 | ph-stair-deck full well so post-climb (e.g. 5.92,4.8) stays Y=5.4 |

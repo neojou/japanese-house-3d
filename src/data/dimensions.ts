@@ -131,6 +131,28 @@ export type StairFlight = {
   label?: string;
 };
 
+/**
+ * 90° winder flight (turn while rising).
+ * Angles: 0 = +X east, π/2 = +Z north (atan2(z,x) convention).
+ */
+export type StairWinder = {
+  id: string;
+  fromFloor: FloorId;
+  pivotX: number;
+  pivotZ: number;
+  rInner: number;
+  rOuter: number;
+  /** Start angle (rad); first step begins here */
+  startAngle: number;
+  /** Signed sweep (rad); −π/2 = 90° clockwise */
+  sweep: number;
+  stepCount: number;
+  riserHeight: number;
+  baseY: number;
+  topY: number;
+  label?: string;
+};
+
 // ─────────────────────────────────────────────────────────────
 // Global
 // ─────────────────────────────────────────────────────────────
@@ -678,25 +700,8 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     label: "CL東|階段",
   },
 
-  // ── 階段 east wall: mid → north (extends south of stairS to screen LDK door) ──
-  // Door @ genkanW is ~0.91 m east; this wall blocks sightline into stair from entry.
-  {
-    id: "1f-int-stair-e",
-    ...wallNS(IR.stairE, IR.mid, IR.north),
-    floor: "1f",
-    label: "階段東 mid→北",
-  },
-
-  // ── 階段南東灣：z=stairS, x stairE→genkanW（封門側南口）──
-  // West bay x clE–stairE remains open south so LDK can still climb.
-  {
-    id: "1f-int-stair-s-east",
-    ...wallEW(IR.stairE, IR.genkanW, IR.stairS),
-    floor: "1f",
-    label: "階段南東灣",
-  },
-
-  // 階段南西灣：開放接 LDK（可從 LDK 走上樓）
+  // L 形梯：無 180° 中隔；井壁 = CL 東 + 外框
+  // 直段南口開放接 LDK（z=4.55 南）
 
   // ── LDK | 玄関 south segment: solid wall ──
   {
@@ -705,16 +710,23 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     floor: "1f",
     label: "LDK|玄関(壁)",
   },
-  // ── LDK | 玄関 北側通道 + door ──
+  // ── LDK|玄関 mid→stairS：實牆（門已北移）──
   {
     id: "1f-int-ldk-e-hall",
-    ...wallNS(IR.genkanW, IR.mid, IR.wetS),
+    ...wallNS(IR.genkanW, IR.mid, IR.stairS),
     floor: "1f",
-    label: "LDK|玄関 北通道",
+    label: "LDK|玄関 mid→4.55",
+  },
+  // ── LDK 門：z 4.55–5.46 (0.91)，緊貼トイレ西牆南側 ──
+  {
+    id: "1f-int-ldk-door",
+    ...wallNS(IR.genkanW, IR.stairS, IR.north - M91),
+    floor: "1f",
+    label: "LDK門 0.91@トイレ南",
     openings: [
       {
         id: "1f-door-ldk-genkan",
-        fromStart: 0.2,
+        fromStart: (M91 - INT_DOOR_W) / 2,
         width: INT_DOOR_W,
         height: INT_DOOR_H,
         sill: INT_SILL,
@@ -902,20 +914,19 @@ export const SWING_DOORS: SwingDoorDef[] = [
     openingId: "1f-door-ldk-genkan",
     wallX: IR.genkanW,
     wallZ: 0,
-    // Northern passage: wall IR.mid → IR.wetS, fromStart 0.2
-    alongMin: IR.mid + 0.2,
-    alongMax: IR.mid + 0.2 + INT_DOOR_W,
+    // Door bay z 4.55–5.46 (abut toilet west wall south)
+    alongMin: IR.stairS + (M91 - INT_DOOR_W) / 2,
+    alongMax: IR.stairS + (M91 - INT_DOOR_W) / 2 + INT_DOOR_W,
     axis: "ns",
     sill: INT_SILL,
     height: INT_DOOR_H,
     /**
-     * Entering LDK (facing west): handle left = south (min Z),
-     * hinge right = north (max Z). Open into LDK clockwise.
+     * Entering LDK (facing west): hinge north (max), open into LDK.
      */
     hingeAt: "max",
     openSign: -1,
     openAngleDeg: 90,
-    label: "LDK|玄関 北通道",
+    label: "LDK|玄関 門0.91",
   },
   {
     id: "swing-senmen",
@@ -1046,209 +1057,177 @@ export const WALLS_1F_SHELL: WallSegment[] = WALLS_1F.filter(
 );
 
 // ─────────────────────────────────────────────────────────────
-// Stairs 1F → 2F (U-turn at north)
-// Rise 2.2 m: lower 6×0.20 → platform 1.7; upper 5×0.20 → 2.7
-// Lower north x 4.55–5.46; mid landing; upper south x 5.46–6.37
+// Stairs L-shape (not 180°): straight NS 0.91 + 90° winders NS 0.91
+// 1F→2F: straight north z 4.55–5.46, winders z 5.46–6.37 turn to east @ Y=2.7
+// Rise 2.2 m: 6×0.20 straight + 5×0.20 winders
 // ─────────────────────────────────────────────────────────────
 
-const STAIR_TREAD = 0.22;
+const STAIR_BAND = M91; // 0.91
 const STAIR_RISER = 0.2;
-const STAIR_LOWER_N = 6;
-const STAIR_UPPER_N = 5;
-const STAIR_PLATFORM_Y = INTERIOR_FLOOR_Y + STAIR_LOWER_N * STAIR_RISER; // 1.7
-const STAIR_LOWER_RUN = STAIR_LOWER_N * STAIR_TREAD; // 1.32
-const STAIR_UPPER_RUN = STAIR_UPPER_N * STAIR_TREAD; // 1.10
-/** Overlap between flights and mid landing (closes gap / eases turn). */
-const STAIR_OVERLAP = 0.05;
+const STAIR_STRAIGHT_N = 6;
+const STAIR_WINDER_N = 5;
+const STAIR_STRAIGHT_TREAD = STAIR_BAND / STAIR_STRAIGHT_N; // ≈ 0.1517
+const STAIR_STRAIGHT_RISE = STAIR_STRAIGHT_N * STAIR_RISER; // 1.2
+const STAIR_WINDER_RISE = STAIR_WINDER_N * STAIR_RISER; // 1.0
+
+/** Straight band south edge (= IR.stairS); north edge overlaps winders */
+const STAIR_STR_Z0 = IR.stairS; // 4.55
+const STAIR_STR_Z1_NOMINAL = IR.north - M91; // 5.46
+/** Overlap straight into turn zone so (5.36, 5.55) stays walkable */
+const STAIR_JOIN_OVERLAP = 0.08;
+const STAIR_STR_Z1 = STAIR_STR_Z1_NOMINAL + STAIR_JOIN_OVERLAP; // ≈ 5.54
+const STAIR_WIN_Z0 = STAIR_STR_Z1_NOMINAL; // 5.46
+const STAIR_WIN_Z1 = IR.north; // 6.37
 
 /**
- * Geometry chain (must stay continuous — no void between lower end and landing):
- *   lower z0 (≈3.74) → +1.32 run → lowerEnd (≈5.06)
- *   landing z0 = lowerEnd − overlap (≈5.01) → north 6.37
- *   upper starts at landing z0 + overlap (≈5.06) going south
+ * L-stair 1F→2F: straight north then winders (connection → east).
+ * Pivot west of east bay edge so first winders meet straight exit (x≈5.0–5.4).
+ * startAngle ~WNW so arc covers join before sweeping to east.
  */
-const STAIR_LOWER_Z0 = IR.mid + 0.1; // ≈ 3.74 (into LDK past mid)
-const STAIR_LOWER_END = STAIR_LOWER_Z0 + STAIR_LOWER_RUN; // ≈ 5.06
-const STAIR_LAND_Z0 = STAIR_LOWER_END - STAIR_OVERLAP; // ≈ 5.01
-const STAIR_LAND_Z1 = IR.north; // 6.37
-const STAIR_UPPER_Z_NORTH = STAIR_LAND_Z0 + STAIR_OVERLAP; // ≈ 5.06 into landing
-const STAIR_UPPER_Z_SOUTH = STAIR_UPPER_Z_NORTH - STAIR_UPPER_RUN; // ≈ 3.96
-
-export const STAIR_U = {
-  lower: {
-    x0: IR.clE,
-    x1: IR.stairE,
-    z0: STAIR_LOWER_Z0,
-    /** North edge of last lower tread */
-    z1: STAIR_LOWER_END,
-    steps: STAIR_LOWER_N,
+export const STAIR_L_1F_2F = {
+  straight: {
+    x0: IR.clE, // 4.55
+    x1: IR.stairE, // 5.46
+    z0: STAIR_STR_Z0,
+    z1: STAIR_STR_Z1, // extends into winder band
+    steps: STAIR_STRAIGHT_N,
+    tread: (STAIR_STR_Z1 - STAIR_STR_Z0) / STAIR_STRAIGHT_N,
+    riser: STAIR_RISER,
+    baseY: INTERIOR_FLOOR_Y,
+    topY: INTERIOR_FLOOR_Y + STAIR_STRAIGHT_RISE, // 1.7
   },
+  winder: {
+    /** Slightly west of bay NE corner — aligns with straight centerline */
+    pivotX: IR.clE + 0.6, // ≈ 5.15
+    pivotZ: STAIR_STR_Z1_NOMINAL, // 5.46
+    rInner: 0.05,
+    rOuter: 0.95,
+    /**
+     * From WNW (~0.88π, join with straight) clockwise to east (0).
+     * Facing change ≈ N→E; arc longer so treads cover the join.
+     */
+    startAngle: Math.PI * 0.88,
+    sweep: -Math.PI * 0.88,
+    steps: STAIR_WINDER_N,
+    riser: STAIR_RISER,
+    baseY: INTERIOR_FLOOR_Y + STAIR_STRAIGHT_RISE,
+    topY: FLOOR_LEVELS["2f"], // 2.7
+  },
+  baseY: INTERIOR_FLOOR_Y,
+  topY: FLOOR_LEVELS["2f"],
+  voidRect: {
+    x: IR.clE,
+    z: STAIR_STR_Z0,
+    width: IR.genkanW - IR.clE,
+    depth: IR.north - STAIR_STR_Z0,
+  },
+} as const;
+
+/** @deprecated alias — L-stair, no mid landing */
+export const STAIR_U = {
+  lower: STAIR_L_1F_2F.straight,
   landing: {
     x0: IR.clE,
     x1: IR.genkanW,
-    /** South edge abuts lower flight (with overlap) */
-    z0: STAIR_LAND_Z0,
-    z1: STAIR_LAND_Z1,
-    y: STAIR_PLATFORM_Y,
+    z0: STAIR_WIN_Z0,
+    z1: STAIR_WIN_Z1,
+    y: STAIR_L_1F_2F.straight.topY,
   },
   upper: {
     x0: IR.stairE,
     x1: IR.genkanW,
-    zNorth: STAIR_UPPER_Z_NORTH,
-    zSouth: STAIR_UPPER_Z_SOUTH,
-    steps: STAIR_UPPER_N,
+    zNorth: STAIR_WIN_Z1,
+    zSouth: STAIR_WIN_Z0,
+    steps: 0,
+    tread: 0.15,
   },
-  tread: STAIR_TREAD,
+  tread: STAIR_STRAIGHT_TREAD,
   riser: STAIR_RISER,
-  overlap: STAIR_OVERLAP,
+  overlap: 0,
   baseY: INTERIOR_FLOOR_Y,
   topY: FLOOR_LEVELS["2f"],
-  /** Plan hole under stair runs + landing (1F y=0.5 slab kept only south of lower z0) */
-  voidRect: {
-    x: IR.clE,
-    z: STAIR_LOWER_Z0,
-    width: IR.genkanW - IR.clE, // 4.55–6.37
-    depth: IR.north - STAIR_LOWER_Z0,
-  },
+  voidRect: STAIR_L_1F_2F.voidRect,
 } as const;
 
-/** @deprecated use STAIR_U */
+/** @deprecated */
 export const STAIR_1F_2F = STAIR_U;
 
-export const STAIRS: StairFlight[] = [
-  {
-    id: "stair-1f-mid",
-    fromFloor: "1f",
-    x: (STAIR_U.lower.x0 + STAIR_U.lower.x1) / 2,
-    z: STAIR_U.lower.z0,
-    direction: "north",
-    stepCount: STAIR_U.lower.steps,
-    treadDepth: STAIR_U.tread,
-    riserHeight: STAIR_U.riser,
-    width: STAIR_U.lower.x1 - STAIR_U.lower.x0,
-    baseY: STAIR_U.baseY,
-    topY: STAIR_U.landing.y,
-    label: "1F→平台(北上)",
-  },
-  {
-    id: "stair-mid-2f",
-    fromFloor: "1f",
-    x: (STAIR_U.upper.x0 + STAIR_U.upper.x1) / 2,
-    z: STAIR_U.upper.zNorth,
-    direction: "south",
-    stepCount: STAIR_U.upper.steps,
-    treadDepth: STAIR_U.tread,
-    riserHeight: STAIR_U.riser,
-    width: STAIR_U.upper.x1 - STAIR_U.upper.x0,
-    baseY: STAIR_U.landing.y,
-    topY: STAIR_U.topY,
-    label: "平台→2F(南上)",
-  },
-];
-
-/** Mid-level turning platform Y=1.7 (1F→2F) */
+/** @deprecated no flat mid landing on L-stair */
 export const FLOOR_STAIR_MID_LANDING: FloorSlab = {
-  id: "stair-mid-landing",
+  id: "stair-mid-landing-deprecated",
   floor: "1f",
-  y: STAIR_U.landing.y,
-  rect: {
-    x: STAIR_U.landing.x0,
-    z: STAIR_U.landing.z0,
-    width: STAIR_U.landing.x1 - STAIR_U.landing.x0,
-    depth: STAIR_U.landing.z1 - STAIR_U.landing.z0,
-  },
-  thickness: 0.15,
-  label: "階段轉折平台",
+  y: -10,
+  rect: { x: 0, z: 0, width: 0.01, depth: 0.01 },
+  thickness: 0.01,
+  label: "unused",
   color: "#9a958c",
 };
 
 // ─────────────────────────────────────────────────────────────
-// Stairs 2F → PH + PH 楼梯间 + ルーフバルコニー
-// Hall shell 1.82 × 2.73 (x 4.55–6.37, z 3.64–6.37)
-// Inside: south corridor 0.91 (like 2F) + stair well NS 1.82 (= 1F→2F)
-//   corr: z 3.64–4.55 | well: z 4.55–6.37
-// Rise 2.7 m: 12 × 0.225; U in well only
+// Stairs 2F → PH — same L: straight 0.91 + 90° winders 0.91
+// Hall shell 1.82 × 2.73; door corr z 3.64–4.55
+// Rise 2.7 m: 6×0.225 straight + 6×0.225 winders → Y=5.4
 // Balcony: x 0–6.37, z 0–3.64
 // ─────────────────────────────────────────────────────────────
 
-const PH_TREAD = 0.22;
-const PH_RISER = 0.225; // 12 × 0.225 = 2.7
-const PH_LOWER_N = 6;
-const PH_UPPER_N = 6;
-const PH_OVERLAP = 0.05;
+const PH_BAND = M91;
+const PH_RISER = 0.225;
+const PH_STRAIGHT_N = 6;
+const PH_WINDER_N = 6;
+const PH_STRAIGHT_TREAD = PH_BAND / PH_STRAIGHT_N;
+const PH_STRAIGHT_RISE = PH_STRAIGHT_N * PH_RISER; // 1.35
 const PH_BASE_Y = FLOOR_LEVELS["2f"]; // 2.7
 const PH_TOP_Y = FLOOR_LEVELS.ph; // 5.4
-const PH_LAND_Y = PH_BASE_Y + PH_LOWER_N * PH_RISER; // 4.05
-const PH_LOWER_RUN = PH_LOWER_N * PH_TREAD; // 1.32
-const PH_UPPER_RUN = PH_UPPER_N * PH_TREAD; // 1.32
 
 /** PH stair hall outer shell (walls + ceiling) */
 export const PH_HALL = {
-  x0: IR.clE, // 4.55
-  x1: IR.genkanW, // 6.37
-  z0: IR.mid, // 3.64 — south wall / door to balcony
-  z1: IR.north, // 6.37
-  width: IR.genkanW - IR.clE, // 1.82
-  depth: IR.north - IR.mid, // 2.73
-  /** South corridor band (door → well), NS 0.91 */
-  corrZ0: IR.mid, // 3.64
-  corrZ1: IR.stairS, // 4.55
-  corrDepth: M91, // 0.91
-  /** Stair well NS 1.82 (same as 1F→2F) */
-  wellZ0: IR.stairS, // 4.55
-  wellZ1: IR.north, // 6.37
-  wellDepth: M182, // 1.82
+  x0: IR.clE,
+  x1: IR.genkanW,
+  z0: IR.mid,
+  z1: IR.north,
+  width: IR.genkanW - IR.clE,
+  depth: IR.north - IR.mid,
+  corrZ0: IR.mid,
+  corrZ1: IR.stairS,
+  corrDepth: M91,
+  flightZ0: IR.stairS,
+  flightZ1: IR.north - M91,
+  landZ0: IR.north - M91,
+  landZ1: IR.north,
+  wellZ0: IR.stairS,
+  wellZ1: IR.north,
+  wellDepth: M182,
 } as const;
 
-const PH_MID_X = (PH_HALL.x0 + PH_HALL.x1) / 2; // 5.46
+const PH_JOIN_OVERLAP = 0.08;
+const PH_STR_Z1 = PH_HALL.flightZ1 + PH_JOIN_OVERLAP; // ≈ 5.54
 
-/**
- * U-stair entirely inside well z 4.55–6.37 (NS 1.82).
- * lower run 1.32 + upper run 1.32 fold at north landing (overlap).
- * Upper south end = well south → step onto PH corridor 0.91.
- */
-const PH_LOWER_Z0 = PH_HALL.wellZ0; // 4.55
-const PH_LOWER_END = PH_LOWER_Z0 + PH_LOWER_RUN; // 5.87
-const PH_LAND_Z0 = PH_LOWER_END - PH_OVERLAP; // 5.82
-const PH_LAND_Z1 = PH_HALL.wellZ1; // 6.37
-const PH_UPPER_Z_N = PH_LAND_Z0 + PH_OVERLAP; // 5.87
-const PH_UPPER_Z_S = PH_UPPER_Z_N - PH_UPPER_RUN; // 4.55 = well south
-
-export const STAIR_2F_PH = {
-  lower: {
+export const STAIR_L_2F_PH = {
+  straight: {
     x0: PH_HALL.x0,
-    x1: PH_MID_X,
-    z0: PH_LOWER_Z0,
-    z1: PH_LOWER_END,
-    steps: PH_LOWER_N,
+    x1: IR.stairE,
+    z0: PH_HALL.flightZ0,
+    z1: PH_STR_Z1,
+    steps: PH_STRAIGHT_N,
+    tread: (PH_STR_Z1 - PH_HALL.flightZ0) / PH_STRAIGHT_N,
+    riser: PH_RISER,
+    baseY: PH_BASE_Y,
+    topY: PH_BASE_Y + PH_STRAIGHT_RISE, // 4.05
   },
-  landing: {
-    x0: PH_HALL.x0,
-    x1: PH_HALL.x1,
-    z0: PH_LAND_Z0,
-    z1: PH_LAND_Z1,
-    y: PH_LAND_Y,
+  winder: {
+    pivotX: PH_HALL.x0 + 0.6, // ≈ 5.15
+    pivotZ: PH_HALL.flightZ1, // 5.46
+    rInner: 0.05,
+    rOuter: 0.95,
+    startAngle: Math.PI * 0.88,
+    sweep: -Math.PI * 0.88,
+    steps: PH_WINDER_N,
+    riser: PH_RISER,
+    baseY: PH_BASE_Y + PH_STRAIGHT_RISE,
+    topY: PH_TOP_Y,
   },
-  upper: {
-    x0: PH_MID_X,
-    x1: PH_HALL.x1,
-    zNorth: PH_UPPER_Z_N,
-    zSouth: PH_UPPER_Z_S,
-    steps: PH_UPPER_N,
-  },
-  tread: PH_TREAD,
-  riser: PH_RISER,
-  overlap: PH_OVERLAP,
   baseY: PH_BASE_Y,
   topY: PH_TOP_Y,
-  /** Well band only (not the 0.91 PH corridor) */
-  well: {
-    x0: PH_HALL.x0,
-    x1: PH_HALL.x1,
-    z0: PH_HALL.wellZ0,
-    z1: PH_HALL.wellZ1,
-  },
-  /** PH door-front corridor (like 2F corr) */
   corridor: {
     x0: PH_HALL.x0,
     x1: PH_HALL.x1,
@@ -1257,53 +1236,114 @@ export const STAIR_2F_PH = {
   },
 } as const;
 
-/** Mid landing 2F→PH */
-export const FLOOR_STAIR_PH_MID: FloorSlab = {
-  id: "stair-ph-mid-landing",
-  floor: "2f",
-  y: STAIR_2F_PH.landing.y,
-  rect: {
-    x: STAIR_2F_PH.landing.x0,
-    z: STAIR_2F_PH.landing.z0,
-    width: STAIR_2F_PH.landing.x1 - STAIR_2F_PH.landing.x0,
-    depth: STAIR_2F_PH.landing.z1 - STAIR_2F_PH.landing.z0,
+/** @deprecated shape alias for height/docs */
+export const STAIR_2F_PH = {
+  lower: STAIR_L_2F_PH.straight,
+  landing: {
+    x0: PH_HALL.x0,
+    x1: PH_HALL.x1,
+    z0: PH_HALL.landZ0,
+    z1: PH_HALL.landZ1,
+    y: STAIR_L_2F_PH.straight.topY,
   },
-  thickness: 0.15,
-  label: "2F→PH 轉折平台",
+  upper: {
+    x0: IR.stairE,
+    x1: PH_HALL.x1,
+    zNorth: PH_HALL.landZ1,
+    zSouth: PH_HALL.flightZ0,
+    steps: 0,
+    tread: PH_STRAIGHT_TREAD,
+  },
+  tread: PH_STRAIGHT_TREAD,
+  riser: PH_RISER,
+  overlap: 0,
+  baseY: PH_BASE_Y,
+  topY: PH_TOP_Y,
+  well: {
+    x0: PH_HALL.x0,
+    x1: PH_HALL.x1,
+    z0: PH_HALL.wellZ0,
+    z1: PH_HALL.wellZ1,
+  },
+  corridor: STAIR_L_2F_PH.corridor,
+} as const;
+
+/** @deprecated unused on L-stair */
+export const FLOOR_STAIR_PH_MID: FloorSlab = {
+  id: "stair-ph-mid-deprecated",
+  floor: "2f",
+  y: -10,
+  rect: { x: 0, z: 0, width: 0.01, depth: 0.01 },
+  thickness: 0.01,
+  label: "unused",
   color: "#8a8580",
 };
 
-/** Append 2F→PH flights onto STAIRS */
-STAIRS.push(
+/** Straight flights only (winders in STAIR_WINDERS) */
+export const STAIRS: StairFlight[] = [
   {
-    id: "stair-2f-ph-lower",
-    fromFloor: "2f",
-    x: (STAIR_2F_PH.lower.x0 + STAIR_2F_PH.lower.x1) / 2,
-    z: STAIR_2F_PH.lower.z0,
+    id: "stair-1f-straight",
+    fromFloor: "1f",
+    x: (STAIR_L_1F_2F.straight.x0 + STAIR_L_1F_2F.straight.x1) / 2,
+    z: STAIR_L_1F_2F.straight.z0,
     direction: "north",
-    stepCount: STAIR_2F_PH.lower.steps,
-    treadDepth: STAIR_2F_PH.tread,
-    riserHeight: STAIR_2F_PH.riser,
-    width: STAIR_2F_PH.lower.x1 - STAIR_2F_PH.lower.x0,
-    baseY: STAIR_2F_PH.baseY,
-    topY: STAIR_2F_PH.landing.y,
-    label: "2F→PH平台(北上)",
+    stepCount: STAIR_L_1F_2F.straight.steps,
+    treadDepth: STAIR_L_1F_2F.straight.tread,
+    riserHeight: STAIR_L_1F_2F.straight.riser,
+    width: STAIR_L_1F_2F.straight.x1 - STAIR_L_1F_2F.straight.x0,
+    baseY: STAIR_L_1F_2F.straight.baseY,
+    topY: STAIR_L_1F_2F.straight.topY,
+    label: "1F直線北上",
   },
   {
-    id: "stair-ph-upper",
+    id: "stair-2f-ph-straight",
     fromFloor: "2f",
-    x: (STAIR_2F_PH.upper.x0 + STAIR_2F_PH.upper.x1) / 2,
-    z: STAIR_2F_PH.upper.zNorth,
-    direction: "south",
-    stepCount: STAIR_2F_PH.upper.steps,
-    treadDepth: STAIR_2F_PH.tread,
-    riserHeight: STAIR_2F_PH.riser,
-    width: STAIR_2F_PH.upper.x1 - STAIR_2F_PH.upper.x0,
-    baseY: STAIR_2F_PH.landing.y,
-    topY: STAIR_2F_PH.topY,
-    label: "平台→PH(南上)",
+    x: (STAIR_L_2F_PH.straight.x0 + STAIR_L_2F_PH.straight.x1) / 2,
+    z: STAIR_L_2F_PH.straight.z0,
+    direction: "north",
+    stepCount: STAIR_L_2F_PH.straight.steps,
+    treadDepth: STAIR_L_2F_PH.straight.tread,
+    riserHeight: STAIR_L_2F_PH.straight.riser,
+    width: STAIR_L_2F_PH.straight.x1 - STAIR_L_2F_PH.straight.x0,
+    baseY: STAIR_L_2F_PH.straight.baseY,
+    topY: STAIR_L_2F_PH.straight.topY,
+    label: "2F直線北上",
   },
-);
+];
+
+/** 90° winders (turn while rising) → floor level at end */
+export const STAIR_WINDERS: StairWinder[] = [
+  {
+    id: "winder-1f-2f",
+    fromFloor: "1f",
+    pivotX: STAIR_L_1F_2F.winder.pivotX,
+    pivotZ: STAIR_L_1F_2F.winder.pivotZ,
+    rInner: STAIR_L_1F_2F.winder.rInner,
+    rOuter: STAIR_L_1F_2F.winder.rOuter,
+    startAngle: STAIR_L_1F_2F.winder.startAngle,
+    sweep: STAIR_L_1F_2F.winder.sweep,
+    stepCount: STAIR_L_1F_2F.winder.steps,
+    riserHeight: STAIR_L_1F_2F.winder.riser,
+    baseY: STAIR_L_1F_2F.winder.baseY,
+    topY: STAIR_L_1F_2F.winder.topY,
+    label: "1F→2F 90°踢步",
+  },
+  {
+    id: "winder-2f-ph",
+    fromFloor: "2f",
+    pivotX: STAIR_L_2F_PH.winder.pivotX,
+    pivotZ: STAIR_L_2F_PH.winder.pivotZ,
+    rInner: STAIR_L_2F_PH.winder.rInner,
+    rOuter: STAIR_L_2F_PH.winder.rOuter,
+    startAngle: STAIR_L_2F_PH.winder.startAngle,
+    sweep: STAIR_L_2F_PH.winder.sweep,
+    stepCount: STAIR_L_2F_PH.winder.steps,
+    riserHeight: STAIR_L_2F_PH.winder.riser,
+    baseY: STAIR_L_2F_PH.winder.baseY,
+    topY: STAIR_L_2F_PH.winder.topY,
+    label: "2F→PH 90°踢步",
+  },
+];
 
 /** Roof balcony parapet height (m) */
 export const PH_PARAPET_H = 1.4;
@@ -1339,7 +1379,7 @@ export const FLOORS_PH: FloorSlab[] = [
   },
   /**
    * PH corridor NS 0.91 (z 3.64–4.55) — door front, like 2F corridor.
-   * Open north into stair well (no partition wall).
+   * North edge abuts ph-stair-deck.
    */
   {
     id: "ph-corridor",
@@ -1355,16 +1395,35 @@ export const FLOORS_PH: FloorSlab[] = [
     label: "PH廊道0.91",
     color: "#b0aaa0",
   },
-  // Top of north turning pad (walkable at PH after climb)
+  /**
+   * L-stair top deck @ PH: full well x 4.55–6.37, z 4.55–6.37, Y=5.4.
+   * Fills gap (e.g. 5.92, 4.8) between corridor and north landing band.
+   * Connects winder exit → corridor (south) → balcony door.
+   */
+  {
+    id: "ph-stair-deck",
+    floor: "ph",
+    y: Y_PH,
+    rect: {
+      x: PH_HALL.x0, // 4.55
+      z: PH_HALL.wellZ0, // 4.55
+      width: PH_HALL.width, // 1.82
+      depth: PH_HALL.wellDepth, // 1.82
+    },
+    thickness: T_PH,
+    label: "PH梯口甲板",
+    color: "#b8b4ac",
+  },
+  // North band still listed for clarity (overlaps deck; harmless)
   {
     id: "ph-hall-landing-top",
     floor: "ph",
     y: Y_PH,
     rect: {
       x: PH_HALL.x0,
-      z: PH_LAND_Z0,
+      z: PH_HALL.landZ0,
       width: PH_HALL.width,
-      depth: Math.max(PH_LAND_Z1 - PH_LAND_Z0, 0.2),
+      depth: PH_HALL.landZ1 - PH_HALL.landZ0,
     },
     thickness: T_PH,
     label: "PH梯間北平台面",
@@ -1537,7 +1596,7 @@ const T2 = BUILDING.slabThickness;
  * 2F walkable floors.
  *
  * South rooms NS 2.73; corridor NS 0.91 (clN→corrN), west to X2_NW_JOG=1.82;
- * NW jog wet bay NS 1.365 west of トイレ; stair well void x 4.55–6.37, z≥corrN.
+ * L-stair well covered by 2f-stair-deck at Y=2.7 so exit connects to corr + NE.
  * NE G2 4.55 m locked. Balcony visual only.
  */
 export const FLOORS_2F: FloorSlab[] = [
@@ -1579,6 +1638,7 @@ export const FLOORS_2F: FloorSlab[] = [
   },
   /**
    * 0.91 corridor: west façade at 1.82 (jog) → 6.37; SW door stays indoors.
+   * North edge abuts 2f-stair-deck.
    */
   {
     id: "2f-corridor",
@@ -1593,6 +1653,25 @@ export const FLOORS_2F: FloorSlab[] = [
     thickness: T2,
     label: "2F廊道0.91",
     color: "#b0aaa0",
+  },
+  /**
+   * L-stair top deck: full well x 4.55–6.37, z 4.55–6.37 @ Y=2.7.
+   * Connects winder exit → corridor (south) + NE room (east).
+   * mid-climb snap limited by maxStepUp 0.55.
+   */
+  {
+    id: "2f-stair-deck",
+    floor: "2f",
+    y: Y2,
+    rect: {
+      x: IR.clE, // 4.55
+      z: IR.stairS, // 4.55
+      width: IR.genkanW - IR.clE, // 1.82
+      depth: IR.north - IR.stairS, // 1.82
+    },
+    thickness: T2,
+    label: "2F梯口甲板",
+    color: "#b8b4ac",
   },
   /**
    * NW jog wet / sink bay (north of corridor strip, west of トイレ solid wall).
@@ -1687,8 +1766,8 @@ export const FLOORS_1F_NORTH_SPLIT: FloorSlab[] = [
     color: "#cfc8bc",
   },
   /**
-   * A: full-width approach mid → first lower tread (x 4.55–6.37)
-   * Fixes X=5.8,Z=3.65 hole between LDK door and stairs.
+   * Approach mid → flight band south (z 4.55), full stair width.
+   * LDK door sits on genkanW at z 4.55–5.46 (east of this band).
    */
   {
     id: "1f-n-stair-approach-wide",
@@ -1698,28 +1777,10 @@ export const FLOORS_1F_NORTH_SPLIT: FloorSlab[] = [
       x: IR.clE,
       z: SZ.mid,
       width: IR.genkanW - IR.clE, // 4.55–6.37
-      depth: Math.max(STAIR_LOWER_Z0 - SZ.mid, 0.05),
+      depth: Math.max(STAIR_STR_Z0 - SZ.mid, 0.05), // mid → 4.55
     },
     thickness: INTERIOR_SLAB_THICKNESS,
     label: "1F梯南走廊A",
-    color: "#cfc8bc",
-  },
-  /**
-   * B: east bay under/near upper run — 1F deck from mid up to upper south end
-   * (y=0.5; stair treads still win when climbing via height sampling).
-   */
-  {
-    id: "1f-n-stair-east-corridor",
-    floor: "1f",
-    y: INTERIOR_FLOOR_Y,
-    rect: {
-      x: IR.stairE,
-      z: SZ.mid,
-      width: IR.genkanW - IR.stairE, // 5.46–6.37
-      depth: Math.max(STAIR_UPPER_Z_SOUTH - SZ.mid, 0.05),
-    },
-    thickness: INTERIOR_SLAB_THICKNESS,
-    label: "1F梯東走廊B",
     color: "#cfc8bc",
   },
   // East of genkanW: 1f-hall-north-east
@@ -1729,9 +1790,7 @@ export const FLOORS_1F_NORTH_SPLIT: FloorSlab[] = [
 export const ALL_FLOOR_SLABS: FloorSlab[] = [
   ...FLOORS,
   ...FLOORS_1F_NORTH_SPLIT,
-  FLOOR_STAIR_MID_LANDING,
   ...FLOORS_2F,
-  FLOOR_STAIR_PH_MID,
   ...FLOORS_PH,
 ];
 
@@ -1786,7 +1845,7 @@ export const CEILINGS_1F: FloorSlab[] = [
     label: "天花 北側西",
     color: CEIL_COLOR,
   },
-  // Approach / corridor south of stair void (full width to genkanW)
+  // Approach south of stair package (mid → flight z0)
   {
     id: "ceil-1f-stair-approach",
     floor: "1f",

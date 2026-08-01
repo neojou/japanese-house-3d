@@ -3,9 +3,9 @@ import {
   BUILDING,
   GENKAN_ENTRY,
   INTERIOR_FLOOR_Y,
-  STAIR_2F_PH,
-  STAIR_U,
+  STAIR_WINDERS,
   STAIRS,
+  type StairWinder,
 } from "@/data/dimensions";
 
 /**
@@ -21,9 +21,64 @@ const Y_2F_SLAB_MIN = 2.5;
 const Y_PH_SLAB_MIN = 5.0;
 
 /** Horizontal padding on stair tread / width hitboxes (m). */
-const STAIR_PAD = 0.08;
+const STAIR_PAD = 0.14;
+/** Extra angular pad for winders (rad). */
+const WINDER_ANG_PAD = 0.22;
 
 type SurfaceHit = { y: number; kind: "slab" | "stair" | "step" | "grade" | "landing" };
+
+function normalizeAngle(a: number): number {
+  while (a > Math.PI) a -= Math.PI * 2;
+  while (a <= -Math.PI) a += Math.PI * 2;
+  return a;
+}
+
+/**
+ * Map ang into sweep parameter t∈[0,1] relative to start+sweep (signed).
+ * Returns null if outside padded sweep.
+ */
+function sweepParam(
+  ang: number,
+  start: number,
+  sweep: number,
+): number | null {
+  // Progress along clockwise (negative) or CCW sweep
+  let a = normalizeAngle(ang - start);
+  if (sweep < 0) {
+    // clockwise: a should be in [sweep, 0]
+    if (a > 0) a -= Math.PI * 2;
+    if (a > WINDER_ANG_PAD || a < sweep - WINDER_ANG_PAD) return null;
+    return Math.max(0, Math.min(0.999, a / sweep));
+  }
+  if (a < 0) a += Math.PI * 2;
+  if (a < -WINDER_ANG_PAD || a > sweep + WINDER_ANG_PAD) return null;
+  return Math.max(0, Math.min(0.999, a / sweep));
+}
+
+function collectWinderHits(
+  w: StairWinder,
+  planX: number,
+  planZ: number,
+  hits: SurfaceHit[],
+) {
+  const dx = planX - w.pivotX;
+  const dz = planZ - w.pivotZ;
+  const r = Math.hypot(dx, dz);
+  // Allow walking near pivot (rInner small + pad)
+  const rMin = Math.max(0, w.rInner - STAIR_PAD);
+  const rMax = w.rOuter + STAIR_PAD;
+  if (r < rMin || r > rMax) return;
+
+  const ang = Math.atan2(dz, dx);
+  const t = sweepParam(ang, w.startAngle, w.sweep);
+  if (t === null) return;
+
+  const i = Math.floor(t * w.stepCount);
+  hits.push({
+    y: w.baseY + (i + 1) * w.riserHeight,
+    kind: "stair",
+  });
+}
 
 function collectSurfaces(
   planX: number,
@@ -48,12 +103,7 @@ function collectSurfaces(
       planZ >= rect.z &&
       planZ <= rect.z + rect.depth
     ) {
-      const kind =
-        Math.abs(y - STAIR_U.landing.y) < 0.05 ||
-        Math.abs(y - STAIR_2F_PH.landing.y) < 0.05
-          ? "landing"
-          : "slab";
-      hits.push({ y, kind });
+      hits.push({ y, kind: "slab" });
     }
   }
 
@@ -76,17 +126,7 @@ function collectSurfaces(
     hits.push({ y: INTERIOR_FLOOR_Y, kind: "slab" });
   }
 
-  // Mid landing insurance (turn pad at Y=1.7)
-  if (isOnMidLanding(planX, planZ) && feetY >= 1.4) {
-    hits.push({ y: STAIR_U.landing.y, kind: "landing" });
-  }
-
-  // 2F→PH mid landing insurance
-  if (isOnPhMidLanding(planX, planZ) && feetY >= 3.5) {
-    hits.push({ y: STAIR_2F_PH.landing.y, kind: "landing" });
-  }
-
-  // Stair flights (widened pads)
+  // Straight stair flights
   for (const flight of STAIRS) {
     const halfWidth = flight.width / 2 + STAIR_PAD;
     if (planX < flight.x - halfWidth || planX > flight.x + halfWidth) {
@@ -116,33 +156,37 @@ function collectSurfaces(
           });
         }
       }
+    } else if (flight.direction === "east") {
+      for (let i = 0; i < flight.stepCount; i++) {
+        const x0 = flight.x + i * flight.treadDepth - STAIR_PAD * 0.5;
+        const x1 = flight.x + (i + 1) * flight.treadDepth + STAIR_PAD * 0.5;
+        if (planX >= x0 && planX < x1) {
+          hits.push({
+            y: flight.baseY + (i + 1) * flight.riserHeight,
+            kind: "stair",
+          });
+        }
+      }
+    } else if (flight.direction === "west") {
+      for (let i = 0; i < flight.stepCount; i++) {
+        const xE = flight.x - i * flight.treadDepth + STAIR_PAD * 0.5;
+        const xW = flight.x - (i + 1) * flight.treadDepth - STAIR_PAD * 0.5;
+        if (planX > xW && planX <= xE) {
+          hits.push({
+            y: flight.baseY + (i + 1) * flight.riserHeight,
+            kind: "stair",
+          });
+        }
+      }
     }
   }
 
+  // 90° winders
+  for (const w of STAIR_WINDERS) {
+    collectWinderHits(w, planX, planZ, hits);
+  }
+
   return hits;
-}
-
-function isOnMidLanding(planX: number, planZ: number): boolean {
-  const L = STAIR_U.landing;
-  // Generous pad so turn movement stays on Y=1.7
-  const pad = 0.1;
-  return (
-    planX >= L.x0 - pad &&
-    planX <= L.x1 + pad &&
-    planZ >= L.z0 - pad &&
-    planZ <= L.z1 + pad
-  );
-}
-
-function isOnPhMidLanding(planX: number, planZ: number): boolean {
-  const L = STAIR_2F_PH.landing;
-  const pad = 0.1;
-  return (
-    planX >= L.x0 - pad &&
-    planX <= L.x1 + pad &&
-    planZ >= L.z0 - pad &&
-    planZ <= L.z1 + pad
-  );
 }
 
 function isInsidePastGenkanDoor(planX: number, planZ: number): boolean {
@@ -175,7 +219,6 @@ function isOverInteriorFloor(planX: number, planZ: number): boolean {
 
 function pickBest(hits: SurfaceHit[]): number {
   if (hits.length === 0) return 0;
-  // Prefer stair / landing / step over plain slab at same height
   const maxY = Math.max(...hits.map((h) => h.y));
   const top = hits.filter((h) => Math.abs(h.y - maxY) < 1e-6);
   const preferred = top.find(
