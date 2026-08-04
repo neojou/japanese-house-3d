@@ -59,11 +59,12 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 
 | Action | Binding |
 |--------|---------|
-| Move | W / S (or ↑↓) — `moveSpeed` forward/back |
-| Turn | A / D (or ←→) — ±`turnDegrees` (10°) per keypress |
-| Look | Click empty space → Pointer Lock; mouse look; Esc unlock |
-| Doors | Click leaf → open/close only (raycast priority; no lock on door hit) |
+| Move | W / S (or ↑↓) — `moveSpeed` forward/back; **mobile:** virtual ↑↓ D-pad (coarse only) |
+| Turn | A / D (or ←→) — ±`turnDegrees` (10°) per keypress; **mobile:** virtual ←→ **hold continuous** (`virtualTurnSpeedDeg`) |
+| Look | Desktop: click empty → Pointer Lock + mouse; Esc unlock. **Mobile:** single-finger drag on canvas (no pointer lock) |
+| Doors | Click / tap leaf → open/close only (raycast priority; no lock on door hit) |
 | Position | HUD: plan X / Z / eye Y |
+| Mobile UX | Left-bottom translucent D-pad; portrait soft hint; shared input in `src/lib/input.ts` |
 
 ### 1F architecture
 
@@ -381,3 +382,4 @@ Every task also satisfies:
 | 2026-08-02 | Stair east screen: remove door-aligned pass (was see-through); solid wall; approach S of 4.55 |
 | 2026-08-02 | Stair well open: 2f/ph-stair-deck → east exit bridge only; height prefers stair on descent |
 | 2026-08-02 | Migrate Next.js → Vite SPA (React 19, Tailwind 4, base /japanese-house-3d/, dist for Pages) |
+| 2026-08-04 | Mobile controls: virtual D-pad (↑↓ walk, ←→ hold-turn); touch drag look; shared `lib/input.ts`; portrait hint |

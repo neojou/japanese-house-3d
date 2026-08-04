@@ -6,6 +6,8 @@ import * as THREE from "three";
 import { House } from "@/components/house";
 import { Player } from "@/components/Player";
 import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
+import { MobileDpad } from "@/components/ui/MobileDpad";
+import { OrientationHint } from "@/components/ui/OrientationHint";
 import { PositionHud } from "@/components/ui/PositionHud";
 import { BUILDING, LIGHTING, PLAYER } from "@/data/dimensions";
 import { planToWorldX } from "@/lib/coords";
@@ -118,22 +120,23 @@ function HelpOverlay() {
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-4">
       <header className="flex items-start justify-between gap-4">
-        <div className="rounded-xl border border-white/15 bg-black/50 px-4 py-3 text-white shadow-lg backdrop-blur-md">
-          <h1 className="text-base font-semibold tracking-tight">
+        <div className="rounded-xl border border-white/15 bg-black/50 px-4 py-3 text-white shadow-lg backdrop-blur-md max-sm:px-2.5 max-sm:py-2">
+          <h1 className="text-base font-semibold tracking-tight max-sm:text-sm">
             日本住宅 3D · 1F / 2F
           </h1>
-          <p className="mt-1 max-w-md text-xs leading-relaxed text-white/75">
+          <p className="mt-1 max-w-md text-xs leading-relaxed text-white/75 max-sm:hidden">
             U 形樓梯 → 2F。東北洋室門（梯廳）· 南 G2 落地窗 4.55 m 接東牆。
           </p>
-          <p className="mt-1 text-[11px] text-white/50">
+          <p className="mt-1 text-[11px] text-white/50 max-sm:hidden">
             {BUILDING.width}m × {BUILDING.depth}m · 單位公尺
           </p>
         </div>
         <PositionHud />
       </header>
 
-      <div className="flex items-end justify-between gap-3">
-        <div className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/80 backdrop-blur-md">
+      {/* Desktop help — bottom-left is reserved for MobileDpad on coarse devices */}
+      <div className="flex items-end justify-between gap-3 max-sm:justify-end">
+        <div className="rounded-lg border border-white/10 bg-black/45 px-3 py-2 text-[11px] leading-relaxed text-white/80 backdrop-blur-md max-sm:hidden">
           <ul className="space-y-0.5">
             <li>
               <kbd className="rounded bg-white/15 px-1">W S</kbd> 前進/後退 ·{" "}
@@ -146,9 +149,12 @@ function HelpOverlay() {
             <li>
               <strong>點門</strong>：只開關門（不上鎖）
             </li>
+            <li className="text-white/55">
+              手機：左下虛擬鍵 · 單指拖曳改視角 · 輕點門
+            </li>
           </ul>
         </div>
-        <p className="rounded-lg bg-black/40 px-2 py-1 text-[10px] text-white/50 backdrop-blur">
+        <p className="rounded-lg bg-black/40 px-2 py-1 text-[10px] text-white/50 backdrop-blur max-sm:mb-16">
           HUD 座標為平面圖空間（X 西→東）
         </p>
       </div>
@@ -187,6 +193,8 @@ export function Scene({ onReady }: SceneProps = {}) {
   return (
     <div className="relative h-full w-full min-h-0 flex-1">
       <HelpOverlay />
+      <OrientationHint />
+      <MobileDpad />
       <Canvas
         shadows={{ type: THREE.PCFShadowMap }}
         dpr={[1, 2]}
@@ -198,6 +206,7 @@ export function Scene({ onReady }: SceneProps = {}) {
           toneMappingExposure: 1.12,
         }}
         className="h-full w-full touch-none"
+        style={{ touchAction: "none" }}
         onCreated={() => {
           // Context up; final ready after House mounts (ReadySignal)
         }}

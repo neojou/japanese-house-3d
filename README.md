@@ -61,13 +61,15 @@ npm run preview  # serve dist locally
 
 ## Controls
 
-| Action | Control |
-|--------|---------|
-| Move | **W / S** (or ↑↓) — forward / back |
-| Turn | **A / D** (or ←→) — ±10° per keypress |
-| Look | **Click empty space** to pointer-lock; move mouse; **Esc** to unlock |
-| Doors | Click door leaf (priority: open/close only, does **not** lock view) |
-| Position | Top-right HUD (plan X east, Z north, Y eye height, m) |
+| Action | Desktop | Mobile / tablet (coarse pointer) |
+|--------|---------|----------------------------------|
+| Move | **W / S** (or ↑↓) | Virtual **↑↓** D-pad (bottom-left) |
+| Turn | **A / D** (or ←→) ±10° per keypress | Virtual **←→** hold to turn continuously |
+| Look | **Click empty** → pointer-lock; mouse; **Esc** unlock | **Single-finger drag** on canvas (no pointer lock) |
+| Doors | Click leaf (open/close only; does **not** lock) | Tap leaf (same) |
+| Position | Top-right HUD (plan X east, Z north, Y eye height, m) | Same |
+
+Portrait is playable; a soft banner suggests landscape for comfort.
 
 ---
 

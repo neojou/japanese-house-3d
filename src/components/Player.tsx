@@ -1,42 +1,52 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PLAYER } from "@/data/dimensions";
 import { worldToPlanX } from "@/lib/coords";
 import { getGroundHeight } from "@/lib/height";
+import { getInputAxes, resetInput, setKeyboardMove } from "@/lib/input";
 import { useViewerStore } from "@/store/useViewerStore";
 
 const _forward = new THREE.Vector3();
 const _move = new THREE.Vector3();
 
 /**
- * First-person walk: W/S (or ↑↓) forward/back only.
- * A/D turn is handled by FirstPersonCamera (discrete yaw steps).
- * Look: Pointer Lock in FirstPersonCamera.
+ * First-person walk: W/S (or ↑↓) or virtual D-pad ↑↓ forward/back.
+ * A/D turn is handled by FirstPersonCamera (discrete keyboard; continuous virtual).
+ * Look: Pointer Lock (desktop) or touch drag (coarse) in FirstPersonCamera.
  */
 export function Player() {
   const { camera } = useThree();
   const setPosition = useViewerStore((s) => s.setPosition);
-  const keys = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      keys.current[e.code] = true;
-      if (e.code === "ArrowUp" || e.code === "ArrowDown") {
-        e.preventDefault();
+      if (e.code === "KeyW" || e.code === "ArrowUp") {
+        setKeyboardMove("forward", true);
+        if (e.code === "ArrowUp") e.preventDefault();
+      } else if (e.code === "KeyS" || e.code === "ArrowDown") {
+        setKeyboardMove("back", true);
+        if (e.code === "ArrowDown") e.preventDefault();
       }
     };
     const up = (e: KeyboardEvent) => {
-      keys.current[e.code] = false;
+      if (e.code === "KeyW" || e.code === "ArrowUp") {
+        setKeyboardMove("forward", false);
+      } else if (e.code === "KeyS" || e.code === "ArrowDown") {
+        setKeyboardMove("back", false);
+      }
     };
+    const blur = () => resetInput();
 
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
+    window.addEventListener("blur", blur);
     return () => {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
-      keys.current = {};
+      window.removeEventListener("blur", blur);
+      resetInput();
     };
   }, []);
 
@@ -50,9 +60,10 @@ export function Player() {
       _forward.normalize();
     }
 
+    const axes = getInputAxes();
     _move.set(0, 0, 0);
-    if (keys.current["KeyW"] || keys.current["ArrowUp"]) _move.add(_forward);
-    if (keys.current["KeyS"] || keys.current["ArrowDown"]) _move.sub(_forward);
+    if (axes.forward) _move.add(_forward);
+    if (axes.back) _move.sub(_forward);
 
     if (_move.lengthSq() > 0) {
       _move.normalize().multiplyScalar(PLAYER.moveSpeed * delta);

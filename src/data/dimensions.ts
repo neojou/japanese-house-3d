@@ -2979,8 +2979,15 @@ export const PLAYER = {
   moveSpeed: 2.0,
   /** Pointer-lock look sensitivity (rad per pixel) */
   lookSensitivity: 0.002,
+  /** Touch drag look sensitivity (rad per pixel); slightly higher than mouse */
+  touchLookSensitivity: 0.0035,
   /** A / D (and ← / →) discrete yaw step (degrees). A = left, D = right. */
   turnDegrees: 10,
+  /**
+   * Virtual D-pad ←→ hold-to-turn rate (degrees / second).
+   * Keyboard A/D stay discrete `turnDegrees` steps.
+   */
+  virtualTurnSpeedDeg: 90,
   /**
    * Spawn at z = -2.8 m (south of building), centered on genkan door bay X.
    * Facing north toward the door: left = LDK, right = SCL / UB.
