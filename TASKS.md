@@ -63,8 +63,9 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | Turn | A / D (or ←→) — ±`turnDegrees` (10°) per keypress; **mobile:** virtual ←→ **hold continuous** (`virtualTurnSpeedDeg`) |
 | Look | Desktop: click empty → Pointer Lock + mouse; Esc unlock. **Mobile:** single-finger drag on canvas (no pointer lock) |
 | Doors | Click / tap leaf → open/close only (raycast priority; no lock on door hit) |
-| Position | HUD: plan X / Z / eye Y |
-| Mobile UX | Left-bottom translucent D-pad; portrait soft hint; shared input in `src/lib/input.ts` |
+| Position | Compact top-right HUD: plan X / Z / eye Y (all devices) |
+| Mobile UX | Left-bottom D-pad only (no title / key legend / portrait banner); shared `src/lib/input.ts` |
+| Desktop help | Small bottom-left WS/AD + lock/door legend (`pointer: fine` only) |
 
 ### 1F architecture
 
@@ -383,3 +384,14 @@ Every task also satisfies:
 | 2026-08-02 | Stair well open: 2f/ph-stair-deck → east exit bridge only; height prefers stair on descent |
 | 2026-08-02 | Migrate Next.js → Vite SPA (React 19, Tailwind 4, base /japanese-house-3d/, dist for Pages) |
 | 2026-08-04 | Mobile controls: virtual D-pad (↑↓ walk, ←→ hold-turn); touch drag look; shared `lib/input.ts`; portrait hint |
+| 2026-08-04 | HUD declutter: drop title + coord footnote + portrait tip; compact PositionHud; desktop help only |
+| 2026-08-04 | Senmen washer tokonoma-card: enamel body, wood plinth/rail, closed porthole+drum, drawer, dial (no extra light) |
+| 2026-08-04 | Senmen washer pass: no wood/handle; large mirror glass; quiet controls; light laundry in drum |
+| 2026-08-04 | Senmen washer: fix torus face-on (was edge-on “handle”); slim bezel; drop drum chrome ribs |
+| 2026-08-04 | Senmen mirror: planar MeshReflectorMaterial 512² light blur — live senmen/UB, not outdoor env |
+| 2026-08-04 | Senmen mirror black fix: InteriorMirror + transformDirection (plan-mirror −X broke drei) |
+| 2026-08-04 | Senmen mirror: portal three.js Reflector to scene root at world pose (escape scale −X) |
+| 2026-08-04 | Senmen mirror rewrite: custom RT + near=dist-to-plane (clip wall); portal world pose; no fog |
+| 2026-08-04 | Senmen mirror: remove live RT (secondary gl.render → full canvas black); static glass only |
+| 2026-08-04 | Mirror Phase A+B: mirrorMath + glOffscreen + useFBO magenta smoke; `npm run test:mirror` |
+| 2026-08-04 | Mirror: rollback FBO runtime → classic envMap glass (fix full-canvas black) |

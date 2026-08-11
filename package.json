@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:mirror": "node scripts/verify-mirror-math.mjs && node scripts/verify-mirror-source.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

@@ -8,8 +8,10 @@ import {
 } from "@/lib/houseMaterials";
 
 /**
- * 1F 洗面 north wall — tokonoma-card vignette:
- * west laundry basket, center warm-wood vanity + vertical mirror, east front-load washer.
+ * 1F 洗面 north wall — tokonoma-card vignette (DESIGN.md §2.7):
+ * west laundry basket, center warm-wood vanity + vertical mirror
+ * (standard MeshStandardMaterial + envMap — live FBO deferred; was blacking canvas),
+ * east closed front-load washer (large gloss glass, no wood / no door handle).
  */
 export function SenmenDisplay() {
   const p = PROP_1F_SENMEN;
@@ -54,37 +56,114 @@ export function SenmenDisplay() {
       }),
     [],
   );
+  /** Soft enamel body — quiet luxury appliance */
   const matWasher = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
         color: w.body,
-        roughness: 0.38,
-        metalness: 0.12,
-        envMapIntensity: 0.35,
+        roughness: 0.3,
+        metalness: 0.08,
+        envMapIntensity: 0.45,
       }),
     [w.body],
   );
-  const matWasherDoor = useMemo(
+  const matWasherEdge = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: w.door,
-        roughness: 0.32,
-        metalness: 0.2,
+        color: w.bodyEdge,
+        roughness: 0.38,
+        metalness: 0.06,
+        envMapIntensity: 0.3,
       }),
-    [w.door],
+    [w.bodyEdge],
   );
+  const matWasherPanel = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: w.panel,
+        roughness: 0.34,
+        metalness: 0.08,
+        envMapIntensity: 0.32,
+      }),
+    [w.panel],
+  );
+  const matDoorChrome = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: w.doorChrome,
+        roughness: 0.28,
+        metalness: 0.55,
+        envMapIntensity: 0.55,
+      }),
+    [w.doorChrome],
+  );
+  /** High-gloss semi-transparent porthole “mirror glass” */
   const matGlass = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
         color: w.glass,
         transparent: true,
-        opacity: 0.45,
-        roughness: 0.15,
-        metalness: 0.1,
+        opacity: w.glassOpacity,
+        roughness: 0.06,
+        metalness: 0.35,
+        envMapIntensity: 0.85,
         depthWrite: false,
+        side: THREE.DoubleSide,
       }),
-    [w.glass],
+    [w.glass, w.glassOpacity],
   );
+  const matDrum = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: w.drum,
+        roughness: 0.48,
+        metalness: 0.4,
+        envMapIntensity: 0.45,
+        side: THREE.DoubleSide,
+      }),
+    [w.drum],
+  );
+  const matGasket = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: w.gasket,
+        roughness: 0.88,
+        metalness: 0.02,
+      }),
+    [w.gasket],
+  );
+  const matDrawer = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: w.drawer,
+        roughness: 0.36,
+        metalness: 0.08,
+        envMapIntensity: 0.25,
+      }),
+    [w.drawer],
+  );
+  /** Soft laundry folds inside drum (light neutrals) */
+  const matDrumCloth = useMemo(
+    () => [
+      new THREE.MeshStandardMaterial({
+        color: "#f0ebe4",
+        roughness: 0.92,
+        metalness: 0,
+      }),
+      new THREE.MeshStandardMaterial({
+        color: "#e2ddd4",
+        roughness: 0.9,
+        metalness: 0,
+      }),
+      new THREE.MeshStandardMaterial({
+        color: "#d4cfc6",
+        roughness: 0.91,
+        metalness: 0,
+      }),
+    ],
+    [],
+  );
+  /** Classic glass: scene Environment only (no FBO). Safe for main view. */
   const matMirror = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -141,12 +220,18 @@ export function SenmenDisplay() {
         matMetal,
         matBasin,
         matWasher,
-        matWasherDoor,
+        matWasherEdge,
+        matWasherPanel,
+        matDoorChrome,
         matGlass,
+        matDrum,
+        matGasket,
+        matDrawer,
         matMirror,
         matFrame,
         matRattan,
         ...matCloth,
+        ...matDrumCloth,
       ]) {
         mat.dispose();
       }
@@ -157,12 +242,18 @@ export function SenmenDisplay() {
     matMetal,
     matBasin,
     matWasher,
-    matWasherDoor,
+    matWasherEdge,
+    matWasherPanel,
+    matDoorChrome,
     matGlass,
+    matDrum,
+    matGasket,
+    matDrawer,
     matMirror,
     matFrame,
     matRattan,
     matCloth,
+    matDrumCloth,
   ]);
 
   const y0 = p.y;
@@ -311,7 +402,7 @@ export function SenmenDisplay() {
         </mesh>
       </group>
 
-      {/* Vertical mirror + frame on north wall */}
+      {/* Vertical mirror + frame (no offscreen FBO — keeps main canvas stable) */}
       <mesh position={[v.x, mirrorY, mirrorZ]} material={matFrame} castShadow>
         <boxGeometry
           args={[m.w + m.frame * 2, m.h + m.frame * 2, m.t + 0.01]}
@@ -325,76 +416,204 @@ export function SenmenDisplay() {
         <boxGeometry args={[m.w, m.h, m.t]} />
       </mesh>
 
-      {/* ── East: front-load washer ── */}
-      <group position={[w.x, y0, washerZ]}>
-        <mesh
-          position={[0, w.h / 2, 0]}
-          material={matWasher}
-          castShadow
-          receiveShadow
-        >
-          <boxGeometry args={[w.w, w.h, w.d]} />
-        </mesh>
-        {/* Soft corner top panel */}
-        <mesh
-          position={[0, w.h - 0.04, 0]}
-          material={matWasherDoor}
-          castShadow
-        >
-          <boxGeometry args={[w.w * 0.96, 0.08, w.d * 0.96]} />
-        </mesh>
-        {/* Control row */}
-        <mesh
-          position={[0, w.h - 0.06, w.d / 2 + 0.005]}
-          material={matMetal}
-        >
-          <boxGeometry args={[w.w * 0.7, 0.04, 0.02]} />
-        </mesh>
-        <mesh
-          position={[w.w * 0.22, w.h - 0.06, w.d / 2 + 0.02]}
-          material={matMetal}
-          castShadow
-        >
-          <cylinderGeometry args={[0.028, 0.028, 0.03, 16]} />
-        </mesh>
-        {/* Front door ring + glass */}
-        <mesh
-          position={[0, w.h * 0.42, w.d / 2 + 0.01]}
-          rotation={[Math.PI / 2, 0, 0]}
-          material={matWasherDoor}
-          castShadow
-        >
-          <torusGeometry args={[0.2, 0.035, 10, 28]} />
-        </mesh>
-        <mesh
-          position={[0, w.h * 0.42, w.d / 2 + 0.02]}
-          material={matGlass}
-        >
-          <circleGeometry args={[0.18, 28]} />
-        </mesh>
-        {/* Handle */}
-        <mesh
-          position={[w.w * 0.28, w.h * 0.42, w.d / 2 + 0.04]}
-          material={matMetal}
-          castShadow
-        >
-          <boxGeometry args={[0.08, 0.02, 0.025]} />
-        </mesh>
-        {/* Feet */}
-        {[
-          [-1, -1],
-          [-1, 1],
-          [1, -1],
-          [1, 1],
-        ].map(([sx, sz], i) => (
-          <mesh
-            key={`ft-${i}`}
-            position={[sx * w.w * 0.35, 0.02, sz * w.d * 0.35]}
-            material={matMetal}
-          >
-            <cylinderGeometry args={[0.02, 0.022, 0.04, 8]} />
-          </mesh>
-        ))}
+      {/* ── East: closed front-load washer (tokonoma-card) ──
+          Ivory enamel body; large high-gloss glass; no wood; no door handle.
+          Subtle top controls; stainless drum + light folded laundry inside. */}
+      <group position={[w.x, y0, washerZ]} name="senmen-washer">
+        {(() => {
+          const bodyH = w.h;
+          const bodyY = bodyH / 2;
+          // Front faces room (−Z)
+          const fz = -1;
+          const frontZ = fz * (w.d / 2);
+          const out = (t: number) => frontZ + fz * t;
+          const doorR = w.doorR;
+          const doorCy = bodyH * 0.42;
+          const panelH = 0.07;
+          const panelY = bodyH - panelH / 2 - 0.018;
+          const glassR = doorR - 0.028;
+          const drumR = doorR - 0.055;
+
+          return (
+            <>
+              {/* Main body */}
+              <mesh
+                position={[0, bodyY, 0]}
+                material={matWasher}
+                castShadow
+                receiveShadow
+              >
+                <boxGeometry args={[w.w, bodyH, w.d]} />
+              </mesh>
+
+              {/* Soft front vertical edge rounds */}
+              {([-1, 1] as const).map((side) => (
+                <mesh
+                  key={`edge-${side}`}
+                  position={[side * (w.w / 2 - 0.022), bodyY, out(-0.03)]}
+                  material={matWasherEdge}
+                  castShadow
+                >
+                  <cylinderGeometry args={[0.024, 0.024, bodyH * 0.96, 12]} />
+                </mesh>
+              ))}
+
+              {/* Front face plate (quiet, not a second box) */}
+              <mesh
+                position={[0, bodyY - 0.02, out(0.003)]}
+                material={matWasherPanel}
+                castShadow
+              >
+                <boxGeometry args={[w.w * 0.9, bodyH * 0.72, 0.01]} />
+              </mesh>
+
+              {/* Top crown lip */}
+              <mesh
+                position={[0, bodyH - 0.01, 0]}
+                material={matWasherEdge}
+                castShadow
+              >
+                <boxGeometry args={[w.w * 0.98, 0.018, w.d * 0.98]} />
+              </mesh>
+
+              {/* Subtle control band (smaller / quieter) */}
+              <mesh
+                position={[0, panelY, out(0.008)]}
+                material={matWasherPanel}
+                castShadow
+              >
+                <boxGeometry args={[w.w * 0.88, panelH, 0.016]} />
+              </mesh>
+              <mesh
+                position={[0, panelY - panelH / 2 - 0.004, out(0.008)]}
+                material={matGasket}
+              >
+                <boxGeometry args={[w.w * 0.82, 0.003, 0.005]} />
+              </mesh>
+              {/* Small detergent drawer */}
+              <mesh
+                position={[-w.w * 0.26, panelY, out(0.02)]}
+                material={matDrawer}
+                castShadow
+              >
+                <boxGeometry args={[0.12, panelH * 0.55, 0.028]} />
+              </mesh>
+              {/* Small program dial */}
+              <mesh
+                position={[w.w * 0.24, panelY, out(0.022)]}
+                rotation={[Math.PI / 2, 0, 0]}
+                material={matDoorChrome}
+                castShadow
+              >
+                <cylinderGeometry args={[0.018, 0.02, 0.016, 16]} />
+              </mesh>
+              <mesh
+                position={[w.w * 0.24, panelY, out(0.032)]}
+                rotation={[Math.PI / 2, 0, 0]}
+                material={matGasket}
+              >
+                <cylinderGeometry args={[0.007, 0.007, 0.006, 10]} />
+              </mesh>
+              {/* Tiny status pips */}
+              {[-0.02, 0.0, 0.02].map((dx, i) => (
+                <mesh
+                  key={`pip-${i}`}
+                  position={[w.w * 0.08 + dx, panelY + 0.008, out(0.016)]}
+                  material={matDoorChrome}
+                >
+                  <boxGeometry args={[0.008, 0.006, 0.005]} />
+                </mesh>
+              ))}
+
+              {/* ── Closed porthole (face-on circle, NOT edge-on “handle”) ──
+                  TorusGeometry lies in XY by default — do NOT rotX π/2 or it
+                  becomes a horizontal hoop that reads as a metal semicircle. */}
+              {/* Single quiet body-tone bezel */}
+              <mesh
+                position={[0, doorCy, out(0.012)]}
+                material={matWasherEdge}
+                castShadow
+              >
+                <torusGeometry args={[doorR, 0.012, 10, 48]} />
+              </mesh>
+              {/* Thin dark gasket just inside glass */}
+              <mesh
+                position={[0, doorCy, out(0.016)]}
+                material={matGasket}
+              >
+                <torusGeometry args={[glassR + 0.004, 0.008, 8, 40]} />
+              </mesh>
+              {/* Large high-gloss glass (closed door) */}
+              <mesh
+                position={[0, doorCy, out(0.022)]}
+                material={matGlass}
+              >
+                <circleGeometry args={[glassR, 48]} />
+              </mesh>
+
+              {/* Inner stainless drum (no chrome ribs — those read as a handle) */}
+              <mesh
+                position={[0, doorCy, out(-0.07)]}
+                rotation={[Math.PI / 2, 0, 0]}
+                material={matDrum}
+              >
+                <cylinderGeometry
+                  args={[drumR, drumR * 0.98, 0.24, 32, 1, true]}
+                />
+              </mesh>
+              <mesh
+                position={[0, doorCy, out(-0.18)]}
+                material={matDrum}
+              >
+                <circleGeometry args={[drumR * 0.98, 32]} />
+              </mesh>
+
+              {/* Soft folded laundry inside drum */}
+              <mesh
+                position={[-0.04, doorCy - 0.06, out(-0.08)]}
+                rotation={[0.4, 0.3, 0.2]}
+                material={matDrumCloth[0]}
+                castShadow
+              >
+                <boxGeometry args={[0.14, 0.04, 0.1]} />
+              </mesh>
+              <mesh
+                position={[0.05, doorCy - 0.04, out(-0.1)]}
+                rotation={[-0.25, -0.4, 0.15]}
+                material={matDrumCloth[1]}
+                castShadow
+              >
+                <boxGeometry args={[0.12, 0.035, 0.11]} />
+              </mesh>
+              <mesh
+                position={[0.0, doorCy - 0.02, out(-0.12)]}
+                rotation={[0.15, 0.5, -0.1]}
+                material={matDrumCloth[2]}
+                castShadow
+              >
+                <boxGeometry args={[0.1, 0.03, 0.09]} />
+              </mesh>
+
+              {/* Recessed feet (no loud chrome pads) */}
+              {(
+                [
+                  [-1, -1],
+                  [-1, 1],
+                  [1, -1],
+                  [1, 1],
+                ] as const
+              ).map(([sx, sz], i) => (
+                <mesh
+                  key={`ft-${i}`}
+                  position={[sx * w.w * 0.36, 0.012, sz * w.d * 0.34]}
+                  material={matWasherEdge}
+                >
+                  <cylinderGeometry args={[0.014, 0.016, 0.024, 8]} />
+                </mesh>
+              ))}
+            </>
+          );
+        })()}
       </group>
 
       {/* Mirror-top weak warm light */}

@@ -1166,7 +1166,11 @@ export const PROP_1F_SENMEN = {
   wallZ: IR.north,
   wallFaceZ: IR.north - BUILDING.wallThickness / 2,
   standoff: 0.04,
-  /** Vertical mirror above vanity */
+  /**
+   * Vertical mirror above vanity.
+   * Runtime: MeshStandardMaterial + Environment envMap (classic look).
+   * Live FBO reflection deferred (was blacking main canvas).
+   */
   mirror: {
     w: 0.48,
     h: 0.95,
@@ -1184,15 +1188,32 @@ export const PROP_1F_SENMEN = {
     wood: "#c4a882",
     stone: "#f0ebe4",
   },
+  /**
+   * East front-load washer — tokonoma-card appliance (detail-first).
+   * Closed porthole with large high-gloss glass; no wood plinth / no door handle.
+   */
   washer: {
-    w: 0.62,
-    d: 0.64,
-    h: 0.88,
-    /** East — flush-ish to room east */
-    x: SENMEN_1F.x1 - 0.12 - 0.62 / 2,
-    body: "#eef0f2",
-    door: "#d8dce0",
-    glass: "#a8b4bc",
+    w: 0.6,
+    d: 0.62,
+    h: 0.85,
+    /** East — clearance from east wall */
+    x: SENMEN_1F.x1 - 0.1 - 0.6 / 2,
+    /** Warm ivory enamel */
+    body: "#f2f0ec",
+    bodyEdge: "#e4e0da",
+    panel: "#ebe7e1",
+    /** Quiet door bezel tint (face-on ring only; no handle) */
+    doorRing: "#c8c4be",
+    /** Small control dial only — not used for door hardware */
+    doorChrome: "#b8b4ae",
+    /** High-gloss semi-transparent “mirror glass” */
+    glass: "#9aadb8",
+    glassOpacity: 0.28,
+    drum: "#6a7278",
+    gasket: "#2a2826",
+    drawer: "#e8e4de",
+    /** Porthole outer radius (m) — large mirror face */
+    doorR: 0.22,
   },
   basket: {
     w: 0.42,

@@ -67,9 +67,16 @@ npm run preview  # serve dist locally
 | Turn | **A / D** (or ←→) ±10° per keypress | Virtual **←→** hold to turn continuously |
 | Look | **Click empty** → pointer-lock; mouse; **Esc** unlock | **Single-finger drag** on canvas (no pointer lock) |
 | Doors | Click leaf (open/close only; does **not** lock) | Tap leaf (same) |
-| Position | Top-right HUD (plan X east, Z north, Y eye height, m) | Same |
+| Position | Compact top-right HUD (plan X / Z / eye Y, m) | Same (no keyboard help chrome) |
 
-Portrait is playable; a soft banner suggests landscape for comfort.
+On-screen chrome is minimal: **no title panel**. Desktop keeps a small bottom-left key legend; mobile shows only the virtual D-pad + coordinates.
+
+### Mirror reflection
+
+- **Runtime (stable):** classic `MeshStandardMaterial` + scene Environment (may look outdoor).
+- **Live FBO path:** rolled back — secondary render blacked the full canvas.
+- Math / offscreen helpers kept for later: `src/lib/mirrorMath.ts`, `src/lib/glOffscreen.ts`.
+- Auto math check: `npm run test:mirror`.
 
 ---
 
