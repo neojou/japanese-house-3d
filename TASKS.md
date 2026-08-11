@@ -395,3 +395,4 @@ Every task also satisfies:
 | 2026-08-04 | Senmen mirror: remove live RT (secondary gl.render → full canvas black); static glass only |
 | 2026-08-04 | Mirror Phase A+B: mirrorMath + glOffscreen + useFBO magenta smoke; `npm run test:mirror` |
 | 2026-08-04 | Mirror: rollback FBO runtime → classic envMap glass (fix full-canvas black) |
+| 2026-08-04 | Architecture.md + hardened glOffscreen (no 0×0 viewport); live mirror opt-in `?mirrorLive=1` |

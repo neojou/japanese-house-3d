@@ -59,6 +59,17 @@ npm run preview  # serve dist locally
 
 ---
 
+## Kotlin Multiplatform (parallel track — through K2)
+
+Optional **Desktop + Wasm** first-person **1F shell** (soft 3D). Does **not** replace the Vite SPA.  
+Docs: **[docs/KMP.md](./docs/KMP.md)** · plan **[docs/KMP-plan.md](./docs/KMP-plan.md)** · agents **[docs/KMP-agents.md](./docs/KMP-agents.md)**.
+
+```bash
+./gradlew :shared:jvmTest
+./gradlew :composeApp:run                              # K2 walkable 1F shell
+./gradlew :composeApp:wasmJsBrowserDevelopmentRun      # same on Wasm
+```
+
 ## Controls
 
 | Action | Desktop | Mobile / tablet (coarse pointer) |
@@ -73,10 +84,15 @@ On-screen chrome is minimal: **no title panel**. Desktop keeps a small bottom-le
 
 ### Mirror reflection
 
-- **Runtime (stable):** classic `MeshStandardMaterial` + scene Environment (may look outdoor).
-- **Live FBO path:** rolled back — secondary render blacked the full canvas.
-- Math / offscreen helpers kept for later: `src/lib/mirrorMath.ts`, `src/lib/glOffscreen.ts`.
-- Auto math check: `npm run test:mirror`.
+See **[Architecture.md](./Architecture.md)** for design + why earlier FBO attempts blacked the canvas.
+
+| Mode | URL | Expect |
+|------|-----|--------|
+| **Default (stable)** | `/japanese-house-3d/` | House loads; mirror uses Environment (may look outdoor) |
+| **Live FBO (experimental)** | `?mirrorLive=1` | Interior planar reflection; **must not** full-black the app |
+| **Debug** | `?mirrorLive=1&mirrorDebug=1` | `window.__MIRROR_DEBUG__` in console |
+
+Auto checks (no browser): `npm run test:mirror`
 
 ---
 

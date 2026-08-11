@@ -67,3 +67,91 @@ docs/*-error*.png
 
 # Floor plans — personal / private; do not upload to GitHub
 docs/2d-floors/
+
+# ─────────────────────────────────────────────────────────────
+# Kotlin Multiplatform / Gradle (from Hello2026; future KMP sibling)
+# Entries already covered above (.DS_Store, .idea/, dist, out) are not repeated
+# unless Hello2026 uses a broader or exception pattern we need.
+# ─────────────────────────────────────────────────────────────
+
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Kotlin
+.kotlin
+
+# IntelliJ (extra patterns beyond .idea/)
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# ─────────────────────────────────────────────────────────────
+# From artificial_life_simu_game (KMP / Gradle / JetBrains extras)
+# Skips patterns already covered above (.DS_Store, .idea/, *.iml, out/, mygrok)
+# ─────────────────────────────────────────────────────────────
+
+# Nested Gradle module builds (broader than root build/)
+**/build/
+!**/src/**/build/
+
+# Kotlin/JS store (KMP wasm)
+kotlin-js-store/wasm/yarn.lock
+
+# Gradle tooling
+gradle-app.setting
+.gradletasknamecache
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# CMake (IDE / native)
+cmake-build-*/
+
+# JetBrains high-churn / local (redundant if whole .idea/ is ignored; kept for clarity)
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/**/gradle.xml
+.idea/**/libraries
+.idea/httpRequests
+.idea/caches/build_file_checksums.ser
+
+# Grok local note (Hello/KMP sibling projects)
+mygroknote

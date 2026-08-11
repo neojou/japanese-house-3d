@@ -1,5 +1,5 @@
 /**
- * Phase B contract: source must use safe offscreen helpers / finally restore.
+ * Source contracts for mirror reflection.
  * Run: node scripts/verify-mirror-source.mjs
  */
 
@@ -15,30 +15,41 @@ function read(rel) {
 }
 
 function main() {
-  console.log("verify-mirror-source: Phase B contracts");
+  console.log("verify-mirror-source");
+
+  assert.ok(fs.existsSync(path.join(root, "Architecture.md")), "Architecture.md exists");
+  const arch = read("Architecture.md");
+  assert.match(arch, /plan-mirror/);
+  assert.match(arch, /0×0|zero|viewport/i);
+  assert.match(arch, /mirrorLive/);
+  console.log("  ✓ Architecture.md present with failure analysis");
 
   const math = read("src/lib/mirrorMath.ts");
-  assert.match(math, /reflectCameraPosition/, "mirrorMath exports reflectCameraPosition");
-  assert.match(math, /nearPlaneForMirror/, "mirrorMath exports nearPlaneForMirror");
-  console.log("  ✓ mirrorMath.ts API");
+  assert.match(math, /reflectCameraPosition/);
+  assert.match(math, /nearPlaneForMirror/);
+  console.log("  ✓ mirrorMath.ts");
 
   const off = read("src/lib/glOffscreen.ts");
-  assert.match(off, /withOffscreenRender/, "glOffscreen has withOffscreenRender");
-  assert.match(off, /finally/, "glOffscreen uses finally");
-  assert.match(off, /setRenderTarget/, "restores render target");
-  assert.match(off, /setViewport/, "restores viewport");
-  console.log("  ✓ glOffscreen.ts restore contract");
+  assert.match(off, /isViewportSnapshotValid/);
+  assert.match(off, /withOffscreenRender/);
+  assert.match(off, /drawingBuffer|domElement\.width/);
+  assert.match(off, /finally/);
+  console.log("  ✓ glOffscreen hardened viewport restore");
 
-  // Runtime glass is classic MeshStandardMaterial (FBO path rolled back — black canvas).
-  // Keep lib contracts for a future Phase B re-entry.
+  const mirror = read("src/components/house/InteriorMirror.tsx");
+  assert.match(mirror, /useFBO/);
+  assert.match(mirror, /withOffscreenRender/);
+  assert.match(mirror, /createPortal/);
+  assert.match(mirror, /isMainFramebufferReady/);
+  assert.match(mirror, /mirrorLive/);
+  console.log("  ✓ InteriorMirror opt-in live path");
+
   const senmen = read("src/components/house/SenmenDisplay.tsx");
-  assert.match(senmen, /matMirror|envMapIntensity/, "SenmenDisplay has classic mirror material");
-  assert.doesNotMatch(
-    senmen,
-    /useFBO|withOffscreenRender/,
-    "SenmenDisplay must not run offscreen FBO (full-canvas black regression)",
-  );
-  console.log("  ✓ SenmenDisplay classic mirror (no FBO)");
+  assert.match(senmen, /matMirror|envMapIntensity/);
+  assert.match(senmen, /isMirrorLiveEnabled/);
+  assert.match(senmen, /InteriorMirror/);
+  assert.match(senmen, /planToWorldX/);
+  console.log("  ✓ SenmenDisplay classic + live switch");
 
   console.log("verify-mirror-source: ALL PASS");
 }

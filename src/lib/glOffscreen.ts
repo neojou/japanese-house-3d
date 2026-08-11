@@ -16,6 +16,23 @@ const _clear = new THREE.Color();
 const _viewport = new THREE.Vector4();
 
 /**
+ * True if a captured viewport can safely be re-applied.
+ * Zero-size viewports were a prime suspect for "full canvas black from boot"
+ * when restore ran after an early-frame offscreen pass.
+ */
+export function isViewportSnapshotValid(v: {
+  z: number;
+  w: number;
+}): boolean {
+  return (
+    Number.isFinite(v.z) &&
+    Number.isFinite(v.w) &&
+    v.z >= 1 &&
+    v.w >= 1
+  );
+}
+
+/**
  * Capture WebGL / scene bits that secondary FBO passes must restore.
  */
 export function snapshotOffscreenState(
@@ -38,6 +55,12 @@ export function snapshotOffscreenState(
 
 /**
  * Restore after an offscreen pass. Always call from `finally`.
+ *
+ * Viewport policy (critical):
+ * - Never apply a 0×0 snapshot (would black the main canvas permanently).
+ * - When returning to the default framebuffer (prevRt === null), prefer
+ *   drawing-buffer size if the snapshot is invalid.
+ * - When prevRt was non-null, only re-apply snapshot viewport if valid.
  */
 export function restoreOffscreenState(
   gl: WebGLRenderer,
@@ -50,20 +73,41 @@ export function restoreOffscreenState(
   gl.autoClear = snap.prevAutoClear;
   gl.setClearColor(snap.clearColor, snap.clearAlpha);
   gl.setRenderTarget(snap.prevRt);
-  gl.setViewport(snap.viewport.x, snap.viewport.y, snap.viewport.z, snap.viewport.w);
+
+  if (isViewportSnapshotValid(snap.viewport)) {
+    gl.setViewport(
+      snap.viewport.x,
+      snap.viewport.y,
+      snap.viewport.z,
+      snap.viewport.w,
+    );
+  } else if (snap.prevRt === null) {
+    // Fallback: full drawing buffer (never 0×0)
+    const w = Math.max(1, gl.domElement.width || gl.domElement.clientWidth || 1);
+    const h = Math.max(1, gl.domElement.height || gl.domElement.clientHeight || 1);
+    gl.setViewport(0, 0, w, h);
+  }
+  // else: leave RT's own viewport as set by setRenderTarget(prevRt)
 }
 
 export type OffscreenRenderOptions = {
-  /** Clear color while drawing into the FBO */
   clearColor?: number;
   clearAlpha?: number;
-  /** Disable scene fog for the offscreen pass */
   disableFog?: boolean;
 };
 
 /**
+ * Canvas is large enough that an offscreen pass is unlikely to snapshot a
+ * degenerate main viewport.
+ */
+export function isMainFramebufferReady(gl: WebGLRenderer): boolean {
+  const w = gl.domElement.width || gl.domElement.clientWidth;
+  const h = gl.domElement.height || gl.domElement.clientHeight;
+  return w >= 2 && h >= 2;
+}
+
+/**
  * Run `draw` while bound to `fbo`, then always restore main framebuffer state.
- * This is the R3F-safe contract: secondary renders must not leave RT/viewport dirty.
  */
 export function withOffscreenRender(
   gl: WebGLRenderer,
@@ -91,54 +135,4 @@ export function withOffscreenRender(
   } finally {
     restoreOffscreenState(gl, scene, snap);
   }
-}
-
-/**
- * Test helper: mock-friendly check that restore always runs after throw.
- * Used by scripts/verify-mirror-math.mjs (imported path for contract docs).
- */
-export function offscreenRestoreContractHolds(
-  runWithThrow: boolean,
-): { restored: boolean; threw: boolean } {
-  let restored = false;
-  const fakeGl = {
-    xr: { enabled: true },
-    shadowMap: { autoUpdate: true },
-    autoClear: false,
-    getRenderTarget: () => null,
-    getClearColor: (c: THREE.Color) => c.setRGB(1, 0, 0),
-    getClearAlpha: () => 0.5,
-    getViewport: (v: THREE.Vector4) => v.set(0, 0, 100, 100),
-    setClearColor: () => {},
-    setRenderTarget: () => {},
-    setViewport: () => {
-      restored = true;
-    },
-    clear: () => {},
-  } as unknown as WebGLRenderer;
-
-  const fakeScene = { fog: {} } as unknown as Scene;
-  const fakeFbo = {} as WebGLRenderTarget;
-
-  // Inline minimal version using same finally pattern
-  const snap = {
-    prevRt: null,
-    prevXr: true,
-    prevShadowAuto: true,
-    prevAutoClear: false,
-    prevFog: fakeScene.fog,
-    clearColor: new THREE.Color(1, 0, 0),
-    clearAlpha: 0.5,
-    viewport: new THREE.Vector4(0, 0, 100, 100),
-  };
-  let threw = false;
-  try {
-    fakeGl.setRenderTarget(fakeFbo);
-    if (runWithThrow) throw new Error("draw failed");
-  } catch {
-    threw = true;
-  } finally {
-    restoreOffscreenState(fakeGl, fakeScene, snap);
-  }
-  return { restored, threw };
 }

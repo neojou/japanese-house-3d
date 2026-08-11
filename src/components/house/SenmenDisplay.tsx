@@ -2,16 +2,24 @@
 import { useLayoutEffect, useMemo } from "react";
 import * as THREE from "three";
 import { PROP_1F_SENMEN } from "@/data/dimensions";
+import { planToWorldX } from "@/lib/coords";
 import {
   createInteriorWoodMaterial,
   ensureFaçadeTextures,
 } from "@/lib/houseMaterials";
+import {
+  InteriorMirror,
+  isMirrorLiveEnabled,
+} from "./InteriorMirror";
 
 /**
  * 1F 洗面 north wall — tokonoma-card vignette (DESIGN.md §2.7):
- * west laundry basket, center warm-wood vanity + vertical mirror
- * (standard MeshStandardMaterial + envMap — live FBO deferred; was blacking canvas),
- * east closed front-load washer (large gloss glass, no wood / no door handle).
+ * west laundry basket, center warm-wood vanity + vertical mirror,
+ * east closed front-load washer.
+ *
+ * Mirror glass:
+ * - Default: MeshStandardMaterial + Environment (safe, may look outdoor).
+ * - `?mirrorLive=1`: planar FBO reflection (see Architecture.md).
  */
 export function SenmenDisplay() {
   const p = PROP_1F_SENMEN;
@@ -402,19 +410,30 @@ export function SenmenDisplay() {
         </mesh>
       </group>
 
-      {/* Vertical mirror + frame (no offscreen FBO — keeps main canvas stable) */}
+      {/* Mirror frame always; glass = classic or live (opt-in ?mirrorLive=1) */}
       <mesh position={[v.x, mirrorY, mirrorZ]} material={matFrame} castShadow>
         <boxGeometry
           args={[m.w + m.frame * 2, m.h + m.frame * 2, m.t + 0.01]}
         />
       </mesh>
-      <mesh
-        position={[v.x, mirrorY, mirrorZ - 0.008]}
-        material={matMirror}
-        castShadow
-      >
-        <boxGeometry args={[m.w, m.h, m.t]} />
-      </mesh>
+      {!isMirrorLiveEnabled() && (
+        <mesh
+          position={[v.x, mirrorY, mirrorZ - 0.008]}
+          material={matMirror}
+          castShadow
+        >
+          <boxGeometry args={[m.w, m.h, m.t]} />
+        </mesh>
+      )}
+      {isMirrorLiveEnabled() && (
+        <InteriorMirror
+          position={[planToWorldX(v.x), mirrorY, mirrorZ - 0.012]}
+          rotation={[0, Math.PI, 0]}
+          width={m.w}
+          height={m.h}
+          resolution={512}
+        />
+      )}
 
       {/* ── East: closed front-load washer (tokonoma-card) ──
           Ivory enamel body; large high-gloss glass; no wood; no door handle.

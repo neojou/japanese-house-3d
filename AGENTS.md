@@ -8,16 +8,31 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Coding rules and conventions for AI agents working in this repo.
 
-**Tasks / phases / DoD / milestones / Grok prompts:** **[`TASKS.md`](./TASKS.md)** (source of truth)  
+**Tasks / phases / DoD / milestones / Grok prompts:** **[`TASKS.md`](./TASKS.md)** (npm SPA source of truth)  
 **Visual / material aesthetics:** **[`DESIGN.md`](./DESIGN.md)** (how the house should look and feel)  
+**Runtime / mirror architecture:** **[`Architecture.md`](./Architecture.md)** (npm plan-mirror, FBO contracts)  
+**KMP parallel track:** **[`docs/KMP-plan.md`](./docs/KMP-plan.md)** · status board **[`docs/KMP-agents.md`](./docs/KMP-agents.md)** · run **[`docs/KMP.md`](./docs/KMP.md)**  
 **Hero object style:** **`tokonoma-card`** / 床の間卡 (**高貴典雅 · 細節優先**) → **[`DESIGN.md` §2.7](./DESIGN.md)**  
 **Human product overview:** **[`README.md`](./README.md)**
 
 ---
 
+## Dual track (npm SPA + KMP)
+
+| Track | Code | Roadmap |
+|-------|------|---------|
+| **A — product SPA** | `src/`, `package.json`, Vite | `TASKS.md` only |
+| **B — KMP walkthrough** | `shared/`, `composeApp/`, Gradle | `docs/KMP-plan.md` (K-S0→K9) |
+
+- **Do not** break `npm run dev` while doing KMP.  
+- **Do not** implement K3+ KMP features unless plan says so / owner asks.  
+- KMP domain lives in **`shared`** (pure Kotlin); UI/render in **`composeApp`**.
+
+---
+
 ## Before you code
 
-1. Read **`TASKS.md`**: current milestone, next task, DoD, out-of-scope.
+1. **npm work:** Read **`TASKS.md`**. **KMP work:** Read **`docs/KMP-plan.md`** + **`docs/KMP-agents.md`**.
 2. Obey **cancelled** items there (notably: **no top-down camera / mode switch**).
 3. If geometry is ambiguous, **plan first** and wait for owner confirmation when the task says so.
 4. Prefer `@TASKS.md` + task id in Grok prompts so status stays aligned.
