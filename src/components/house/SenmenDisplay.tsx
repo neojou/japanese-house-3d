@@ -2,24 +2,21 @@
 import { useLayoutEffect, useMemo } from "react";
 import * as THREE from "three";
 import { PROP_1F_SENMEN } from "@/data/dimensions";
-import { planToWorldX } from "@/lib/coords";
+import { senmenProbePlanFrom } from "@/lib/senmenMirror";
+import { SENMEN_1F } from "@/data/dimensions";
 import {
   createInteriorWoodMaterial,
   ensureFaçadeTextures,
 } from "@/lib/houseMaterials";
-import {
-  InteriorMirror,
-  isMirrorLiveEnabled,
-} from "./InteriorMirror";
+import { SenmenMirrorGlass } from "./SenmenMirrorGlass";
 
 /**
  * 1F 洗面 north wall — tokonoma-card vignette (DESIGN.md §2.7):
  * west laundry basket, center warm-wood vanity + vertical mirror,
  * east closed front-load washer.
  *
- * Mirror glass:
- * - Default: MeshStandardMaterial + Environment (safe, may look outdoor).
- * - `?mirrorLive=1`: planar FBO reflection (see Architecture.md).
+ * Mirror: indoor cube fallback, then 3 CubeCamera shots from inside the
+ * senmen (sees UB through shower). No planar FBO. Plan dims unchanged.
  */
 export function SenmenDisplay() {
   const p = PROP_1F_SENMEN;
@@ -171,17 +168,6 @@ export function SenmenDisplay() {
     ],
     [],
   );
-  /** Classic glass: scene Environment only (no FBO). Safe for main view. */
-  const matMirror = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#c8d0d8",
-        roughness: 0.08,
-        metalness: 0.85,
-        envMapIntensity: 0.9,
-      }),
-    [],
-  );
   const matFrame = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -235,7 +221,6 @@ export function SenmenDisplay() {
         matDrum,
         matGasket,
         matDrawer,
-        matMirror,
         matFrame,
         matRattan,
         ...matCloth,
@@ -257,7 +242,6 @@ export function SenmenDisplay() {
     matDrum,
     matGasket,
     matDrawer,
-    matMirror,
     matFrame,
     matRattan,
     matCloth,
@@ -410,30 +394,23 @@ export function SenmenDisplay() {
         </mesh>
       </group>
 
-      {/* Mirror frame always; glass = classic or live (opt-in ?mirrorLive=1) */}
+      {/* Frame + glass. Probe sits in senmen (south of vanity) so the cube
+          env includes UB through the shower — plan dims unchanged. */}
       <mesh position={[v.x, mirrorY, mirrorZ]} material={matFrame} castShadow>
         <boxGeometry
           args={[m.w + m.frame * 2, m.h + m.frame * 2, m.t + 0.01]}
         />
       </mesh>
-      {!isMirrorLiveEnabled() && (
-        <mesh
-          position={[v.x, mirrorY, mirrorZ - 0.008]}
-          material={matMirror}
-          castShadow
-        >
-          <boxGeometry args={[m.w, m.h, m.t]} />
-        </mesh>
-      )}
-      {isMirrorLiveEnabled() && (
-        <InteriorMirror
-          position={[planToWorldX(v.x), mirrorY, mirrorZ - 0.012]}
-          rotation={[0, Math.PI, 0]}
-          width={m.w}
-          height={m.h}
-          resolution={512}
-        />
-      )}
+      <SenmenMirrorGlass
+        position={[v.x, mirrorY, mirrorZ - 0.008]}
+        probePosition={(() => {
+          const pr = senmenProbePlanFrom(v.x, y0, SENMEN_1F.z0, SENMEN_1F.z1);
+          return [pr.x, pr.y, pr.z];
+        })()}
+        width={m.w}
+        height={m.h}
+        thickness={m.t}
+      />
 
       {/* ── East: closed front-load washer (tokonoma-card) ──
           Ivory enamel body; large high-gloss glass; no wood; no door handle.

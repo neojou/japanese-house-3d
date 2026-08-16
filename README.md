@@ -82,17 +82,14 @@ Docs: **[docs/KMP.md](./docs/KMP.md)** · plan **[docs/KMP-plan.md](./docs/KMP-p
 
 On-screen chrome is minimal: **no title panel**. Desktop keeps a small bottom-left key legend; mobile shows only the virtual D-pad + coordinates.
 
-### Mirror reflection
+### Mirror reflection (1F 洗面)
 
-See **[Architecture.md](./Architecture.md)** for design + why earlier FBO attempts blacked the canvas.
+See **[Architecture.md](./Architecture.md)** and **[docs/mirror-improve.md](./docs/mirror-improve.md)**.
 
-| Mode | URL | Expect |
-|------|-----|--------|
-| **Default (stable)** | `/japanese-house-3d/` | House loads; mirror uses Environment (may look outdoor) |
-| **Live FBO (experimental)** | `?mirrorLive=1` | Interior planar reflection; **must not** full-black the app |
-| **Debug** | `?mirrorLive=1&mirrorDebug=1` | `window.__MIRROR_DEBUG__` in console |
+- **Current:** static **indoor cube env** on the glass (warm plaster / wood) — not city HDR, **no** per-frame FBO.
+- **Not yet:** physically correct 洗面/UB reflection (`?mirrorLive=1` is off; it blacked the canvas).
 
-Auto checks (no browser): `npm run test:mirror`
+Auto checks: `npm run test:mirror`
 
 ---
 

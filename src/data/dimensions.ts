@@ -1168,8 +1168,8 @@ export const PROP_1F_SENMEN = {
   standoff: 0.04,
   /**
    * Vertical mirror above vanity.
-   * Runtime: MeshStandardMaterial + Environment envMap (classic look).
-   * Live FBO reflection deferred (was blacking main canvas).
+   * Indoor cube fallback + few CubeCamera captures from senmen (sees UB).
+   * No planar FBO. Geometry / plan locks unchanged.
    */
   mirror: {
     w: 0.48,

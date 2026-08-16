@@ -36,20 +36,26 @@ function main() {
   assert.match(off, /finally/);
   console.log("  ✓ glOffscreen hardened viewport restore");
 
-  const mirror = read("src/components/house/InteriorMirror.tsx");
-  assert.match(mirror, /useFBO/);
-  assert.match(mirror, /withOffscreenRender/);
-  assert.match(mirror, /createPortal/);
-  assert.match(mirror, /isMainFramebufferReady/);
-  assert.match(mirror, /mirrorLive/);
-  console.log("  ✓ InteriorMirror opt-in live path");
-
   const senmen = read("src/components/house/SenmenDisplay.tsx");
-  assert.match(senmen, /matMirror|envMapIntensity/);
-  assert.match(senmen, /isMirrorLiveEnabled/);
-  assert.match(senmen, /InteriorMirror/);
-  assert.match(senmen, /planToWorldX/);
-  console.log("  ✓ SenmenDisplay classic + live switch");
+  assert.match(senmen, /SenmenMirrorGlass/);
+  assert.doesNotMatch(senmen, /useFBO|withOffscreenRender/);
+  console.log("  ✓ SenmenDisplay uses SenmenMirrorGlass (no planar FBO helper)");
+
+  const glass = read("src/components/house/SenmenMirrorGlass.tsx");
+  assert.match(glass, /CubeCamera/);
+  assert.match(glass, /createInteriorCubeEnv/);
+  assert.match(glass, /primitive object=\{cubeCam\}/);
+  assert.match(glass, /do not overwrite with world/);
+  console.log("  ✓ SenmenMirrorGlass CubeCamera parented in plan space");
+
+  const layout = read("src/lib/senmenMirror.ts");
+  assert.match(layout, /senmenProbePlanFrom/);
+  assert.match(layout, /planToWorldXAt/);
+  console.log("  ✓ senmenMirror.ts layout helpers");
+
+  const env = read("src/lib/interiorEnvMap.ts");
+  assert.match(env, /createInteriorCubeEnv/);
+  console.log("  ✓ interiorEnvMap.ts");
 
   console.log("verify-mirror-source: ALL PASS");
 }

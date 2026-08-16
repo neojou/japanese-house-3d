@@ -521,4 +521,53 @@ When `mirrorLive=1`, `SenmenDisplay` removes classic envMap glass and mounts `In
 
 ---
 
-*Document version: 2026-08-04 — path analysis only; fixes tracked separately after owner confirms next step.*
+---
+
+## 17. Fix applied (npm, 2026-08-04)
+
+**Chosen path:** do **not** re-enable per-frame FBO (`H-LOOP` / `H-RT` still unsolved).
+
+| Change | Why |
+|--------|-----|
+| `createInteriorCubeEnv()` | 2D-canvas cube faces: warm plaster + wood floor |
+| Senmen `matMirror.envMap` | Glass no longer samples city `Environment` |
+| `InteriorMirror` unmounted | `?mirrorLive=1` cannot black the canvas |
+| Live FBO | Still deferred until §13 B0–B2 is proven |
+
+**What you should see:** main view stays lit; mirror shows **warm indoor tones** that shift with view angle — not street/sky, **not** a physically correct 洗面/UB reflection.
+
+---
+
+## 18. Cube probe (npm, follow-up)
+
+Painted cube env cannot show UB hex / tub. **SenmenMirrorGlass** now:
+
+1. Starts with painted indoor cube (safe first frames).  
+2. After ~75 frames, **three** `THREE.CubeCamera.update` shots from **inside the senmen** (`z` mid-room), so the cubemap includes the shower opening and UB.  
+3. Does **not** use planar FBO or `setViewport` restore.  
+4. **Does not change** plan dimensions or room positions.
+
+Limitation: cubemap is approximate (not a planar mirror), but bathroom dark walls / tub / pattern should read when facing the glass.
+
+---
+
+## 19. Design hole: plan vs world (owner pose 10.09, 5.65)
+
+**Symptom:** From 洗面 east, looking at the glass, env showed **house exterior + green ground** (`COLORS.ground` `#7a8a6a`).
+
+**Root cause (logic, not “need a better engine”):**
+
+| Space | Who uses it |
+|-------|-------------|
+| Plan X | `dimensions.ts`, HUD, `SenmenDisplay` meshes under `plan-mirror` |
+| World X | Player / free cameras: `planToWorldX = width − planX` |
+
+`CubeCamera` was **not** in the plan-mirror graph. `cubeCam.position.set(planX, y, z)` made Three treat **plan X as world X**.
+
+Example: probe plan X ≈ 9.55 → correct world X ≈ **1.37**. Detached cam at X=9.55 sits in the **west / outdoor** half of the displayed house → cubemap includes landscape.
+
+**Fix:** Parent `<primitive object={cubeCam} position={probePlan} />` under the same group as the glass (plan space). Tests in `scripts/verify-senmen-mirror.mjs`.
+
+Still not a true planar mirror; it should no longer be a camera sitting on the lawn.
+
+*Document version: 2026-08-04 — plan/world probe bug + tests.*
