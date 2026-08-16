@@ -11,11 +11,14 @@ Agents and humans **designing or changing materials, colours, lighting, or faça
 
 ## 1. Product visual goal
 
-Interactive **first-person** walkthrough that feels like a **professional residential 3D tour**: refined, calm, and spatially clear—not a gamey prototype, not a sterile CAD dump.
+Interactive **first-person** walkthrough that reads as a **cinematic residential still**: refined, calm, spatially clear — and **close-up perfect**. Not a gamey prototype, not a sterile CAD dump, not “good enough for a walkthrough.”
 
-**Target emotion:** 細緻、高貴、溫暖、克制（日式極簡住宅導覽）。
+**Target emotion:** 細緻、高貴、溫暖、克制（日式極簡住宅導覽）— 0.5 m 仍像電影靜幀。
 
-Phase 1 geometry is largely complete; from L1 onward we optimise for **sensory quality**, not “good enough flat colours.”
+**Quality doctrine: 高品質、力求完美.**  
+If a hero would be described as 組合木板 / 白長方體 / 直壁平底盒, it is **not shipped**. Prefer fewer objects done right.
+
+Phase 1 plan geometry is locked. From L1 onward we optimise **sensory quality**. Continuous-curvature wet heroes use **Path B** (scripted DCC → `public/props/<id>/*.glb`) so form is authored, not stacked extrudes. Agents bake and test unattended; humans are optional at the first-person visual gate (`docs/cinematic-path-b.md`).
 
 ---
 
@@ -135,7 +138,7 @@ Not full-room furniture. A **hero prop** is a single intentional object (or deli
 | **可讀輪廓 (readable form)** | From 0.5–2 m: know *what it is* (coat, getabako, stiletto). Axis-aligned brick stacks are **failure**. |
 | **減法中的焦點** | One object (or one paired vignette) per zone; silence around it; still subtractive vs whole-house clutter. |
 
-**Quality bar (acceptance):** If the owner would describe it as “組合木板／紅色長方形,” it is **not** shipped as tokonoma-card — refine form first.
+**Quality bar (acceptance):** If the owner would describe it as “組合木板／白長方體／紅色長方形,” it is **not** shipped as tokonoma-card — refine **form** first (Path B bake if the shape needs continuous curvature).
 
 ### Why this name
 
@@ -158,7 +161,7 @@ Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one**
 | **1. Intent** | One focal object per zone **or** a deliberate **paired vignette** (e.g. SCL 落塵: east coat + north getabako); subtractive silence around the pair |
 | **2. Endscape** | Small **wood backboard / shallow niche** (5% wood accent), optional thin charcoal reveal — **not** full-wall cladding |
 | **3. Standoff** | Object **3–5 cm** off wall (or off board) so shadow / depth reads |
-| **4. Form** | Prefer **curved card**, **Lathe / Extrude / moldings**, or composed low-poly with **readable silhouette** over flat billboard. Soft taper, legs, rounded corners, frame-and-panel as needed. Side-walk in room must not collapse to a paper plane or “lumber stack.” |
+| **4. Form** | Prefer **curved card**, **Lathe / Extrude / moldings**, or composed low-poly with **readable silhouette** over flat billboard. Soft taper, legs, rounded corners, frame-and-panel as needed. Side-walk in room must not collapse to a paper plane or “lumber stack.” **Continuous curvature** (basin bowl, tub inner, toilet bowl) is **Path B**: scripted DCC → `public/props/<id>/*.glb` — never two stacked extrude slabs. |
 | **5. Surface** | Albedo + normal / roughness when it sells lacquer, fabric, grain; 1–2k enough; alpha cutout OK; procedural or `public/props/<id>/`. **Maps support form — they never replace missing form.** |
 | **6. Light** | **One** short-range warm key; weak residential; **must not** wash genkan yaki or whole room; raking light should reveal micro-detail |
 | **7. Brands** | **No trademarks / logos** — generic or “inspired” only |
@@ -169,7 +172,7 @@ Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one**
 ### Not Tokonoma Card (use crude props or different style)
 
 - Utility placeholders still OK for **curtains / crude sinks** until upgraded; **toilet is no longer a two-box placeholder** once listed as hang-point  
-- Remaining crude: curtain panels, simple sink boxes until tasked  
+- Remaining crude: curtain panels until tasked; **1F senmen vanity** is Path B porcelain (`public/props/senmen-basin/basin.glb` + open deck / chrome; ref `docs/S__112345090.jpg`) — **not** a lumber box or a second extrude “bowl”  
 - Whole-room furniture sets, physics toys, neon/game pickups  
 - Flat photo posters with no standoff / no light when viewed from the side  
 - **Bare multi-box carcasses** that read as “組合木板” without legs, moldings, or proportion  
@@ -198,9 +201,11 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 
 - **Placement / orientation locked** by plan unless owner says otherwise  
 - **Readable porcelain form** — Lathe bowl, rounded tank, seat ring, lid, base skirt; **never** two bare boxes  
+- **Continuous curvature** (this basin, future bowl upgrades): **Path B** — `npm run bake:senmen-basin` writes `public/props/…/*.glb`; runtime `useGLTF`. Do not reconstruct the cavity from stacked `ExtrudeGeometry`. Process: `docs/cinematic-path-b.md`  
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`  
+- **1F senmen vessel:** rectangular outer, lofted inner bowl, chrome mixer toward −Z — `SenmenVanity.tsx` + `props/senmen-basin/basin.glb` + `docs/senmen-vanity.md`  
 - **Freestanding tub:** sculptural oval shell (Lathe + scale), inner basin, optional decorative water plane, floor faucet; long axis per plan; no brand marks — `TubDisplay.tsx` + `PROP_1F_UB_TUB`  
 - **UB room finishes:** darker **seamless** smoke-marble on south/partitions; **east clad** = elongated **hex cyan patchwork**; floor **seamless goose-yellow diatomaceous earth** (no joints); white wool bath mat west of tub; exterior stucco kept via clad (`BathFinishes`, `UB_BATH`); tub solid basin + denser water + full faucet
 
@@ -228,7 +233,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-ub-bathmat` | 1F UB 浴缸西側白羊毛腳踏 | `tokonoma-card` (配件) | **Done** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
 | `hero-1f-ldk-kitchen` | 1F LDK 西 2.175 m 開放廚（島台朝東＋西牆冰箱高櫃） | `tokonoma-card` (廚房 vignette) | **Done** |
-| `hero-1f-senmen` | 1F 洗面北牆：西籃＋中洗面台＋**平面反射豎鏡**（室內／開口視角）＋東滾筒洗衣機 | `tokonoma-card` (洗面 vignette) | **Done** |
+| `hero-1f-senmen` | 1F 洗面北牆：西籃＋**Path B 釉面方盆 (glTF)**＋鉻腳／龍頭＋豎鏡＋東洗衣機 | `tokonoma-card` (洗面 vignette) | **Done** (basin B) |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -267,7 +272,7 @@ Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in 
 - Low **Environment** intensity (drei) for micro-specular on board ridges.
 - Warm-ish background / fog—avoid blue hospital atmosphere.
 - ACES tone mapping; mild exposure lift for ivory midtones.
-- Prefer **no heavy post stack** unless tasked (still “architectural calm,” not cinematic grade).
+- Prefer **no heavy post stack** unless tasked. **Cinematic stillness** comes from form, glaze spec, and one weak key — not bloom / SSR. (Planar FBO mirrors remain forbidden; they blacked the canvas.)
 
 ### 4.1 Why yaki looked “flat black” (and fix)
 
@@ -291,7 +296,8 @@ When changing look, verify in first-person:
 3. **Genkan recess:** yaki-sugi is clearly different material—dark, vertical, matte.  
 4. **Colour balance:** large white, small wood pockets, tiny dark metal/wood accents.  
 5. **Indoors:** calm, readable; not blown-out white or cave-black without fills.  
-6. **Performance:** no major new deps; maps shared; static export still viable.
+6. **Performance:** no major new deps; maps shared; static export still viable.  
+7. **Hero close-up:** the object is what it claims to be (a basin is a basin, not a white brick).
 
 ---
 
@@ -313,7 +319,8 @@ When changing look, verify in first-person:
 3. Prefer plan → owner confirm when adding new wood hang-points or L2 features.  
 4. After look changes: update this file if the **principle or hang-point list** changes; update `TASKS.md` changelog for ship status; keep code constants in sync with §2–3.  
 5. Cite principles in PR / task notes when relevant (e.g. “70/25/5”, “texture over swatch”, **`tokonoma-card`**, “detail-first / noble elegant”).  
-6. When the owner says **tokonoma-card** / 床の間卡 → implement §2.7 **including aesthetic ethos** (高貴典雅、細節優先); do not invent a parallel hero style; do not ship crude box stacks as hero props.
+6. When the owner says **tokonoma-card** / 床の間卡 → implement §2.7 **including aesthetic ethos** (高貴典雅、細節優先); do not invent a parallel hero style; do not ship crude box stacks as hero props.  
+7. Continuous-curvature heroes: run **Path B** bake unattended (`docs/cinematic-path-b.md`). Do not wait for the owner to model or to re-open mesh vs DCC.
 
 ---
 
@@ -351,6 +358,8 @@ When changing look, verify in first-person:
 | 2026-08-04 | Senmen mirror: portal Reflector to scene root (world X via planToWorldX) |
 | 2026-08-04 | Senmen mirror: revert live RT (broke main view); static glass envMapIntensity 0 |
 | 2026-08-04 | Mirror Phase A+B: safe FBO (useFBO+withOffscreenRender), magenta smoke; math tests |
+| 2026-08-04 | Senmen vanity: open white deck + chrome legs + rounded vessel + mixer (ref S__112345090) |
+| 2026-08-17 | Quality doctrine → cinematic / 力求完美; wet curvature = Path B glTF; senmen basin baker |
 
 ---
 
@@ -363,3 +372,5 @@ When changing look, verify in first-person:
 | `src/components/house/Walls.tsx` | Applies finishes to wall meshes |
 | `src/data/dimensions.ts` | `COLORS`, `LIGHTING`, geometry |
 | `src/components/Scene.tsx` | Canvas tone mapping / lights |
+| `docs/cinematic-path-b.md` | AI-unattended Path B bake / test loop |
+| `docs/senmen-vanity.md` | 1F basin Path B spec |

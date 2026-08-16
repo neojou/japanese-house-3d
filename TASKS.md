@@ -21,7 +21,7 @@
 
 ## Product goal (stable)
 
-Interactive **first-person** 3D walkthrough of a Japanese house from three floor plans (1F / 2F / PH).
+Interactive **first-person** 3D walkthrough of a Japanese house from three floor plans (1F / 2F / PH). Visual bar: **cinematic / 力求完美** (`DESIGN.md` §1) — heroes that read as boxes are not shipped.
 
 **In scope (product):**
 
@@ -247,7 +247,8 @@ Phases map to milestones; **do not skip ahead** without owner request.
 **DoD:** Key rooms have simple placeholder furniture aligned to plan; no collision required.
 
 **Hero style name:** **`tokonoma-card`** / 床の間卡 — full recipe in **DESIGN.md §2.7**.  
-**Ethos:** **高貴典雅 + 細節優先** (noble elegant, detail-first) — readable silhouette, quiet luxury, not crude box assemblies; form before texture.
+**Ethos:** **高貴典雅 + 細節優先** + **cinematic / 力求完美** — readable silhouette, quiet luxury, not crude box assemblies; form before texture.  
+**Continuous curvature:** **Path B** (`docs/cinematic-path-b.md`) — bake glTF unattended; do not wait for the owner to model.
 
 **Done so far**
 - [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
@@ -260,12 +261,13 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
 - [x] `hero-1f-ldk-kitchen` — LDK 西 2.175 m 開放廚（南北島＋水槽、南冰箱、暖木淺石）
 - [x] `hero-1f-senmen` — 洗面北牆：西置物籃＋中洗面台豎鏡＋東前開洗衣機
+- [x] `hero-1f-senmen` basin **Path B** — `public/props/senmen-basin/basin.glb` (lofted inner bowl, no inner extrude); `npm run bake:senmen-basin` / `test:basin`
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
 
 ```text
-@TASKS.md @DESIGN.md continue T-401. New close-up object: tokonoma-card (床の間卡) — 高貴典雅、細節優先. No brand trademarks. No new major deps. No crude lumber-box heroes.
+@TASKS.md @DESIGN.md continue T-401. New close-up object: tokonoma-card (床の間卡) — 高貴典雅、細節優先、cinematic / 力求完美. Continuous curvature = Path B glTF (docs/cinematic-path-b.md), bake unattended. No brand trademarks. No new major deps. No crude lumber-box / 白長方體 heroes.
 ```
 
 ---
@@ -313,8 +315,8 @@ Every task also satisfies:
 2. Read AGENTS.md conventions
 3. If materials / light / façade: read DESIGN.md
 4. If geometry: open Second/First floor plan + dimensions.ts
-5. Plan if task says so → wait for owner if ambiguous
-6. Implement → tsc → manual verify DoD (+ DESIGN cues if look work)
+5. Plan if task says so → wait for owner if ambiguous **except** Path B (already locked — bake, do not ask mesh vs DCC)
+6. Implement → tsc → tests (`test:basin` / `test:mirror` when those files change) → DESIGN cues
 7. Mark task done in TASKS.md; update DESIGN.md if aesthetics/hang-points changed
 ```
 
@@ -396,3 +398,4 @@ Every task also satisfies:
 | 2026-08-04 | Mirror Phase A+B: mirrorMath + glOffscreen + useFBO magenta smoke; `npm run test:mirror` |
 | 2026-08-04 | Mirror: rollback FBO runtime → classic envMap glass (fix full-canvas black) |
 | 2026-08-04 | Architecture.md + hardened glOffscreen (no 0×0 viewport); live mirror opt-in `?mirrorLive=1` |
+| 2026-08-17 | Design ethos → cinematic / 力求完美; senmen basin **Path B** glTF (`bake:senmen-basin`, `test:basin`) |

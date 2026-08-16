@@ -34,6 +34,7 @@ App
 | Materials | `src/lib/houseMaterials.ts` |
 | Shared input | `src/lib/input.ts` |
 | Viewer HUD store | `src/store/useViewerStore.ts` |
+| Hero Path B assets | `public/props/<id>/*.glb` via `npm run bake:senmen-basin` (`docs/cinematic-path-b.md`) |
 
 ### Coordinate systems
 

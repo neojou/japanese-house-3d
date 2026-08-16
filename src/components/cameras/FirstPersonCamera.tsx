@@ -4,6 +4,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PLAYER } from "@/data/dimensions";
 import { planToWorldX, worldToPlanX } from "@/lib/coords";
+import { poseFromQuery } from "@/lib/debugPose";
+import { getGroundHeight } from "@/lib/height";
 import { getInputAxes, isCoarsePointer } from "@/lib/input";
 import { useViewerStore } from "@/store/useViewerStore";
 
@@ -60,18 +62,29 @@ export function FirstPersonCamera() {
   const pitch = useRef(0);
 
   useEffect(() => {
-    const eyeY = PLAYER.spawn.y + PLAYER.eyeHeight;
-    const worldX = planToWorldX(PLAYER.spawn.x);
-    camera.position.set(worldX, eyeY, PLAYER.spawn.z);
+    const pose = poseFromQuery();
+    const planX = pose?.x ?? PLAYER.spawn.x;
+    const planZ = pose?.z ?? PLAYER.spawn.z;
+    const worldX = planToWorldX(planX);
+    const groundY = getGroundHeight(planX, planZ, PLAYER.spawn.y);
+    const eyeY = groundY + PLAYER.eyeHeight;
+    camera.position.set(worldX, eyeY, planZ);
     camera.up.set(0, 1, 0);
     camera.rotation.order = "YXZ";
 
-    // Face north (+Z) toward genkan
-    const look = new THREE.Vector3(worldX, eyeY, PLAYER.spawn.z + 1);
-    camera.lookAt(look);
-    camera.rotation.order = "YXZ";
-    yaw.current = camera.rotation.y;
-    pitch.current = camera.rotation.x;
+    if (pose) {
+      yaw.current = pose.yaw;
+      pitch.current = pose.pitch;
+      _euler.set(pose.pitch, pose.yaw, 0, "YXZ");
+      camera.quaternion.setFromEuler(_euler);
+    } else {
+      // Face north (+Z) toward genkan
+      const look = new THREE.Vector3(worldX, eyeY, planZ + 1);
+      camera.lookAt(look);
+      camera.rotation.order = "YXZ";
+      yaw.current = camera.rotation.y;
+      pitch.current = camera.rotation.x;
+    }
     camera.updateProjectionMatrix();
 
     if (document.pointerLockElement) {
@@ -81,7 +94,7 @@ export function FirstPersonCamera() {
     setPosition({
       x: worldToPlanX(worldX),
       y: eyeY,
-      z: PLAYER.spawn.z,
+      z: planZ,
     });
   }, [camera, setPosition]);
 

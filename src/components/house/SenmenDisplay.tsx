@@ -9,10 +9,11 @@ import {
   ensureFaçadeTextures,
 } from "@/lib/houseMaterials";
 import { SenmenMirrorGlass } from "./SenmenMirrorGlass";
+import { SenmenVanity } from "./SenmenVanity";
 
 /**
  * 1F 洗面 north wall — tokonoma-card vignette (DESIGN.md §2.7):
- * west laundry basket, center warm-wood vanity + vertical mirror,
+ * west laundry basket, center Path B vanity (glTF bowl) + vertical mirror,
  * east closed front-load washer.
  *
  * Mirror: indoor cube fallback, then 3 CubeCamera shots from inside the
@@ -32,34 +33,6 @@ export function SenmenDisplay() {
   const matWood = useMemo(
     () => createInteriorWoodMaterial(v.w, v.h),
     [v.w, v.h],
-  );
-  const matStone = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: v.stone,
-        roughness: 0.4,
-        metalness: 0.05,
-        envMapIntensity: 0.3,
-      }),
-    [v.stone],
-  );
-  const matMetal = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#4a4642",
-        roughness: 0.4,
-        metalness: 0.55,
-      }),
-    [],
-  );
-  const matBasin = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#f5f2ec",
-        roughness: 0.28,
-        metalness: 0.06,
-      }),
-    [],
   );
   /** Soft enamel body — quiet luxury appliance */
   const matWasher = useMemo(
@@ -210,9 +183,6 @@ export function SenmenDisplay() {
       matWood.normalMap?.dispose();
       matWood.dispose();
       for (const mat of [
-        matStone,
-        matMetal,
-        matBasin,
         matWasher,
         matWasherEdge,
         matWasherPanel,
@@ -231,9 +201,6 @@ export function SenmenDisplay() {
     };
   }, [
     matWood,
-    matStone,
-    matMetal,
-    matBasin,
     matWasher,
     matWasherEdge,
     matWasherPanel,
@@ -320,79 +287,7 @@ export function SenmenDisplay() {
         </mesh>
       </group>
 
-      {/* ── Center: vanity ── */}
-      <group position={[v.x, y0, vanityZ]}>
-        <mesh
-          position={[0, v.h / 2, 0]}
-          material={matWood}
-          castShadow
-          receiveShadow
-        >
-          <boxGeometry args={[v.w, v.h, v.d]} />
-        </mesh>
-        {/* Door panels */}
-        {[-1, 1].map((side) => (
-          <mesh
-            key={`vd-${side}`}
-            position={[side * v.w * 0.22, v.h * 0.42, v.d / 2 + 0.006]}
-            material={matWood}
-            castShadow
-          >
-            <boxGeometry args={[v.w * 0.38, v.h * 0.7, 0.014]} />
-          </mesh>
-        ))}
-        <mesh
-          position={[-v.w * 0.12, v.h * 0.45, v.d / 2 + 0.016]}
-          material={matMetal}
-        >
-          <boxGeometry args={[0.012, 0.1, 0.01]} />
-        </mesh>
-        <mesh
-          position={[v.w * 0.32, v.h * 0.45, v.d / 2 + 0.016]}
-          material={matMetal}
-        >
-          <boxGeometry args={[0.012, 0.1, 0.01]} />
-        </mesh>
-        {/* Stone top */}
-        <mesh
-          position={[0, v.h + 0.015, 0]}
-          material={matStone}
-          castShadow
-          receiveShadow
-        >
-          <boxGeometry args={[v.w + 0.04, 0.03, v.d + 0.02]} />
-        </mesh>
-        {/* Basin */}
-        <mesh
-          position={[0, v.h + 0.02, 0.02]}
-          material={matBasin}
-          castShadow
-        >
-          <boxGeometry args={[0.52, 0.1, 0.34]} />
-        </mesh>
-        <mesh
-          position={[0, v.h + 0.01, 0.02]}
-          material={matBasin}
-        >
-          <boxGeometry args={[0.42, 0.08, 0.26]} />
-        </mesh>
-        {/* Faucet */}
-        <mesh
-          position={[0, v.h + 0.14, -v.d * 0.28]}
-          material={matMetal}
-          castShadow
-        >
-          <cylinderGeometry args={[0.012, 0.014, 0.18, 12]} />
-        </mesh>
-        <mesh
-          position={[0, v.h + 0.2, -v.d * 0.12]}
-          rotation={[Math.PI / 2.4, 0, 0]}
-          material={matMetal}
-          castShadow
-        >
-          <cylinderGeometry args={[0.009, 0.009, 0.14, 10]} />
-        </mesh>
-      </group>
+      <SenmenVanity position={[v.x, y0, vanityZ]} />
 
       {/* Frame + glass. Probe sits in senmen (south of vanity) so the cube
           env includes UB through the shower — plan dims unchanged. */}

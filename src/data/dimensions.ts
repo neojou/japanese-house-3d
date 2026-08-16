@@ -1186,7 +1186,24 @@ export const PROP_1F_SENMEN = {
     /** Center X — middle of senmen */
     x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
     wood: "#c4a882",
-    stone: "#f0ebe4",
+    stone: "#f4f2ee",
+    /**
+     * Rectangular vessel on open white deck + chrome legs
+     * (docs/S__112345090.jpg). Path B glTF — plan room box unchanged.
+     * Keep fields in sync with SENMEN_VESSEL_SPEC (`src/lib/vesselBasin.ts`).
+     */
+    vessel: {
+      w: 0.56,
+      d: 0.38,
+      h: 0.12,
+      innerDepth: 0.09,
+      wall: 0.009,
+      rim: 0.015,
+      outerR: 0.016,
+      innerR: 0.06,
+      floorR: 0.072,
+      gltf: "props/senmen-basin/basin.glb",
+    },
   },
   /**
    * East front-load washer — tokonoma-card appliance (detail-first).

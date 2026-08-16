@@ -13,6 +13,7 @@ Coding rules and conventions for AI agents working in this repo.
 **Runtime / mirror architecture:** **[`Architecture.md`](./Architecture.md)** (npm plan-mirror, FBO contracts)  
 **KMP parallel track:** **[`docs/KMP-plan.md`](./docs/KMP-plan.md)** · status board **[`docs/KMP-agents.md`](./docs/KMP-agents.md)** · run **[`docs/KMP.md`](./docs/KMP.md)**  
 **Hero object style:** **`tokonoma-card`** / 床の間卡 (**高貴典雅 · 細節優先**) → **[`DESIGN.md` §2.7](./DESIGN.md)**  
+**Visual quality:** cinematic / **力求完美** — [`DESIGN.md` §1](./DESIGN.md). Continuous curvature → **Path B** [`docs/cinematic-path-b.md`](./docs/cinematic-path-b.md)  
 **Human product overview:** **[`README.md`](./README.md)**
 
 ---
@@ -38,6 +39,7 @@ Coding rules and conventions for AI agents working in this repo.
 4. Prefer `@TASKS.md` + task id in Grok prompts so status stays aligned.
 5. When changing **materials, colours, lighting, façade finishes, or wood hang-points**, read **`DESIGN.md`** first and keep 70/25/5, warm ivory, texture-over-swatch, and subtractive wood pockets.
 6. When the owner asks for a close-up display object **in Tokonoma Card style**, follow **`DESIGN.md` §2.7** (`tokonoma-card` / 床の間卡): **noble elegant + detail-first** — readable form, quiet luxury, no crude lumber-box heroes. References: `CoatDisplay.tsx`, `GetabakoDisplay.tsx`, `ToiletDisplay.tsx`.
+7. **Cinematic Path B** (owner lock): if the hero needs a continuous cavity / glaze arc (basin, bowl), **do not** stack extrudes and **do not** wait for a human to model. Bake `public/props/<id>/*.glb` per `docs/cinematic-path-b.md`, test, load with `useGLTF`. Human optional only at `?pose=<id>`.
 
 ---
 
@@ -70,8 +72,9 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 | Dimensions | Centralize in `src/data/dimensions.ts`; change data before hardcoding mesh sizes |
 | Coordinates | Plan: +X east, +Z north, +Y up; origin SW. Display may X-mirror the house (`src/lib/coords.ts`) |
 | Geometry | Simple `Box` walls/floors; L1 façade via `houseMaterials` (stucco maps + yaki-sugi ids) |
-| Look & feel | Follow **`DESIGN.md`** (subtractive warm white, 70/25/5, yaki-sugi only via approved hang-points) |
-| Hero props | **`tokonoma-card`** (床の間卡): 高貴典雅 + 細節優先; wood endscape + standoff + weak key + crafted form; DESIGN §2.7 |
+| Look & feel | Follow **`DESIGN.md`** (cinematic / 力求完美, subtractive warm white, 70/25/5, yaki-sugi only via approved hang-points) |
+| Hero props | **`tokonoma-card`** (床の間卡): 高貴典雅 + 細節優先; wood endscape + standoff + weak key + crafted form; DESIGN §2.7. **Never** ship 組合木板 / 白長方體 |
+| Hero curvature | **Path B**: scripted DCC → `public/props/` glTF. No stacked-extrude bowls. `docs/cinematic-path-b.md` |
 | Components | Small, single-responsibility under `src/components/house/` |
 | Height / walk | Use `src/lib/height.ts` + slabs/stairs in dimensions; respect stair-well voids |
 | Run | Must stay runnable with `npm install && npm run dev` |
@@ -99,7 +102,8 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 - Façade ~**70%** warm ivory stucco, ~**25%** wood/yaki pockets, ~**5%** dark accent
 - Texture (grit / grain) over flat swatches; raking light should read
 - Yaki-sugi only on listed hang-points (`YAKI_SUGI_WALL_IDS`); expand only with owner OK + DESIGN.md update
-- Hero displays: **`tokonoma-card`** only — detail-first / noble elegant; never invent ad-hoc stacks or ship “組合木板” as hero
+- Hero displays: **`tokonoma-card`** only — cinematic / detail-first / noble elegant; never invent ad-hoc stacks or ship “組合木板／白長方體” as hero
+- Wet curvature (basin): Path B glTF only — `npm run bake:senmen-basin` + `npm run test:basin`
 
 ---
 
