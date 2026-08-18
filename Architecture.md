@@ -35,6 +35,7 @@ App
 | Shared input | `src/lib/input.ts` |
 | Viewer HUD store | `src/store/useViewerStore.ts` |
 | Hero Path B assets | `public/props/<id>/*.glb` via `npm run bake:senmen-basin` (`docs/cinematic-path-b.md`) |
+| Wet fixture stack | Porcelain solid → water (visual) → waste (P-trap) → cabinet enclosure → click doors. `docs/senmen-vanity.md` |
 
 ### Coordinate systems
 
@@ -258,7 +259,35 @@ useFrame(priority=1)  // after Player / FirstPersonCamera
 | `src/lib/mirrorMath.ts` | Pure reflection math |
 | `src/lib/glOffscreen.ts` | Safe FBO sandwich |
 | `scripts/verify-mirror-*.mjs` | Automated checks |
+| `src/lib/vesselBasin.ts` | Solid porcelain vessel (Path B) |
+| `src/lib/senmenPlumbing.ts` | Waste path: tailpiece → P-trap → wall |
+| `src/components/house/SenmenVanity.tsx` | Vessel + water + waste + hollow cabinet doors |
 
 ---
 
-*Last updated: 2026-08-04 — mirror failure analysis + safe re-entry contract.*
+## 8. Wet fixture stack (physical, not decorative)
+
+A basin is **not** a glass shell on a wood lid. Real rooms:
+
+```
+faucet (open) → stream → bowl pool → drain grate
+                                    → tailpiece
+                                    → P-trap (water seal)
+                                    → trap arm → wall stub
+cabinet = hollow enclosure that hides the waste
+doors   = same click contract as house doors (`interactable: "door"`)
+```
+
+| Layer | Rule |
+|-------|------|
+| **Porcelain** | Opaque solid (outer + liner + underside). Drain is a **bore into the pipe**, never a window onto the cabinet top. |
+| **Water** | Visual only (stream + shallow pool). No fluid solver, no new deps. |
+| **Waste** | Static chrome/PVC path from basin bottom to the **north wall** (+Z). |
+| **Cabinet** | Hollow: sides / back / bottom / front rail. **No** full wood slab under the bowl. |
+| **Doors** | Dual hinged leaves, damp open, `userData.interactable = "door"` so pointer-lock does not steal the click. |
+
+See `docs/senmen-vanity.md`. Plan walls stay locked.
+
+---
+
+*Last updated: 2026-08-18 — wet fixture stack (porcelain / water / waste / cabinet).*

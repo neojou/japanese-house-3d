@@ -539,6 +539,36 @@ export function createInteriorWoodNormalMap(size = 512): THREE.CanvasTexture {
 }
 
 /**
+ * Pale hinoki (檜) — cream-gold vertical grain, oiled not varnished.
+ * Lighter than INTERIOR wood so a wet-room cabinet stays quiet.
+ */
+export function createHinokiAlbedoMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cache = new Map<string, number>();
+  const rand = mulberry32(919);
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const grain =
+        fbm(u * 2.2, v * 56, 5, cache, rand) * 0.62 +
+        fbm(u * 8, v * 140, 3, cache, rand) * 0.38;
+      const late = 0.88 + grain * 0.16;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.min(255, late * 232 + 18);
+      img.data[i + 1] = Math.min(255, late * 214 + 14);
+      img.data[i + 2] = Math.min(255, late * 176 + 10);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+/**
  * Dark slate / 板岩 tile albedo — grid joints + fire-face grit.
  * Mid-dark (not pure black) so genkan dust zone stays readable.
  */

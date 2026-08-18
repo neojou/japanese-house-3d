@@ -149,7 +149,7 @@ function HelpOverlay() {
             <li>
               <strong>點空白</strong>：鎖定視角 ·{" "}
               <kbd className="rounded bg-white/15 px-1">Esc</kbd> 解鎖 ·{" "}
-              <strong>點門</strong>：開關
+              <strong>點門／龍頭</strong>：開關
             </li>
           </ul>
         </div>

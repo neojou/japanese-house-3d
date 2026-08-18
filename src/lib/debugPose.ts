@@ -18,9 +18,17 @@ export function poseFromQuery(): DebugPose | null {
   if (id === "senmen") {
     return {
       x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
-      z: SENMEN_1F.z0 + 0.72,
+      z: SENMEN_1F.z0 + 0.78,
       yaw: Math.PI,
-      pitch: -0.22,
+      pitch: -0.38,
+    };
+  }
+  if (id === "senmen-cab") {
+    return {
+      x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
+      z: SENMEN_1F.z0 + 0.22,
+      yaw: Math.PI,
+      pitch: -0.28,
     };
   }
   return null;

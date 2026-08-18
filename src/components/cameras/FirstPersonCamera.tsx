@@ -16,11 +16,11 @@ const _euler = new THREE.Euler(0, 0, 0, "YXZ");
 const _ndc = new THREE.Vector2();
 const _raycaster = new THREE.Raycaster();
 
-/** Walk parent chain for door meshes marked `userData.interactable === "door"`. */
-function isDoorInteractable(obj: THREE.Object3D | null): boolean {
+/** Walk parent chain for clickables (`door`, `faucet`, …). */
+function isInteractable(obj: THREE.Object3D | null): boolean {
   let o: THREE.Object3D | null = obj;
   while (o) {
-    if (o.userData?.interactable === "door") return true;
+    if (o.userData?.interactable) return true;
     o = o.parent;
   }
   return false;
@@ -41,7 +41,7 @@ function rayHitsDoor(
   _raycaster.setFromCamera(_ndc, camera);
   const hits = _raycaster.intersectObjects(scene.children, true);
   for (const hit of hits) {
-    if (isDoorInteractable(hit.object)) return true;
+    if (isInteractable(hit.object)) return true;
   }
   return false;
 }

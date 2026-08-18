@@ -4,16 +4,13 @@ import * as THREE from "three";
 import { PROP_1F_SENMEN } from "@/data/dimensions";
 import { senmenProbePlanFrom } from "@/lib/senmenMirror";
 import { SENMEN_1F } from "@/data/dimensions";
-import {
-  createInteriorWoodMaterial,
-  ensureFaçadeTextures,
-} from "@/lib/houseMaterials";
+import { ensureFaçadeTextures } from "@/lib/houseMaterials";
 import { SenmenMirrorGlass } from "./SenmenMirrorGlass";
 import { SenmenVanity } from "./SenmenVanity";
 
 /**
  * 1F 洗面 north wall — tokonoma-card vignette (DESIGN.md §2.7):
- * west laundry basket, center Path B vanity (glTF bowl) + vertical mirror,
+ * west laundry basket, center ceramic vessel on hinoki cabinet + vertical mirror,
  * east closed front-load washer.
  *
  * Mirror: indoor cube fallback, then 3 CubeCamera shots from inside the
@@ -30,10 +27,6 @@ export function SenmenDisplay() {
     ensureFaçadeTextures();
   }, []);
 
-  const matWood = useMemo(
-    () => createInteriorWoodMaterial(v.w, v.h),
-    [v.w, v.h],
-  );
   /** Soft enamel body — quiet luxury appliance */
   const matWasher = useMemo(
     () =>
@@ -179,9 +172,6 @@ export function SenmenDisplay() {
 
   useLayoutEffect(() => {
     return () => {
-      matWood.map?.dispose();
-      matWood.normalMap?.dispose();
-      matWood.dispose();
       for (const mat of [
         matWasher,
         matWasherEdge,
@@ -200,7 +190,6 @@ export function SenmenDisplay() {
       }
     };
   }, [
-    matWood,
     matWasher,
     matWasherEdge,
     matWasherPanel,
@@ -222,7 +211,7 @@ export function SenmenDisplay() {
   const washerZ = faceZ - p.standoff - w.d / 2;
   const basketZ = faceZ - p.standoff - b.d / 2 - 0.02;
 
-  const vanityTopY = y0 + v.h;
+  const vanityTopY = y0 + v.h + v.cabinet.sitGap + v.vessel.h;
   const mirrorBottomY = vanityTopY + m.gapAboveVanity;
   const mirrorY = mirrorBottomY + m.h / 2;
   const mirrorZ = faceZ - p.standoff - 0.02;

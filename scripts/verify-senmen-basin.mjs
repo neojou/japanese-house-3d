@@ -38,6 +38,15 @@ async function main() {
   assert.match(block, /gltf:\s*"props\/senmen-basin\/basin\.glb"/);
   console.log("  ✓ dimensions.ts vessel matches SENMEN_VESSEL_SPEC");
 
+  const vanityBlock = dims.match(/vanity:\s*\{([\s\S]*?)\n    vessel:/);
+  assert.ok(vanityBlock, "vanity block");
+  const vw = vanityBlock[1].match(/\bw:\s*([0-9.]+)/);
+  const vd = vanityBlock[1].match(/\bd:\s*([0-9.]+)/);
+  assert.ok(vw && vd);
+  assert.equal(Number(vw[1]), spec.w, "cabinet W must equal vessel W");
+  assert.equal(Number(vd[1]), spec.d, "cabinet D must equal vessel D");
+  console.log("  ✓ cabinet W×D flush with vessel");
+
   assert.ok(vb.profileMonotonic(), "drop profile must be monotonic");
   assert.ok(vb.profileDrop(1) * spec.innerDepth >= 0.04, "profile depth ≥ 4 cm");
   assert.ok(vb.profileDrop(0) < 0.02, "rim drop near 0");
@@ -51,7 +60,13 @@ async function main() {
   assert.ok(measure.rimSpread < 0.003, `rim spread ${measure.rimSpread}`);
   assert.ok(measure.floorY < measure.rimY - 0.04);
   const names = built.meshes.map((m) => m.name).sort();
-  assert.deepEqual(names, ["basin-inner", "basin-outer", "basin-rim"]);
+  assert.deepEqual(names, [
+    "basin-inner",
+    "basin-liner",
+    "basin-outer",
+    "basin-rim",
+    "basin-well",
+  ]);
   for (const m of built.meshes) {
     assert.ok(m.positions.length >= 9, m.name);
     assert.equal(m.positions.length, m.normals.length);
@@ -74,7 +89,30 @@ async function main() {
   assert.match(vanity, /useGLTF/);
   assert.match(vanity, /vessel\.gltf|senmen-basin|basin\.glb/);
   assert.doesNotMatch(vanity, /geoInner/);
-  console.log("  ✓ SenmenVanity loads glTF (no inner extrude slab)");
+  assert.match(vanity, /interactable:\s*"door"/);
+  assert.match(vanity, /interactable:\s*"faucet"/);
+  assert.match(vanity, /senmen-waste/);
+  assert.match(vanity, /DoubleSide/);
+  assert.match(vanity, /setOn/);
+  // West leafDir=+1 then openSign=+1; east leafDir=-1 then openSign=-1 (swing to −Z).
+  assert.match(
+    vanity,
+    /leafDir=\{1\}[\s\S]*?openSign=\{1\}[\s\S]*?leafDir=\{-1\}[\s\S]*?openSign=\{-1\}/,
+  );
+  console.log("  ✓ SenmenVanity loads glTF; opaque ceramic; click doors; waste stack");
+
+  const pl = await loadTs("src/lib/senmenPlumbing.ts");
+  const segs = pl.senmenWasteSegments(pl.SENMEN_PLUMBING);
+  assert.ok(pl.wasteReachesWall(segs, spec.d / 2), "trap arm must reach cabinet back / wall");
+  assert.ok(
+    pl.wasteStaysInCabinet(segs, 0.72, spec.d / 2),
+    "waste must fit under the basin inside the cabinet",
+  );
+  const dimsPlumb = dims.match(/plumbing:\s*\{([\s\S]*?)\n    \}/);
+  assert.ok(dimsPlumb);
+  assert.equal(num(dimsPlumb[1], "pipeR"), pl.SENMEN_PLUMBING.pipeR);
+  assert.equal(num(dimsPlumb[1], "tailH"), pl.SENMEN_PLUMBING.tailH);
+  console.log("  ✓ P-trap path reaches the wall and stays in the cabinet");
 
   console.log("verify-senmen-basin: ALL PASS");
 }

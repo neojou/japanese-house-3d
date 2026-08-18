@@ -9,6 +9,7 @@ import {
   createInteriorWarmGrayAlbedoMap,
   createInteriorWoodAlbedoMap,
   createInteriorWoodNormalMap,
+  createHinokiAlbedoMap,
   createSlateAlbedoMap,
   createSlateNormalMap,
   createStuccoAlbedoMap,
@@ -147,6 +148,7 @@ let grayAlbedo: THREE.Texture;
 let grayNormal: THREE.Texture;
 let woodAlbedo: THREE.Texture;
 let woodNormal: THREE.Texture;
+let hinokiAlbedo: THREE.Texture;
 let slateAlbedo: THREE.Texture;
 let slateNormal: THREE.Texture;
 let trenchAlbedo: THREE.Texture;
@@ -265,6 +267,13 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
       step: "室內木質法線…",
       run: () => {
         woodNormal = createInteriorWoodNormalMap(512);
+      },
+    },
+    {
+      weight: 4,
+      step: "洗面檜木…",
+      run: () => {
+        hinokiAlbedo = createHinokiAlbedoMap(512);
       },
     },
     {
@@ -530,6 +539,38 @@ export function createMatteBlackHandleMaterial(): THREE.MeshStandardMaterial {
     color: "#1a1a1a",
     roughness: 0.72,
     metalness: 0.35,
+  });
+}
+
+/** Pale oiled hinoki for wet-room cabinets (tokonoma-card). */
+export function createHinokiMaterial(
+  alongM: number,
+  upM: number,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !hinokiAlbedo) {
+    return new THREE.MeshStandardMaterial({
+      color: "#efe0c4",
+      roughness: 0.5,
+      metalness: 0.03,
+    });
+  }
+  const tile = 0.62;
+  const maps = cloneMaps(
+    hinokiAlbedo,
+    woodNormal,
+    null,
+    Math.max(alongM / tile, 0.45),
+    Math.max(upM / tile, 0.45),
+  );
+  return new THREE.MeshStandardMaterial({
+    color: "#f6edd8",
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.42, 0.42),
+    roughness: 0.5,
+    metalness: 0.03,
+    envMapIntensity: 0.32,
   });
 }
 

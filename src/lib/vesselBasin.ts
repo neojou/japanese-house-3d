@@ -206,20 +206,22 @@ function stitch(
   return { positions, indices };
 }
 
-function disk(
+function annulus(
   w: number,
   d: number,
   r: number,
+  holeR: number,
   y: number,
   segs: number,
   rings: number,
   faceDown: boolean,
 ): { positions: Float32Array; indices: Uint32Array } {
+  const inner = Math.max(holeR * 2, 0.02);
   const loops: [number, number, number][][] = [];
   for (let i = 0; i < rings; i += 1) {
     const t = i / (rings - 1);
-    const s = 1 - t * 0.98;
-    const loop = loopXZ(w * s, d * s, r * s, segs).map(
+    const s = 1 - t * (1 - inner / Math.min(w, d));
+    const loop = loopXZ(w * s, d * s, Math.max(r * s, holeR), segs).map(
       ([x, z]) => [x, y, z] as [number, number, number],
     );
     loops.push(loop);
@@ -351,7 +353,16 @@ export function buildVesselBasin(spec: VesselSpec = SENMEN_VESSEL_SPEC): VesselB
     );
   }
   const outerWallRaw = stitch(wallRings, true);
-  const bottom = disk(spec.w - 2 * fil, spec.d - 2 * fil, spec.outerR, 0, segs, 8, true);
+  const bottom = annulus(
+    spec.w - 2 * fil,
+    spec.d - 2 * fil,
+    spec.outerR,
+    spec.drainR * 1.15,
+    0,
+    segs,
+    8,
+    true,
+  );
   const outerPos = concatPos(outerWallRaw.positions, bottom.positions);
   const outerIdx = concatIdx(
     outerWallRaw.indices,
@@ -360,6 +371,46 @@ export function buildVesselBasin(spec: VesselSpec = SENMEN_VESSEL_SPEC): VesselB
   );
   const outer = mesh("basin-outer", outerPos, outerIdx);
   if (meanNyNearY(outer, 0, 0.004) > 0) flipWinding(outer);
+
+  // Inner face of the ceramic wall — gives the shell real thickness
+  // so a side view is porcelain, not a window onto the cabinet.
+  const linerRings: [number, number, number][][] = [];
+  for (let i = 0; i <= filSteps; i += 1) {
+    const t = i / filSteps;
+    const a = t * (Math.PI / 2);
+    const inset = fil * (1 - Math.sin(a)) + spec.wall;
+    const y = fil * (1 - Math.cos(a));
+    linerRings.push(
+      loopXZ(
+        spec.w - 2 * inset,
+        spec.d - 2 * inset,
+        Math.max(spec.outerR - spec.wall, 0.004),
+        segs,
+      ).map(([x, z]) => [x, y, z]),
+    );
+  }
+  for (let i = 1; i <= wallSteps; i += 1) {
+    const y = fil + (rimY - fil) * (i / wallSteps);
+    linerRings.push(
+      loopXZ(
+        spec.w - 2 * spec.wall,
+        spec.d - 2 * spec.wall,
+        Math.max(spec.outerR - spec.wall, 0.004),
+        segs,
+      ).map(([x, z]) => [x, y, z]),
+    );
+  }
+  const linerRaw = stitch(linerRings, false);
+  const liner = mesh("basin-liner", linerRaw.positions, linerRaw.indices);
+
+  // Drain bore: tube from bowl floor down to the underside (into the tailpiece).
+  const lastInner = innerRings[innerRings.length - 1];
+  const wellRings: [number, number, number][][] = [
+    lastInner,
+    lastInner.map(([x, , z]) => [x, 0.004, z]),
+  ];
+  const wellRaw = stitch(wellRings, true);
+  const well = mesh("basin-well", wellRaw.positions, wellRaw.indices);
 
   const rimRings: [number, number, number][][] = [];
   const rimSteps = 6;
@@ -375,7 +426,7 @@ export function buildVesselBasin(spec: VesselSpec = SENMEN_VESSEL_SPEC): VesselB
   const rim = mesh("basin-rim", rimRaw.positions, rimRaw.indices);
   if (meanNyNearY(rim, rimY, 0.004) < 0) flipWinding(rim);
 
-  return { meshes: [outer, inner, rim], rimY, floorY };
+  return { meshes: [outer, inner, rim, liner, well], rimY, floorY };
 }
 
 function concatPos(a: Float32Array, b: Float32Array): Float32Array {

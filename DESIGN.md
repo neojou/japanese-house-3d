@@ -172,7 +172,7 @@ Like a Japanese **床の間 (tokonoma)** — a shallow niche that frames **one**
 ### Not Tokonoma Card (use crude props or different style)
 
 - Utility placeholders still OK for **curtains / crude sinks** until upgraded; **toilet is no longer a two-box placeholder** once listed as hang-point  
-- Remaining crude: curtain panels until tasked; **1F senmen vanity** is Path B porcelain (`public/props/senmen-basin/basin.glb` + open deck / chrome; ref `docs/S__112345090.jpg`) — **not** a lumber box or a second extrude “bowl”  
+- Remaining crude: curtain panels until tasked; **1F senmen vanity** is Path B porcelain on a **flush hinoki floor cabinet** (`SenmenVanity.tsx`, ref bowl `docs/S__112345090.jpg`) — **not** a white table, chrome legs, or a second extrude “bowl”  
 - Whole-room furniture sets, physics toys, neon/game pickups  
 - Flat photo posters with no standoff / no light when viewed from the side  
 - **Bare multi-box carcasses** that read as “組合木板” without legs, moldings, or proportion  
@@ -205,7 +205,7 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`  
-- **1F senmen vessel:** rectangular outer, lofted inner bowl, chrome mixer toward −Z — `SenmenVanity.tsx` + `props/senmen-basin/basin.glb` + `docs/senmen-vanity.md`  
+- **1F senmen vessel:** opaque rectangular porcelain (liner + drain bore) on a **hollow pale-hinoki cabinet**; running mixer + P-trap to the wall; **click doors** to see the waste. `SenmenVanity.tsx` + `docs/senmen-vanity.md`  
 - **Freestanding tub:** sculptural oval shell (Lathe + scale), inner basin, optional decorative water plane, floor faucet; long axis per plan; no brand marks — `TubDisplay.tsx` + `PROP_1F_UB_TUB`  
 - **UB room finishes:** darker **seamless** smoke-marble on south/partitions; **east clad** = elongated **hex cyan patchwork**; floor **seamless goose-yellow diatomaceous earth** (no joints); white wool bath mat west of tub; exterior stucco kept via clad (`BathFinishes`, `UB_BATH`); tub solid basin + denser water + full faucet
 
@@ -233,7 +233,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-ub-bathmat` | 1F UB 浴缸西側白羊毛腳踏 | `tokonoma-card` (配件) | **Done** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
 | `hero-1f-ldk-kitchen` | 1F LDK 西 2.175 m 開放廚（島台朝東＋西牆冰箱高櫃） | `tokonoma-card` (廚房 vignette) | **Done** |
-| `hero-1f-senmen` | 1F 洗面北牆：西籃＋**Path B 釉面方盆 (glTF)**＋鉻腳／龍頭＋豎鏡＋東洗衣機 | `tokonoma-card` (洗面 vignette) | **Done** (basin B) |
+| `hero-1f-senmen` | 1F 洗面：不透明瓷盆＋流水＋P 型存水彎＋可開檜木櫃門 | `tokonoma-card` (洗面 vignette) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
 
@@ -360,6 +360,8 @@ When changing look, verify in first-person:
 | 2026-08-04 | Mirror Phase A+B: safe FBO (useFBO+withOffscreenRender), magenta smoke; math tests |
 | 2026-08-04 | Senmen vanity: open white deck + chrome legs + rounded vessel + mixer (ref S__112345090) |
 | 2026-08-17 | Quality doctrine → cinematic / 力求完美; wet curvature = Path B glTF; senmen basin baker |
+| 2026-08-17 | Senmen: drop white deck/chrome legs; porcelain vessel on flush pale-hinoki cabinet |
+| 2026-08-18 | Senmen wet stack: opaque ceramic, faucet stream, P-trap to wall, click cabinet doors |
 
 ---
 

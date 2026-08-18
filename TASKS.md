@@ -262,6 +262,8 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-ldk-kitchen` — LDK 西 2.175 m 開放廚（南北島＋水槽、南冰箱、暖木淺石）
 - [x] `hero-1f-senmen` — 洗面北牆：西置物籃＋中洗面台豎鏡＋東前開洗衣機
 - [x] `hero-1f-senmen` basin **Path B** — `public/props/senmen-basin/basin.glb` (lofted inner bowl, no inner extrude); `npm run bake:senmen-basin` / `test:basin`
+- [x] `hero-1f-senmen` hinoki cabinet — flush W×D with vessel; no white deck / chrome legs
+- [x] `hero-1f-senmen` wet stack — opaque porcelain, faucet stream, P-trap to wall, click doors
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -399,3 +401,6 @@ Every task also satisfies:
 | 2026-08-04 | Mirror: rollback FBO runtime → classic envMap glass (fix full-canvas black) |
 | 2026-08-04 | Architecture.md + hardened glOffscreen (no 0×0 viewport); live mirror opt-in `?mirrorLive=1` |
 | 2026-08-17 | Design ethos → cinematic / 力求完美; senmen basin **Path B** glTF (`bake:senmen-basin`, `test:basin`) |
+| 2026-08-17 | Senmen vanity: porcelain vessel on flush hinoki cabinet (drop white table + chrome legs) |
+| 2026-08-18 | Senmen wet stack: opaque basin, running water, P-trap, hollow cabinet, click doors |
+| 2026-08-18 | Senmen faucet click toggle: handle damps; stream/pool only while on |

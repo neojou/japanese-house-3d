@@ -1180,16 +1180,45 @@ export const PROP_1F_SENMEN = {
     gapAboveVanity: 0.12,
   },
   vanity: {
-    w: 1.05,
-    d: 0.52,
-    h: 0.86,
+    /**
+     * Cabinet footprint = vessel W×D (flush stack).
+     * h = hinoki cabinet to top; ceramic vessel sits on it.
+     */
+    w: 0.56,
+    d: 0.38,
+    h: 0.72,
     /** Center X — middle of senmen */
     x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
-    wood: "#c4a882",
+    wood: "#efe0c4",
     stone: "#f4f2ee",
+    cabinet: {
+      toeKick: 0.068,
+      toeInset: 0.02,
+      topT: 0.016,
+      doorGap: 0.004,
+      frame: 0.026,
+      panelRecess: 0.004,
+      cornerR: 0.01,
+      sitGap: 0.003,
+      doorT: 0.016,
+      shell: 0.016,
+      openDeg: 88,
+    },
+    plumbing: {
+      pipeR: 0.018,
+      tailH: 0.26,
+      trapR: 0.042,
+      armL: 0.18,
+    },
+    water: {
+      streamR: 0.004,
+      poolR: 0.052,
+      color: "#c8deea",
+      opacity: 0.42,
+    },
     /**
-     * Rectangular vessel on open white deck + chrome legs
-     * (docs/S__112345090.jpg). Path B glTF — plan room box unchanged.
+     * Rectangular porcelain vessel (docs/S__112345090.jpg).
+     * Path B glTF — plan room box unchanged.
      * Keep fields in sync with SENMEN_VESSEL_SPEC (`src/lib/vesselBasin.ts`).
      */
     vessel: {
