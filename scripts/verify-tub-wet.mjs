@@ -17,8 +17,12 @@ async function main() {
 
   const fillRate = Number(dims.match(/fillRate:\s*([0-9.]+)/)?.[1]);
   const drainRate = Number(dims.match(/drainRate:\s*([0-9.]+)/)?.[1]);
+  const spreadRate = Number(dims.match(/spreadRate:\s*([0-9.]+)/)?.[1]);
+  const dryRate = Number(dims.match(/dryRate:\s*([0-9.]+)/)?.[1]);
   assert.equal(fillRate, tw.TUB_WATER.fillRate);
   assert.equal(drainRate, tw.TUB_WATER.drainRate);
+  assert.equal(spreadRate, tw.TUB_WATER.spreadRate);
+  assert.equal(dryRate, tw.TUB_WATER.dryRate);
   console.log("  ✓ dimensions water rates match TUB_WATER");
 
   let fill = 0;
@@ -44,7 +48,29 @@ async function main() {
   assert.match(src, /tub-plug/);
   assert.match(src, /tub-runoff/);
   assert.match(src, /runoffVisible/);
+  assert.match(src, /stepFloorWet/);
+  assert.match(src, /tub-spill/);
+  assert.match(src, /cylinderGeometry/);
   console.log("  ✓ TubDisplay: click faucet + lift-out plug");
+
+  assert.equal(tw.isTubSpilling(1, true, true), true);
+  assert.equal(tw.isTubSpilling(0.5, true, true), false);
+  let wet = { front: 0, moisture: 0 };
+  wet = tw.stepFloorWet(wet, 2, 1, true, true);
+  assert.ok(wet.front > 0.1 && wet.moisture > 0.1, "spill grows front + moisture");
+  const frontAtStop = wet.front;
+  wet = tw.stepFloorWet(wet, 2, 1, true, false);
+  assert.ok(wet.moisture < 1, "faucet off: moisture fades");
+  assert.equal(wet.front, frontAtStop, "drying does not shrink the wet front");
+  wet = tw.stepFloorWet({ front: 0.8, moisture: 0.00001 }, 1, 0, false, false);
+  assert.equal(wet.front, 0, "fully dry resets front");
+  wet = tw.stepFloorWet({ front: 0.4, moisture: 0.4 }, 1, 0.5, true, true);
+  assert.equal(wet.front, 0.4, "filling but not full: no new spill");
+  const near = tw.ellipseOutside(10.41 - 0.4, 3.64, 10.41, 3.64, 0.365, 0.75);
+  const far = tw.ellipseOutside(10.41 - 1.2, 3.64, 10.41, 3.64, 0.365, 0.75);
+  assert.ok(near < far, "near the tub is less 'outside' than far");
+  assert.ok(tw.wetnessAt(near, 0.5) >= tw.wetnessAt(far, 0.5));
+  console.log("  ✓ overflow: near-first wet; uniform dry (front holds)");
 
   assert.equal(tw.runoffVisible(true, false, 0), true, "tap on, plug out → rivulet");
   assert.equal(tw.runoffVisible(false, false, 0), false, "tap off → no rivulet");

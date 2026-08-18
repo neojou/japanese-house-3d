@@ -50,6 +50,8 @@ export type Opening = {
    */
   sill?: number;
   type: OpeningType;
+  /** Windows: frosted for wet rooms so the street cannot look in. */
+  glazing?: "clear" | "frosted";
 };
 
 /**
@@ -740,9 +742,17 @@ export const IR = {
 const INT_DOOR_W = 0.8;
 const INT_DOOR_H = 1.95;
 const INT_SILL = INTERIOR_FLOOR_Y;
-const WIN_W = 0.9;
-const WIN_H = 1.0;
-const WIN_SILL = INTERIOR_FLOOR_Y + 0.9;
+/**
+ * 1F トイレ north high vent (日式高窓).
+ * Small + high: ventilates, seated / standing user is below the sill,
+ * so the street cannot look in. Story-base Y (1F = 0); walk floor is +0.5.
+ */
+const TOILET_WIN = {
+  w: 0.48,
+  h: 0.36,
+  /** 1.88 above grade ≈ 1.38 above interior floor; top 2.24 < wall 2.5 */
+  sill: 1.88,
+} as const;
 
 /**
  * 1F トイレ — NS 0.91 × EW 1.82, north strip.
@@ -762,38 +772,57 @@ export const TOILET_1F = {
 } as const;
 
 /**
+ * Shared sit-toilet envelope — typical JP close-coupled 組み合わせ (not tankless).
+ * Mainstream tank fixtures: length 680–770 mm, width 360–400 mm, sit ~420 mm
+ * (bowl rim ~380 + seat), tank top 760–820 mm. Declared depth/width **are**
+ * the visual tank-back → bowl-front box (`src/lib/sitToilet.ts`).
+ */
+export const SIT_TOILET = {
+  /** Tank-back → bowl-front (m). Mid of 680–770 mm. */
+  depth: 0.72,
+  /** Across the seat (m). */
+  width: 0.38,
+  /** Finished wall face → tank back (supply + board). */
+  wallGap: 0.03,
+  tank: {
+    w: 0.38,
+    d: 0.175,
+    h: 0.36,
+    /** Top of tank above finished floor */
+    topY: 0.78,
+  },
+  bowl: {
+    /** Sit surface including seat (ceramic rim ~0.38). */
+    seatH: 0.42,
+    /** Circular lathe radius; mesh is X-scaled to `length` (oval plan). */
+    rimR: 0.185,
+    /** Oval bowl along the sit axis (rear deck tucks under the tank). */
+    length: 0.5,
+  },
+  lidOpenRad: 0.22, // ~12.5°
+  porcelain: "#f5f0e8",
+  porcelainInner: "#c8c2ba",
+  button: "#4a4642",
+} as const;
+
+/**
  * 1F sit toilet — tokonoma-card wet fixture (DESIGN.md §2.7).
- * Placement locked: west half of トイレ, face +X east (tank west, bowl east).
- * Ethos: 高貴典雅 + 細節優先 — boutique rounded porcelain, not two boxes.
+ * West half of トイレ, face +X east (tank west, bowl east).
+ * Origin = envelope center; tank back = west wall face + wallGap.
  */
 export const PROP_1F_TOILET = {
   id: "hero-1f-toilet",
   style: "tokonoma-card" as const,
   floor: "1f" as FloorId,
   label: "1Fトイレ便器",
-  /** Anchor center (locked) — west half, NS mid */
-  x: TOILET_1F.x0 + 0.91 * 0.45,
+  x:
+    TOILET_1F.x0 +
+    BUILDING.wallThickness / 2 +
+    SIT_TOILET.wallGap +
+    SIT_TOILET.depth / 2,
   z: (TOILET_1F.z0 + TOILET_1F.z1) / 2,
   y: INTERIOR_FLOOR_Y,
-  /** Overall envelope NS width / EW depth (approx, refined mesh inside) */
-  width: 0.4,
-  depth: 0.65,
-  /** Tank (west) */
-  tank: {
-    w: 0.36,
-    d: 0.18,
-    h: 0.42,
-    /** Top of tank above finished floor */
-    topY: 0.78,
-  },
-  /** Bowl / seat (east of tank) */
-  bowl: {
-    seatH: 0.4,
-    rimR: 0.17,
-    length: 0.42,
-  },
-  /** Lid open angle (rad) — slight lift toward room east */
-  lidOpenRad: 0.22, // ~12.5°
+  ...SIT_TOILET,
   /** Thin wood endscape behind tank on west wall */
   board: {
     width: 0.42,
@@ -809,9 +838,6 @@ export const PROP_1F_TOILET = {
     distance: 1.4,
     color: "#fff4e8",
   },
-  porcelain: "#f5f0e8",
-  porcelainInner: "#c8c2ba",
-  button: "#4a4642",
 } as const;
 
 /**
@@ -889,6 +915,8 @@ export const PROP_1F_UB_TUB = {
     fillRate: 0.12,
     drainRate: 0.32,
     streamR: 0.006,
+    spreadRate: 0.085,
+    dryRate: 0.05,
   },
   /** Lift-out plug (seated on drain, or set on the west rim) */
   plug: {
@@ -1561,11 +1589,12 @@ export const WALLS_1F_NORTH: WallSegment[] = [
     openings: [
       {
         id: "1f-win-toilet",
-        fromStart: 0.35,
-        width: WIN_W,
-        height: WIN_H,
-        sill: WIN_SILL,
+        fromStart: (TOILET_1F.width - TOILET_WIN.w) / 2,
+        width: TOILET_WIN.w,
+        height: TOILET_WIN.h,
+        sill: TOILET_WIN.sill,
         type: "window",
+        glazing: "frosted",
       },
     ],
   },
@@ -2471,6 +2500,59 @@ export const FLOORS_2F: FloorSlab[] = [
     color: "#c5c0b6",
   },
 ];
+
+/**
+ * 2F トイレ — EW 1.82 × NS 2.73, north of corridor.
+ * Door on south @ corrN; sit toilet on north wall facing south.
+ */
+export const TOILET_2F = {
+  x0: 2.73,
+  x1: IR.clE, // 4.55
+  z0: Z2.corrN, // 3.64
+  z1: Z2.north, // 6.37
+  width: IR.clE - 2.73, // 1.82
+  depth: Z2.north - Z2.corrN, // 2.73
+} as const;
+
+/**
+ * 2F sit toilet — tokonoma-card wet (same family as 1F).
+ * Tank against north wall; bowl / sit facing −Z (south).
+ * Enter south door, walk in, turn, sit.
+ * Local +X fixture is yawed +π/2 (tank → +Z); origin = envelope center.
+ */
+export const PROP_2F_TOILET = {
+  id: "hero-2f-toilet",
+  style: "tokonoma-card" as const,
+  floor: "2f" as FloorId,
+  label: "2Fトイレ便器",
+  /** Room EW center */
+  x: (2.73 + IR.clE) / 2,
+  /**
+   * Tank back = north interior face − wallGap.
+   * After yaw +π/2, world Z = originZ − localX.
+   */
+  z:
+    Z2.north -
+    BUILDING.wallThickness / 2 -
+    SIT_TOILET.wallGap -
+    SIT_TOILET.depth / 2,
+  y: FLOOR_LEVELS["2f"],
+  ...SIT_TOILET,
+  board: {
+    width: 0.48,
+    height: 1.05,
+    thickness: 0.016,
+    standoff: 0.025,
+  },
+  light: {
+    dx: 0.0,
+    dy: 0.55,
+    dz: -0.22,
+    intensity: 0.26,
+    distance: 1.4,
+    color: "#fff4e8",
+  },
+} as const;
 
 /**
  * Simple Phase-1 sink placeholder (plan-space, on 2F).

@@ -204,7 +204,8 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - **Continuous curvature** (this basin, future bowl upgrades): **Path B** — `npm run bake:senmen-basin` writes `public/props/…/*.glb`; runtime `useGLTF`. Do not reconstruct the cavity from stacked `ExtrudeGeometry`. Process: `docs/cinematic-path-b.md`  
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
-- Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`  
+- Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET` / `PROP_2F_TOILET`  
+- **Residential envelope (JP 組み合わせ):** tank-back → bowl-front **720 mm**, width **380 mm**, sit **420 mm** (rim ~380 + seat), close-coupled tank top **780 mm**. Declared `SIT_TOILET.depth` / `width` **are** the visual box — oval bowl + rear deck, not a packed circular lathe. `src/lib/sitToilet.ts`, `npm run test:toilet`  
 - **1F senmen vessel:** opaque rectangular porcelain (liner + drain bore) on a **hollow pale-hinoki cabinet**; running mixer + P-trap to the wall; **click doors** to see the waste. `SenmenVanity.tsx` + `docs/senmen-vanity.md`  
 - **Freestanding tub:** sculptural oval shell; **clickable floor faucet**; **lift-out plug** (seated or west rim); water rises only when plugged + faucet on — `TubDisplay.tsx` + `docs/ub-tub.md`  
 - **UB room finishes:** darker **seamless** smoke-marble on south/partitions; **east clad** = elongated **hex cyan patchwork**; floor **seamless goose-yellow diatomaceous earth** (no joints); white wool bath mat west of tub; exterior stucco kept via clad (`BathFinishes`, `UB_BATH`); tub solid basin + denser water + full faucet
@@ -227,6 +228,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-scl-trench` | 1F SCL 東牆 — 蜜金 trench | `tokonoma-card` | **Done** |
 | `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
+| `hero-2f-toilet` | 2F トイレ北牆 — 坐便朝南（進門轉身坐下） | `tokonoma-card` (潔具) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
 | `hero-1f-ub-tub` | 1F UB 東半 — 獨立浴缸＋可開關龍頭＋可拿起塞子／蓄排水 | `tokonoma-card` (潔具) | **Done** |
 | `ub-bath-finish` | 1F UB 牆 seamless／東 hex 青拼布／地鵝黃珪藻土整片 | `tokonoma-card` (濕區) | **Done** |
@@ -363,6 +365,8 @@ When changing look, verify in first-person:
 | 2026-08-17 | Senmen: drop white deck/chrome legs; porcelain vessel on flush pale-hinoki cabinet |
 | 2026-08-18 | Senmen wet stack: opaque ceramic, faucet stream, P-trap to wall, click cabinet doors |
 | 2026-08-18 | UB tub: click faucet + lift-out plug; fill only when seated and faucet on |
+| 2026-08-18 | 2F toilet: sit fixture on north wall facing south (tokonoma-card) |
+| 2026-08-18 | Sit toilet: JP 組み合わせ envelope 720×380, sit 420, tank 780 (1F+2F share `SIT_TOILET`) |
 
 ---
 
@@ -373,7 +377,8 @@ When changing look, verify in first-person:
 | `src/lib/houseMaterials.ts` | Finish types, `FAÇADE`, `YAKI_SUGI_WALL_IDS` |
 | `src/lib/surfaceTextures.ts` | Procedural stucco / yaki-sugi maps |
 | `src/components/house/Walls.tsx` | Applies finishes to wall meshes |
-| `src/data/dimensions.ts` | `COLORS`, `LIGHTING`, geometry |
+| `src/data/dimensions.ts` | `COLORS`, `LIGHTING`, geometry, `SIT_TOILET` |
+| `src/lib/sitToilet.ts` | Sit-toilet envelope packing (tank back → bowl front) |
 | `src/components/Scene.tsx` | Canvas tone mapping / lights |
 | `docs/cinematic-path-b.md` | AI-unattended Path B bake / test loop |
 | `docs/senmen-vanity.md` | 1F basin Path B spec |

@@ -254,6 +254,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
 - [x] `hero-1f-scl-getabako` — SCL 北牆象牙白鞋罐（車腳／圓角頂／雙扇框心門／尖頭細跟並攏；落地 tokonoma-card）
 - [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
+- [x] `hero-2f-toilet` — 2F トイレ北牆坐便朝南（進門轉身坐下；同 tokonoma-card 瓷；一般住宅組み合わせ 720×380、座面 420、水箱頂 780）
 - [x] `slide-ub-shower` — UB｜洗面 雙片西向淋浴拉門（磨砂／炭灰／地軌／加高；無平開佔位）
 - [x] `hero-1f-ub-tub` — UB 東半南北獨立浴缸（弧線瓷白、南落地香檳金龍頭、裝飾水面）
 - [x] `hero-1f-ub-tub` wet — click faucet on/off; lift-out plug; fill / drain (`docs/ub-tub.md`, `npm run test:tub`)
@@ -406,3 +407,7 @@ Every task also satisfies:
 | 2026-08-18 | Senmen wet stack: opaque basin, running water, P-trap, hollow cabinet, click doors |
 | 2026-08-18 | Senmen faucet click toggle: handle damps; stream/pool only while on |
 | 2026-08-18 | UB tub: click faucet + lift-out plug; water fills / drains (`test:tub`) |
+| 2026-08-18 | UB tub overflow: spill onto diatom floor + towel, near-first wet / dry |
+| 2026-08-18 | 1F トイレ north window → small high frosted vent (cannot look in from street) |
+| 2026-08-18 | 2F トイレ sit toilet on north wall facing south (enter, turn, sit) |
+| 2026-08-18 | Sit toilet real envelope: 720×380 mm, seat 420, tank 780 (`test:toilet`); 1F/2F share `SIT_TOILET` |

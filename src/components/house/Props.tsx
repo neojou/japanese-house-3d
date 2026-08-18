@@ -4,7 +4,7 @@ import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
 import { KitchenDisplay } from "./KitchenDisplay";
 import { SenmenDisplay } from "./SenmenDisplay";
-import { ToiletDisplay } from "./ToiletDisplay";
+import { Toilet2FDisplay, ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
 
@@ -17,6 +17,7 @@ export function Props() {
     <group name="props">
       <Sink2F />
       <ToiletDisplay />
+      <Toilet2FDisplay />
       <ToiletCurtainDisplay />
       <CoatDisplay />
       <GetabakoDisplay />

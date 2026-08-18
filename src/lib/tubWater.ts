@@ -7,6 +7,10 @@
 export type TubWaterSpec = {
   fillRate: number;
   drainRate: number;
+  /** How fast the floor wet-front grows while spilling (0–1 / s) */
+  spreadRate: number;
+  /** How fast stain + towel dry after the spill stops */
+  dryRate: number;
 };
 
 export const TUB_WATER: TubWaterSpec = {
@@ -14,7 +18,97 @@ export const TUB_WATER: TubWaterSpec = {
   fillRate: 0.12,
   /** Faster than fill — water leaves through the unseen waste */
   drainRate: 0.32,
+  spreadRate: 0.085,
+  dryRate: 0.05,
 };
+
+/** Tub is full and still being fed — water goes over the rim. */
+export function isTubSpilling(
+  fill: number,
+  plugged: boolean,
+  faucetOn: boolean,
+): boolean {
+  return plugged && faucetOn && fill >= 0.995;
+}
+
+export type FloorWetState = {
+  /** Max wet-front 0–1. Grows while spilling; holds until moisture hits 0. */
+  front: number;
+  /** Uniform moisture of the already-wetted region. */
+  moisture: number;
+};
+
+export function stepFloorWet(
+  state: FloorWetState,
+  dt: number,
+  fill: number,
+  plugged: boolean,
+  faucetOn: boolean,
+  spec: TubWaterSpec = TUB_WATER,
+): FloorWetState {
+  if (isTubSpilling(fill, plugged, faucetOn)) {
+    return {
+      front: Math.min(1, state.front + spec.spreadRate * dt),
+      moisture: Math.min(1, state.moisture + spec.spreadRate * 1.15 * dt),
+    };
+  }
+  if (!faucetOn || !plugged) {
+    const moisture = Math.max(0, state.moisture - spec.dryRate * dt);
+    return { front: moisture <= 1e-4 ? 0 : state.front, moisture };
+  }
+  return state;
+}
+
+/** @deprecated use stepFloorWet — kept as moisture-only for older calls */
+export function stepTubOverflow(
+  overflow: number,
+  dt: number,
+  fill: number,
+  plugged: boolean,
+  faucetOn: boolean,
+  spec: TubWaterSpec = TUB_WATER,
+): number {
+  return stepFloorWet(
+    { front: overflow, moisture: overflow },
+    dt,
+    fill,
+    plugged,
+    faucetOn,
+    spec,
+  ).moisture;
+}
+
+/** Ellipse-normalized distance past the tub footprint (0 = on the shell). */
+export function ellipseOutside(
+  x: number,
+  z: number,
+  cx: number,
+  cz: number,
+  halfW: number,
+  halfL: number,
+): number {
+  const e = Math.hypot((x - cx) / halfW, (z - cz) / halfL);
+  return Math.max(0, e - 1);
+}
+
+export function wetnessAt(
+  outside: number,
+  wetR: number,
+  feather = 0.28,
+): number {
+  if (wetR <= 1e-6) return 0;
+  const a = wetR;
+  const b = wetR + Math.max(feather, 1e-4);
+  if (outside <= a) return 1;
+  if (outside >= b) return 0;
+  const t = (outside - a) / (b - a);
+  return 1 - t * t * (3 - 2 * t);
+}
+
+/** Maps front 0–1 → ellipse-outside distance covering the whole UB floor at 1. */
+export function overflowWetRadius(front: number): number {
+  return Math.min(1, Math.max(0, front)) * 2.85;
+}
 
 export function stepTubFill(
   fill: number,

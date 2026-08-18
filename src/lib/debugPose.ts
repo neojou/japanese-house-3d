@@ -1,4 +1,4 @@
-import { PROP_1F_UB_TUB, SENMEN_1F } from "@/data/dimensions";
+import { PROP_1F_UB_TUB, PROP_2F_TOILET, SENMEN_1F } from "@/data/dimensions";
 
 export type DebugPose = {
   x: number;
@@ -37,6 +37,14 @@ export function poseFromQuery(): DebugPose | null {
       z: PROP_1F_UB_TUB.z,
       yaw: -Math.PI / 2,
       pitch: -0.28,
+    };
+  }
+  if (id === "toilet2f") {
+    return {
+      x: PROP_2F_TOILET.x,
+      z: 3.95,
+      yaw: Math.PI,
+      pitch: -0.18,
     };
   }
   return null;

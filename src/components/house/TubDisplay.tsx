@@ -2,18 +2,31 @@
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { INTERIOR_FLOOR_Y, PROP_1F_UB_BATHMAT, PROP_1F_UB_TUB } from "@/data/dimensions";
+import {
+  ALL_FLOOR_SLABS,
+  INTERIOR_FLOOR_Y,
+  PROP_1F_UB_BATHMAT,
+  PROP_1F_UB_TUB,
+} from "@/data/dimensions";
 import {
   createWoolMatMaterial,
   ensureFaçadeTextures,
 } from "@/lib/houseMaterials";
 import {
   buildRunoffStrip,
+  isTubSpilling,
   lerp3,
+  overflowWetRadius,
   runoffVisible,
+  stepFloorWet,
   stepTubFill,
   waterSurfaceY,
 } from "@/lib/tubWater";
+import {
+  attachTowelWetField,
+  createTubFloorWetMaterial,
+  createTubWetUniforms,
+} from "@/lib/tubWetMaterial";
 
 /**
  * Horizontal oval freestanding tub shell (lathe around Y, then scale X/Z).
@@ -80,6 +93,7 @@ export function TubDisplay() {
   const [faucetOn, setFaucetOn] = useState(() => queryFlag("tubFaucet", "1"));
   const [plugged, setPlugged] = useState(() => !queryFlag("tubPlug", "out"));
   const fill = useRef(queryFlag("tubFill", "1") ? 0.85 : 0);
+  const floorWet = useRef({ front: 0, moisture: 0 });
   const leverRef = useRef<THREE.Group>(null);
   const leverZ = useRef(faucetOn ? LEVER_ON : LEVER_OFF);
   const streamRef = useRef<THREE.Mesh>(null);
@@ -90,6 +104,8 @@ export function TubDisplay() {
   const splashRef = useRef<THREE.Mesh>(null);
   const gulpRef = useRef<THREE.Mesh>(null);
   const beadRefs = useRef<(THREE.Mesh | null)[]>([null, null, null]);
+  const spillRef = useRef<THREE.Group>(null);
+  const wetOverlayRef = useRef<THREE.Mesh>(null);
   const flow = useRef(faucetOn ? 1 : 0);
   const plugT = useRef(plugged ? 0 : 1);
 
@@ -186,6 +202,53 @@ export function TubDisplay() {
     [mat.width, mat.depth],
   );
 
+  const ubSlab = ALL_FLOOR_SLABS.find((s) => s.id === "1f-ub");
+  const ubCx = ubSlab ? ubSlab.rect.x + ubSlab.rect.width / 2 : p.x;
+  const ubCz = ubSlab ? ubSlab.rect.z + ubSlab.rect.depth / 2 : p.z;
+  const ubW = ubSlab?.rect.width ?? 1.82;
+  const ubD = ubSlab?.rect.depth ?? 1.83;
+
+  const floorWetU = useMemo(
+    () =>
+      createTubWetUniforms(
+        p.x,
+        p.z,
+        p.width / 2,
+        p.length / 2,
+        ubCx,
+        ubCz,
+        "#ead9b0",
+        "#c9a24e",
+      ),
+    [p.x, p.z, p.width, p.length, ubCx, ubCz],
+  );
+  const towelWetU = useMemo(
+    () =>
+      createTubWetUniforms(
+        p.x,
+        p.z,
+        p.width / 2,
+        p.length / 2,
+        0,
+        0,
+        "#f7f4ee",
+        "#5c4e40",
+      ),
+    [p.x, p.z, p.width, p.length],
+  );
+  const matFloorWet = useMemo(
+    () => createTubFloorWetMaterial(floorWetU),
+    [floorWetU],
+  );
+
+  useLayoutEffect(() => {
+    towelWetU.uOrigin.value.set(
+      p.x - p.width / 2 - mat.gap - mat.width / 2,
+      p.z,
+    );
+    attachTowelWetField(matWool, towelWetU);
+  }, [matWool, towelWetU, p.x, p.z, p.width, mat.gap, mat.width]);
+
   const halfLen = p.length / 2;
   const halfW = p.width / 2;
   const scaleZ = halfLen / halfW;
@@ -214,6 +277,7 @@ export function TubDisplay() {
       matRubber.dispose();
       matWool.normalMap?.dispose();
       matWool.dispose();
+      matFloorWet.dispose();
     };
   }, [
     outerGeo,
@@ -227,6 +291,7 @@ export function TubDisplay() {
     matHole,
     matRubber,
     matWool,
+    matFloorWet,
   ]);
 
   const floorY = p.y;
@@ -312,9 +377,36 @@ export function TubDisplay() {
     fill.current = stepTubFill(fill.current, dt, plugged, faucetOn, {
       fillRate: p.water.fillRate,
       drainRate: p.water.drainRate,
+      spreadRate: p.water.spreadRate,
+      dryRate: p.water.dryRate,
     });
+    floorWet.current = stepFloorWet(
+      floorWet.current,
+      dt,
+      fill.current,
+      plugged,
+      faucetOn,
+      {
+        fillRate: p.water.fillRate,
+        drainRate: p.water.drainRate,
+        spreadRate: p.water.spreadRate,
+        dryRate: p.water.dryRate,
+      },
+    );
     const f = fill.current;
-    const surfY = waterSurfaceY(f, bottomY + 0.008, brimY);
+    const fw = floorWet.current;
+    const spilling = isTubSpilling(f, plugged, faucetOn);
+    const wetR = overflowWetRadius(fw.front);
+    floorWetU.uWetR.value = wetR;
+    floorWetU.uMoisture.value = fw.moisture;
+    floorWetU.uPuddle.value = spilling ? 0.85 : fw.moisture * 0.25;
+    towelWetU.uWetR.value = wetR;
+    towelWetU.uMoisture.value = fw.moisture;
+    if (wetOverlayRef.current) wetOverlayRef.current.visible = fw.moisture > 0.015;
+    if (spillRef.current) spillRef.current.visible = spilling;
+    const surfY = spilling
+      ? floorY + p.rimH - 0.008
+      : waterSurfaceY(f, bottomY + 0.008, brimY);
     const waterH = Math.max(surfY - bottomY, 0.002);
 
     if (waterRef.current) {
@@ -522,6 +614,44 @@ export function TubDisplay() {
           material={matRunoff}
         >
           <ringGeometry args={[0.006, 0.02, 16]} />
+        </mesh>
+      </group>
+
+      <mesh
+        ref={wetOverlayRef}
+        position={[ubCx, floorY + 0.0016, ubCz]}
+        material={matFloorWet}
+        visible={false}
+        renderOrder={2}
+      >
+        <boxGeometry args={[ubW, 0.003, ubD]} />
+      </mesh>
+      <group ref={spillRef} name="tub-spill" visible={false}>
+        {/* Continuous fountain veil around the whole rim */}
+        <mesh
+          position={[cx, floorY + p.rimH * 0.5, cz]}
+          scale={[1, 1, scaleZ]}
+          material={matRunoff}
+        >
+          <cylinderGeometry
+            args={[halfW * 1.02, halfW * 1.14, p.rimH - 0.02, 48, 1, true]}
+          />
+        </mesh>
+        <mesh
+          position={[cx, floorY + p.rimH - 0.01, cz]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[1, scaleZ, 1]}
+          material={matRunoff}
+        >
+          <torusGeometry args={[halfW * 1.01, 0.012, 8, 40]} />
+        </mesh>
+        <mesh
+          position={[cx, floorY + 0.004, cz]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          scale={[1, scaleZ, 1]}
+          material={matRunoff}
+        >
+          <ringGeometry args={[halfW * 1.05, halfW * 1.28, 40]} />
         </mesh>
       </group>
 

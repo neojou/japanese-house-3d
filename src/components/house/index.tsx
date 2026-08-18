@@ -12,7 +12,7 @@ import { Compass } from "./Compass";
 import { Props } from "./Props";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
-import { ToiletDisplay } from "./ToiletDisplay";
+import { Toilet2FDisplay, ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
 import { KitchenDisplay } from "./KitchenDisplay";
@@ -70,6 +70,7 @@ export {
   CoatDisplay,
   GetabakoDisplay,
   ToiletDisplay,
+  Toilet2FDisplay,
   ToiletCurtainDisplay,
   TubDisplay,
   KitchenDisplay,

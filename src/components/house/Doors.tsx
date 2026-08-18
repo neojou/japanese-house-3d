@@ -232,38 +232,71 @@ function WindowPanel({
   const t = 0.03;
   const x = alongX ? mid : wall.x;
   const z = alongX ? wall.z : mid;
-  const sizeX = alongX ? opening.width * 0.92 : t;
-  const sizeZ = alongX ? t : opening.width * 0.92;
+  const sizeX = alongX ? opening.width * 0.88 : t;
+  const sizeZ = alongX ? t : opening.width * 0.88;
+  const frost = opening.glazing === "frosted";
+  const frame = 0.028;
+  const frameDeep = BUILDING.wallThickness * 1.08;
 
   return (
     <group>
       <mesh position={[x, y, z]}>
-        <boxGeometry args={[sizeX, opening.height * 0.92, sizeZ]} />
+        <boxGeometry args={[sizeX, opening.height * 0.88, sizeZ]} />
         <meshStandardMaterial
-          color={COLORS.glass}
-          transparent={MATERIAL_PRESETS.glass.transparent}
-          opacity={MATERIAL_PRESETS.glass.opacity}
-          roughness={MATERIAL_PRESETS.glass.roughness}
-          metalness={MATERIAL_PRESETS.glass.metalness}
-        />
-      </mesh>
-      {/* Simple frame */}
-      <mesh position={[x, baseY + sill + opening.height / 2, z]}>
-        <boxGeometry
-          args={[
-            alongX ? opening.width : BUILDING.wallThickness * 1.05,
-            opening.height,
-            alongX ? BUILDING.wallThickness * 1.05 : opening.width,
-          ]}
-        />
-        <meshStandardMaterial
-          color={COLORS.genkanDoorFrame}
+          color={frost ? "#d8e0e4" : COLORS.glass}
           transparent
-          opacity={0.15}
-          wireframe={false}
-          depthWrite={false}
+          opacity={frost ? 0.72 : MATERIAL_PRESETS.glass.opacity}
+          roughness={frost ? 0.88 : MATERIAL_PRESETS.glass.roughness}
+          metalness={frost ? 0.04 : MATERIAL_PRESETS.glass.metalness}
         />
       </mesh>
+      {/* Slim charcoal frame (four sides) */}
+      {(
+        [
+          alongX
+            ? [opening.width, frame, frameDeep]
+            : [frameDeep, frame, opening.width],
+          alongX
+            ? [opening.width, frame, frameDeep]
+            : [frameDeep, frame, opening.width],
+          alongX
+            ? [frame, opening.height, frameDeep]
+            : [frameDeep, opening.height, frame],
+          alongX
+            ? [frame, opening.height, frameDeep]
+            : [frameDeep, opening.height, frame],
+        ] as [number, number, number][]
+      ).map((args, i) => {
+        const dy =
+          i === 0
+            ? opening.height / 2 - frame / 2
+            : i === 1
+              ? -(opening.height / 2 - frame / 2)
+              : 0;
+        const dAlong =
+          i === 2
+            ? -(opening.width / 2 - frame / 2)
+            : i === 3
+              ? opening.width / 2 - frame / 2
+              : 0;
+        return (
+          <mesh
+            key={`frm-${i}`}
+            position={[
+              alongX ? x + dAlong : x,
+              y + dy,
+              alongX ? z : z + dAlong,
+            ]}
+          >
+            <boxGeometry args={args} />
+            <meshStandardMaterial
+              color="#3a3632"
+              roughness={0.55}
+              metalness={0.2}
+            />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
