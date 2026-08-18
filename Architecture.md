@@ -35,7 +35,7 @@ App
 | Shared input | `src/lib/input.ts` |
 | Viewer HUD store | `src/store/useViewerStore.ts` |
 | Hero Path B assets | `public/props/<id>/*.glb` via `npm run bake:senmen-basin` (`docs/cinematic-path-b.md`) |
-| Wet fixture stack | Porcelain solid → water (visual) → waste (P-trap) → cabinet enclosure → click doors. `docs/senmen-vanity.md` |
+| Wet fixture stack | Senmen: `docs/senmen-vanity.md`. UB tub: plug + fill/drain + click faucet. `docs/ub-tub.md` |
 
 ### Coordinate systems
 

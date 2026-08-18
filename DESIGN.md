@@ -206,7 +206,7 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET`  
 - **1F senmen vessel:** opaque rectangular porcelain (liner + drain bore) on a **hollow pale-hinoki cabinet**; running mixer + P-trap to the wall; **click doors** to see the waste. `SenmenVanity.tsx` + `docs/senmen-vanity.md`  
-- **Freestanding tub:** sculptural oval shell (Lathe + scale), inner basin, optional decorative water plane, floor faucet; long axis per plan; no brand marks — `TubDisplay.tsx` + `PROP_1F_UB_TUB`  
+- **Freestanding tub:** sculptural oval shell; **clickable floor faucet**; **lift-out plug** (seated or west rim); water rises only when plugged + faucet on — `TubDisplay.tsx` + `docs/ub-tub.md`  
 - **UB room finishes:** darker **seamless** smoke-marble on south/partitions; **east clad** = elongated **hex cyan patchwork**; floor **seamless goose-yellow diatomaceous earth** (no joints); white wool bath mat west of tub; exterior stucco kept via clad (`BathFinishes`, `UB_BATH`); tub solid basin + denser water + full faucet
 
 ### Sliding wet door variant (淋浴拉門)
@@ -228,7 +228,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
-| `hero-1f-ub-tub` | 1F UB 東半 — 南北獨立浴缸 + 南端落地龍頭 | `tokonoma-card` (潔具) | **Done** |
+| `hero-1f-ub-tub` | 1F UB 東半 — 獨立浴缸＋可開關龍頭＋可拿起塞子／蓄排水 | `tokonoma-card` (潔具) | **Done** |
 | `ub-bath-finish` | 1F UB 牆 seamless／東 hex 青拼布／地鵝黃珪藻土整片 | `tokonoma-card` (濕區) | **Done** |
 | `hero-1f-ub-bathmat` | 1F UB 浴缸西側白羊毛腳踏 | `tokonoma-card` (配件) | **Done** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
@@ -362,6 +362,7 @@ When changing look, verify in first-person:
 | 2026-08-17 | Quality doctrine → cinematic / 力求完美; wet curvature = Path B glTF; senmen basin baker |
 | 2026-08-17 | Senmen: drop white deck/chrome legs; porcelain vessel on flush pale-hinoki cabinet |
 | 2026-08-18 | Senmen wet stack: opaque ceramic, faucet stream, P-trap to wall, click cabinet doors |
+| 2026-08-18 | UB tub: click faucet + lift-out plug; fill only when seated and faucet on |
 
 ---
 

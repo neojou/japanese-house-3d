@@ -880,12 +880,21 @@ export const PROP_1F_UB_TUB = {
   basinDepth: 0.38,
   porcelain: "#f7f2ea",
   porcelainInner: "#d4cdc4",
-  /** Decorative water plane — opaque enough to hide floor from above */
+  /** Bath water — fills only when plug is seated and faucet is on */
   water: {
     color: "#9ec0d0",
     opacity: 0.62,
-    /** Below rim */
+    /** Surface below rim when full */
     insetY: 0.1,
+    fillRate: 0.12,
+    drainRate: 0.32,
+    streamR: 0.006,
+  },
+  /** Lift-out plug (seated on drain, or set on the west rim) */
+  plug: {
+    r: 0.028,
+    h: 0.014,
+    ringR: 0.01,
   },
   /** Champagne / soft gold metal */
   metal: "#c4a574",

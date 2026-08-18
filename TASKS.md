@@ -256,6 +256,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
 - [x] `slide-ub-shower` — UB｜洗面 雙片西向淋浴拉門（磨砂／炭灰／地軌／加高；無平開佔位）
 - [x] `hero-1f-ub-tub` — UB 東半南北獨立浴缸（弧線瓷白、南落地香檳金龍頭、裝飾水面）
+- [x] `hero-1f-ub-tub` wet — click faucet on/off; lift-out plug; fill / drain (`docs/ub-tub.md`, `npm run test:tub`)
 - [x] `ub-bath-finish` — UB：南 seamless 深灰；東 hex 青拼布；地鵝黃珪藻土整片；浴缸實底＋龍頭
 - [x] `hero-1f-ub-bathmat` — 浴缸西側白羊毛腳踏（0.5×0.75）
 - [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
@@ -404,3 +405,4 @@ Every task also satisfies:
 | 2026-08-17 | Senmen vanity: porcelain vessel on flush hinoki cabinet (drop white table + chrome legs) |
 | 2026-08-18 | Senmen wet stack: opaque basin, running water, P-trap, hollow cabinet, click doors |
 | 2026-08-18 | Senmen faucet click toggle: handle damps; stream/pool only while on |
+| 2026-08-18 | UB tub: click faucet + lift-out plug; water fills / drains (`test:tub`) |
