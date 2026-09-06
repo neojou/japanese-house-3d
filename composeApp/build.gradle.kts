@@ -31,6 +31,7 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.ui)
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
             }
         }
         val desktopMain by getting {

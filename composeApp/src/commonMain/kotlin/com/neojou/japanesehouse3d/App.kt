@@ -33,6 +33,10 @@ import com.neojou.japanesehouse3d.domain.PlayerDefaults
 import com.neojou.japanesehouse3d.domain.PlayerSim
 import com.neojou.japanesehouse3d.domain.PlayerState
 import com.neojou.japanesehouse3d.domain.Shell1F
+import com.neojou.japanesehouse3d.render.GlbRenderer
+import com.neojou.japanesehouse3d.render.HouseGlbAsset
+import com.neojou.japanesehouse3d.render.GlbTri
+import com.neojou.japanesehouse3d.render.parseHouseGlb
 import com.neojou.japanesehouse3d.render.SoftRenderer
 import kotlin.math.round
 
@@ -47,6 +51,19 @@ fun App() {
     val keys = remember { mutableSetOf<Key>() }
     val focusRequester = remember { FocusRequester() }
     val boxes = remember { Shell1F.boxes() }
+    val glbTris = remember {
+        val bytes = HouseGlbAsset.loadOrNull()
+        if (bytes == null) {
+            emptyList()
+        } else {
+            try {
+                parseHouseGlb(bytes)
+            } catch (_: Throwable) {
+                emptyList<GlbTri>()
+            }
+        }
+    }
+    val useGlb = glbTris.isNotEmpty()
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -121,11 +138,16 @@ fun App() {
             },
     ) {
         Canvas(Modifier.fillMaxSize()) {
-            SoftRenderer.drawScene(this, player, boxes)
+            if (useGlb) {
+                GlbRenderer.drawScene(this, player, glbTris)
+            } else {
+                SoftRenderer.drawScene(this, player, boxes)
+            }
         }
 
         Text(
-            text = "K2 1F shell · W/S move · A/D turn · drag look\n" +
+            text = (if (useGlb) "GLB house · " else "SoftRenderer fallback · ") +
+                "W/S move · A/D turn · drag look\n" +
                 "X ${player.x.fmt(2)}  Z ${player.z.fmt(2)}  Y ${player.eyeY.fmt(2)}",
             color = Color(0xEEFFFFFF),
             fontSize = 12.sp,

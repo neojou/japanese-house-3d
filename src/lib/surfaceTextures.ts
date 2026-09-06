@@ -292,8 +292,8 @@ export function createYakiSugiRoughnessMap(size = 512): THREE.CanvasTexture {
       const v = y / size;
       const n = fbm(u * 10, v * 40, 4, cache, rand);
       const grain = fbm(u * 6, v * 100, 2, cache, rand);
-      // Charred: mostly matte; slightly glossier on raised grain (darker in roughness map)
-      const r = 0.62 + n * 0.28 - grain * 0.12;
+      // Charred: mostly matte; tiny sheen on raised grain only
+      const r = 0.78 + n * 0.18 - grain * 0.08;
       const val = Math.round(Math.min(255, Math.max(0, r * 255)));
       const i = (y * size + x) * 4;
       img.data[i] = val;

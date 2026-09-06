@@ -12,7 +12,11 @@
     "bake:senmen-basin": "node --experimental-strip-types scripts/bake-senmen-basin.mjs",
     "test:basin": "node --experimental-strip-types scripts/verify-senmen-basin.mjs",
     "test:tub": "node --experimental-strip-types scripts/verify-tub-wet.mjs",
-    "test:toilet": "node --experimental-strip-types scripts/verify-sit-toilet.mjs"
+    "test:toilet": "node --experimental-strip-types scripts/verify-sit-toilet.mjs",
+    "bake:house": "node --experimental-strip-types scripts/bake-house.mjs",
+    "test:house": "node --experimental-strip-types scripts/verify-house-glb.mjs",
+    "bake:genkan-door": "node --experimental-strip-types scripts/bake-genkan-door.mjs",
+    "test:genkan-door": "node --experimental-strip-types scripts/verify-genkan-door.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

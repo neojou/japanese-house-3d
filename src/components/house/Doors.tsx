@@ -1,5 +1,5 @@
 
-import { useCallback, useRef, useState, type RefObject } from "react";
+import { useCallback, useRef, type RefObject } from "react";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -17,6 +17,7 @@ import {
   type WallSegment,
 } from "@/data/dimensions";
 import { INTERIOR } from "@/lib/houseMaterials";
+import { useViewerStore } from "@/store/useViewerStore";
 
 const LEAF_T = 0.04;
 const FRAME_T = 0.05;
@@ -28,7 +29,8 @@ const SLIDE_FRAME = 0.028;
  * Plan-space geometry (parent house group may mirror X).
  */
 function SwingDoor({ def }: { def: SwingDoorDef }) {
-  const [open, setOpen] = useState(false);
+  const open = useViewerStore((s) => !!s.doorOpen[def.id]);
+  const toggleDoor = useViewerStore((s) => s.toggleDoor);
   const hingeRef = useRef<THREE.Group>(null);
   const angle = useRef(0);
   const openRad = def.openSign * THREE.MathUtils.degToRad(def.openAngleDeg);
@@ -57,10 +59,13 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
    */
   const baseYaw = def.axis === "ns" ? -Math.PI / 2 : 0;
 
-  const onClick = useCallback((e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    setOpen((v) => !v);
-  }, []);
+  const onClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      toggleDoor(def.id);
+    },
+    [def.id, toggleDoor],
+  );
 
   useFrame((_, dt) => {
     const target = open ? openRad : 0;
@@ -307,7 +312,8 @@ function WindowPanel({
  * Dual bypass: both panels stack toward openToward when open.
  */
 function SlideDoor({ def }: { def: SlideDoorDef }) {
-  const [open, setOpen] = useState(false);
+  const open = useViewerStore((s) => !!s.doorOpen[def.id]);
+  const toggleDoor = useViewerStore((s) => s.toggleDoor);
   const tRef = useRef(0); // 0 closed → 1 open
   const leafA = useRef<THREE.Group>(null);
   const leafB = useRef<THREE.Group>(null);
@@ -345,10 +351,13 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
   const railOffA = def.axis === "ew" ? 0.012 : 0;
   const railOffB = def.axis === "ew" ? -0.018 : 0;
 
-  const onClick = useCallback((e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    setOpen((v) => !v);
-  }, []);
+  const onClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      toggleDoor(def.id);
+    },
+    [def.id, toggleDoor],
+  );
 
   useFrame((_, dt) => {
     const target = open ? 1 : 0;

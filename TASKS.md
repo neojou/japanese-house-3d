@@ -266,6 +266,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-senmen` basin **Path B** — `public/props/senmen-basin/basin.glb` (lofted inner bowl, no inner extrude); `npm run bake:senmen-basin` / `test:basin`
 - [x] `hero-1f-senmen` hinoki cabinet — flush W×D with vessel; no white deck / chrome legs
 - [x] `hero-1f-senmen` wet stack — opaque porcelain, faucet stream, P-trap to wall, click doors
+- [x] Blender pipeline — R3F default; archived full-house GLB (`?houseGltf=1`); hero `genkan-door.glb` overlay
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -411,3 +412,5 @@ Every task also satisfies:
 | 2026-08-18 | 1F トイレ north window → small high frosted vent (cannot look in from street) |
 | 2026-08-18 | 2F トイレ sit toilet on north wall facing south (enter, turn, sit) |
 | 2026-08-18 | Sit toilet real envelope: 720×380 mm, seat 420, tank 780 (`test:toilet`); 1F/2F share `SIT_TOILET` |
+| 2026-08-18 | House GLB pipeline (blender.md A–C): `bake:house` / `HouseGltf` default; KMP Desktop same glb, Wasm SoftRenderer fallback |
+| 2026-09-07 | blender.md strategy: R3F default; archive full-house GLB; genkan hero overlay; yaki/stucco less plastic |

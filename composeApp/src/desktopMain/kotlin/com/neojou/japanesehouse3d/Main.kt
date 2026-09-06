@@ -16,7 +16,7 @@ fun main() {
         )
         Window(
             onCloseRequest = ::exitApplication,
-            title = "Japanese House 3D · K2 1F shell",
+            title = "Japanese House 3D · Desktop GLB",
             state = windowState,
         ) {
             App()

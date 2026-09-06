@@ -11,8 +11,8 @@ Parallel to the Vite SPA. **Does not replace** `npm run dev`.
 ## Layout
 
 ```
-shared/          # pure domain (coords, height, player, Shell1F)
-composeApp/      # Compose UI + SoftRenderer (Desktop + Wasm)
+shared/          # pure domain (coords, height, player, Shell1F) — no size changes for GLB
+composeApp/      # Desktop may still load archived house.glb; this round does not change walking
 ```
 
 ## Requirements
@@ -29,7 +29,7 @@ composeApp/      # Compose UI + SoftRenderer (Desktop + Wasm)
 # Compile both targets
 ./gradlew :composeApp:compileKotlinDesktop :composeApp:compileKotlinWasmJs
 
-# Desktop — K2 first-person 1F shell
+# Desktop — shared house.glb (SoftRenderer if glb missing)
 ./gradlew :composeApp:run
 
 # Wasm browser

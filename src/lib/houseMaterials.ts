@@ -51,7 +51,7 @@ export type WallFinish =
 export const FAÇADE = {
   stucco: "#f3eee4",
   stuccoTint: "#f7f2e8",
-  yakiSugi: "#c8c0b4",
+  yakiSugi: "#b9b0a4",
   /** @deprecated use INTERIOR.main */
   interior: "#f7f2e8",
   accentDark: "#2c2824",
@@ -515,8 +515,9 @@ export function createYakiSugiMaterial(
   if (!_ready) {
     return new THREE.MeshStandardMaterial({
       color: FAÇADE.yakiSugi,
-      roughness: 0.88,
-      metalness: 0.02,
+      roughness: 0.93,
+      metalness: 0.0,
+      envMapIntensity: 0.14,
     });
   }
   const repU = Math.max(alongM / FAÇADE.yakiTileM, 0.5);
@@ -526,19 +527,20 @@ export function createYakiSugiMaterial(
     color: FAÇADE.yakiSugi,
     map: maps.map,
     normalMap: maps.normalMap,
-    normalScale: new THREE.Vector2(1.35, 1.35),
+    normalScale: new THREE.Vector2(1.55, 1.55),
     roughnessMap: maps.roughnessMap ?? undefined,
-    roughness: 0.82,
-    metalness: 0.04,
-    envMapIntensity: 0.45,
+    roughness: 0.93,
+    metalness: 0.0,
+    envMapIntensity: 0.14,
   });
 }
 
 export function createMatteBlackHandleMaterial(): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({
-    color: "#1a1a1a",
-    roughness: 0.72,
-    metalness: 0.35,
+    color: "#1c1c1c",
+    roughness: 0.88,
+    metalness: 0.16,
+    envMapIntensity: 0.2,
   });
 }
 
@@ -929,10 +931,11 @@ export function createWallMaterial(
       color: FAÇADE.stuccoTint,
       map: maps.map,
       normalMap: maps.normalMap,
-      normalScale: new THREE.Vector2(0.45, 0.45),
+      normalScale: new THREE.Vector2(0.62, 0.62),
       roughnessMap: maps.roughnessMap ?? undefined,
       roughness: 1,
       metalness: 0.0,
+      envMapIntensity: 0.12,
     });
   }
 

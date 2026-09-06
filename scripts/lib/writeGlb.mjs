@@ -1,6 +1,13 @@
 /**
  * Minimal glTF 2.0 binary writer (no extra deps).
- * Meshes: { name, positions: Float32Array, normals: Float32Array, indices: Uint32Array }
+ *
+ * Legacy: writeGlb(meshes[], extras)
+ *   meshes: { name, positions, normals, indices }
+ *
+ * Scene: writeGlb({ sceneName, materials, meshes, root }, extras)
+ *   materials: { name, color:[r,g,b], roughness, metalness, opacity? }
+ *   meshes: { name, positions, normals, indices, material? }
+ *   root: { name, translation?, rotation? (xyzw), mesh?, extras?, children? }
  */
 
 const MAGIC = 0x46546c67;
@@ -28,23 +35,88 @@ function minMax3(pos) {
   return { min, max };
 }
 
-export function writeGlb(meshes, extras = {}) {
+function quatFromYaw(yaw) {
+  const h = yaw * 0.5;
+  return [0, Math.sin(h), 0, Math.cos(h)];
+}
+
+function flattenNodes(root) {
+  const nodes = [];
+  const walk = (n) => {
+    const idx = nodes.length;
+    const rec = {
+      name: n.name,
+      children: [],
+    };
+    if (n.translation) rec.translation = n.translation;
+    if (n.rotation) rec.rotation = n.rotation;
+    else if (typeof n.rotY === "number" && n.rotY !== 0) {
+      rec.rotation = quatFromYaw(n.rotY);
+    }
+    if (n.mesh != null) rec.mesh = n.mesh;
+    if (n.extras) rec.extras = n.extras;
+    nodes.push(rec);
+    for (const c of n.children ?? []) {
+      rec.children.push(walk(c));
+    }
+    if (rec.children.length === 0) delete rec.children;
+    return idx;
+  };
+  walk(root);
+  return nodes;
+}
+
+export function writeGlb(meshesOrDoc, extras = {}) {
+  const isDoc = meshesOrDoc && !Array.isArray(meshesOrDoc);
+  const doc = isDoc
+    ? meshesOrDoc
+    : {
+        sceneName: extras.sceneName || "senmen-basin",
+        materials: [],
+        meshes: meshesOrDoc,
+        root: null,
+      };
+  const meshes = doc.meshes;
+  const materials = doc.materials ?? [];
   const json = {
     asset: {
       version: "2.0",
-      generator: "japanese-house-3d/bake-senmen-basin",
+      generator: extras.generator || "japanese-house-3d/writeGlb",
     },
     extras,
     scene: 0,
     scenes: [{ nodes: [0] }],
-    nodes: [{ name: "senmen-basin", children: meshes.map((_, i) => i + 1) }],
+    nodes: [],
     meshes: [],
     accessors: [],
     bufferViews: [],
     buffers: [{ byteLength: 0 }],
   };
-  for (let i = 0; i < meshes.length; i += 1) {
-    json.nodes.push({ name: meshes[i].name, mesh: i });
+  if (materials.length) {
+    json.materials = materials.map((m) => {
+      const op = m.opacity == null ? 1 : m.opacity;
+      const mat = {
+        name: m.name,
+        pbrMetallicRoughness: {
+          baseColorFactor: [m.color[0], m.color[1], m.color[2], op],
+          metallicFactor: m.metalness ?? 0,
+          roughnessFactor: m.roughness ?? 0.9,
+        },
+      };
+      if (op < 0.999) {
+        mat.alphaMode = "BLEND";
+        mat.doubleSided = true;
+      }
+      return mat;
+    });
+  }
+  if (doc.root) {
+    json.nodes = flattenNodes(doc.root);
+  } else {
+    json.nodes = [{ name: doc.sceneName, children: meshes.map((_, i) => i + 1) }];
+    for (let i = 0; i < meshes.length; i += 1) {
+      json.nodes.push({ name: meshes[i].name, mesh: i });
+    }
   }
 
   const parts = [];
@@ -96,15 +168,15 @@ export function writeGlb(meshes, extras = {}) {
       count: m.indices.length,
       type: "SCALAR",
     });
+    const prim = {
+      attributes: { POSITION: posAcc, NORMAL: nrmAcc },
+      indices: idxAcc,
+      mode: 4,
+    };
+    if (m.material != null && json.materials) prim.material = m.material;
     json.meshes.push({
       name: m.name,
-      primitives: [
-        {
-          attributes: { POSITION: posAcc, NORMAL: nrmAcc },
-          indices: idxAcc,
-          mode: 4,
-        },
-      ],
+      primitives: [prim],
     });
   }
 

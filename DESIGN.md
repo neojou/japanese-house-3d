@@ -367,6 +367,8 @@ When changing look, verify in first-person:
 | 2026-08-18 | UB tub: click faucet + lift-out plug; fill only when seated and faucet on |
 | 2026-08-18 | 2F toilet: sit fixture on north wall facing south (tokonoma-card) |
 | 2026-08-18 | Sit toilet: JP 組み合わせ envelope 720×380, sit 420, tank 780 (1F+2F share `SIT_TOILET`) |
+| 2026-08-18 | House GLB: DESIGN 70/25/5 PBR colors in `house.glb`; Vite `HouseGltf` default |
+| 2026-09-07 | R3F default again; yaki/stucco matte + genkan rake; hero genkan-door GLB overlay |
 
 ---
 
@@ -379,6 +381,9 @@ When changing look, verify in first-person:
 | `src/components/house/Walls.tsx` | Applies finishes to wall meshes |
 | `src/data/dimensions.ts` | `COLORS`, `LIGHTING`, geometry, `SIT_TOILET` |
 | `src/lib/sitToilet.ts` | Sit-toilet envelope packing (tank back → bowl front) |
+| `src/lib/houseBake.ts` | House GLB boxes from `dimensions.ts` |
+| `public/models/archive/house-full-box-bevel.glb` | Archived full-house bake (`?houseGltf=1`) |
+| `public/models/hero/genkan-door.glb` | 玄關大門 overlay |
 | `src/components/Scene.tsx` | Canvas tone mapping / lights |
 | `docs/cinematic-path-b.md` | AI-unattended Path B bake / test loop |
 | `docs/senmen-vanity.md` | 1F basin Path B spec |

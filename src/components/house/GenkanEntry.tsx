@@ -1,5 +1,5 @@
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {
@@ -15,6 +15,8 @@ import {
   createYakiSugiMaterial,
   ensureFaçadeTextures,
 } from "@/lib/houseMaterials";
+import { useViewerStore } from "@/store/useViewerStore";
+import { GenkanDoorHero } from "./GenkanDoorHero";
 
 /** Negative Y: hinge east, open toward parking (−Z). */
 const OPEN_RAD = -THREE.MathUtils.degToRad(GENKAN_ENTRY.openAngleDeg);
@@ -53,7 +55,8 @@ export function GenkanEntry() {
   const leafZ = wallZ - halfT + leafT / 2 + 0.002;
   const hingeX = g.x1 - frameReveal;
 
-  const [open, setOpen] = useState(false);
+  const open = useViewerStore((s) => !!s.doorOpen.genkan);
+  const toggleDoor = useViewerStore((s) => s.toggleDoor);
   const hingeRef = useRef<THREE.Group>(null);
   const angleRef = useRef(0);
 
@@ -90,10 +93,13 @@ export function GenkanEntry() {
     };
   }, [matLeaf, matFrame, matSoffit, matCheek, matHandle]);
 
-  const onDoorClick = useCallback((e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    setOpen((v) => !v);
-  }, []);
+  const onDoorClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      toggleDoor("genkan");
+    },
+    [toggleDoor],
+  );
 
   useFrame((_, dt) => {
     const target = open ? OPEN_RAD : 0;
@@ -184,76 +190,15 @@ export function GenkanEntry() {
         <boxGeometry args={[CLAD_T, wallH, PORTAL_DEPTH]} />
       </mesh>
 
-      {/* Flush yaki frame — same material as leaf; interactable for lock priority */}
-      {/* West reveal */}
-      <mesh
-        position={[g.x0 + frameReveal / 2, frameBaseY + leafH / 2, leafZ]}
-        castShadow
-        receiveShadow
-        material={matFrame}
-        userData={{ interactable: "door" }}
-        {...doorPointer}
-      >
-        <boxGeometry args={[frameReveal, leafH + frameReveal, leafT * 0.95]} />
-      </mesh>
-      {/* East reveal */}
-      <mesh
-        position={[g.x1 - frameReveal / 2, frameBaseY + leafH / 2, leafZ]}
-        castShadow
-        receiveShadow
-        material={matFrame}
-        userData={{ interactable: "door" }}
-        {...doorPointer}
-      >
-        <boxGeometry args={[frameReveal, leafH + frameReveal, leafT * 0.95]} />
-      </mesh>
-      {/* Head */}
-      <mesh
-        position={[
-          midX,
-          frameBaseY + leafH + frameReveal / 2,
-          leafZ,
-        ]}
-        castShadow
-        receiveShadow
-        material={matFrame}
-        userData={{ interactable: "door" }}
-        {...doorPointer}
-      >
-        <boxGeometry args={[bayW, frameReveal, leafT * 0.95]} />
-      </mesh>
-      {/* Threshold — nearly invisible dark strip */}
-      <mesh
-        position={[midX, frameBaseY + 0.008, leafZ]}
-        castShadow
-        receiveShadow
-        material={matFrame}
-        userData={{ interactable: "door" }}
-        {...doorPointer}
-      >
-        <boxGeometry args={[leafW + frameReveal, 0.016, leafT * 1.05]} />
-      </mesh>
-
-      {/*
-        Door leaf — full bay yaki-sugi, no glass light (subtraction).
-        Hinge east; free edge west with matte-black vertical bar.
-      */}
-      <group
-        ref={hingeRef}
-        position={[hingeX, frameBaseY, leafZ]}
-        name="genkan-door-hinge"
-        userData={{ interactable: "door" }}
-      >
-        <mesh
-          position={[-leafW / 2, leafH / 2, 0]}
-          castShadow
-          receiveShadow
+      {/* Hero GLB: frame static at hinge; leaf rotates with store */}
+      <group position={[hingeX, frameBaseY, leafZ]} name="genkan-door-portal">
+        <GenkanDoorHero part="frame" material={matFrame} ptr={doorPointer} />
+        <group
+          ref={hingeRef}
+          name="genkan-door-hinge"
           userData={{ interactable: "door" }}
-          material={matLeaf}
-          {...doorPointer}
         >
-          <boxGeometry args={[leafW, leafH, leafT]} />
-        </mesh>
+          <GenkanDoorHero part="door" material={matLeaf} ptr={doorPointer} />
 
         {/* Hairline shadow groove (closed look: almost invisible seam) */}
         <mesh
@@ -318,6 +263,7 @@ export function GenkanEntry() {
         >
           <boxGeometry args={[HANDLE_W * 0.85, HANDLE_H * 0.9, HANDLE_D * 0.55]} />
         </mesh>
+        </group>
       </group>
 
       {/* West portal cheek hint at LDK corner (reinforces left of 内凹 next to door) */}

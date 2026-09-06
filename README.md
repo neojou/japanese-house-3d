@@ -27,11 +27,13 @@ Walk the house at eye height: walls, floors, stairs, and clickable doors match t
 
 ```bash
 npm install
+npm run bake:genkan-door   # optional hero overlay (Blender if on PATH)
 npm run dev
 ```
 
 Open [http://localhost:5173/japanese-house-3d/](http://localhost:5173/japanese-house-3d/)  
-(`base` is `/japanese-house-3d/` for GitHub Pages — same path in dev.)
+(`base` is `/japanese-house-3d/` for GitHub Pages — same path in dev.)  
+Default shell is **R3F** (walls / stairs / doors). `?houseGltf=1` previews the archived full-house GLB.
 
 ```bash
 npm run build    # → dist/

@@ -18,14 +18,17 @@ import { TubDisplay } from "./TubDisplay";
 import { KitchenDisplay } from "./KitchenDisplay";
 import { SenmenDisplay } from "./SenmenDisplay";
 import { BathFinishes } from "./BathFinishes";
+import { HouseGltf } from "./HouseGltf";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
+import { useGltfHouse } from "@/lib/houseGltfFlag";
 
 /**
- * House shell — floors / walls / stairs / genkan / ceilings / sparse props.
+ * House shell — R3F floors / walls / stairs / doors by default.
+ * `?houseGltf=1` previews the archived full-house GLB.
  * Exterior L1 + interior 70/25/5 (DESIGN.md / houseMaterials).
- * M8 hero props + UB bath finishes.
  */
 export function House() {
+  const gltfHouse = useGltfHouse();
   return (
     <group name="house">
       <mesh
@@ -41,14 +44,20 @@ export function House() {
         />
       </mesh>
 
-      <Floors />
-      <Ceilings />
-      <Walls />
-      <Stairs />
-      <Doors />
-      <GenkanEntry />
-      <BalconyExterior />
-      <InteriorFinishes />
+      {gltfHouse ? (
+        <HouseGltf />
+      ) : (
+        <>
+          <Floors />
+          <Ceilings />
+          <Walls />
+          <Stairs />
+          <Doors />
+          <GenkanEntry />
+          <BalconyExterior />
+          <InteriorFinishes />
+        </>
+      )}
       <BathFinishes />
       <Props />
       <PlanLabels />
@@ -66,6 +75,7 @@ export {
   GenkanEntry,
   BalconyExterior,
   InteriorFinishes,
+  HouseGltf,
   Props,
   CoatDisplay,
   GetabakoDisplay,

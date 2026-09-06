@@ -3275,15 +3275,15 @@ export const LIGHTING = {
     /** Soft fill from parking toward door */
     fill: {
       position: [7.1, 2.0, 1.4] as [number, number, number],
-      intensity: 1.15,
+      intensity: 1.32,
       distance: 7,
       color: "#fff6ea",
     },
     /** Raking strip along west jog (LDK outer → parking) */
     rakeWest: {
       position: [5.9, 1.85, 1.6] as [number, number, number],
-      intensity: 0.85,
-      distance: 5,
+      intensity: 1.05,
+      distance: 5.4,
       color: "#ffe8c8",
     },
   },
