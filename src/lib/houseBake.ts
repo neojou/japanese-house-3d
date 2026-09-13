@@ -17,6 +17,7 @@ import {
   STAIRS,
   SWING_DOORS,
   WALLS,
+  storyWallHeight,
   type FloorId,
   type FloorSlab,
   type Opening,
@@ -260,7 +261,7 @@ function boxGeometry(
 }
 
 function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
-  const wallHeight = wall.height ?? BUILDING.wallHeight;
+  const wallHeight = wall.height ?? storyWallHeight(wall.floor);
   const baseY = FLOOR_LEVELS[wall.floor];
   const openings = wall.openings ?? [];
   const alongX = wall.lengthX >= wall.lengthZ;

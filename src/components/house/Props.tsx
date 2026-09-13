@@ -1,5 +1,4 @@
 
-import { COLORS, FLOOR_LEVELS, PROP_2F_SINK } from "@/data/dimensions";
 import { CoatDisplay } from "./CoatDisplay";
 import { GetabakoDisplay } from "./GetabakoDisplay";
 import { KitchenDisplay } from "./KitchenDisplay";
@@ -15,7 +14,6 @@ import { TubDisplay } from "./TubDisplay";
 export function Props() {
   return (
     <group name="props">
-      <Sink2F />
       <ToiletDisplay />
       <Toilet2FDisplay />
       <ToiletCurtainDisplay />
@@ -28,32 +26,4 @@ export function Props() {
   );
 }
 
-function Sink2F() {
-  const s = PROP_2F_SINK;
-  const baseY = FLOOR_LEVELS[s.floor];
-  const cabinetH = s.height - s.basinH;
-  return (
-    <group name={s.label}>
-      <mesh
-        position={[s.x, baseY + cabinetH / 2, s.z]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[s.width, cabinetH, s.depth]} />
-        <meshStandardMaterial color={COLORS.propCabinet} roughness={0.75} />
-      </mesh>
-      <mesh
-        position={[s.x, baseY + cabinetH + s.basinH / 2, s.z]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[s.width * 0.92, s.basinH, s.depth * 0.85]} />
-        <meshStandardMaterial
-          color={COLORS.propBasin}
-          roughness={0.25}
-          metalness={0.05}
-        />
-      </mesh>
-    </group>
-  );
-}
+

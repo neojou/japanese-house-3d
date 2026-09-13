@@ -9,6 +9,7 @@ import {
   GENKAN_ENTRY,
   MATERIAL_PRESETS,
   PARKING_1F,
+  storyWallHeight,
 } from "@/data/dimensions";
 import {
   createMatteBlackHandleMaterial,
@@ -44,7 +45,7 @@ export function GenkanEntry() {
   const bayW = g.x1 - g.x0;
   const wallZ = g.z;
   const sillY = g.sill;
-  const wallH = BUILDING.wallHeight;
+  const wallH = storyWallHeight("1f");
   const halfT = BUILDING.wallThickness / 2;
 
   // Flush leaf: minimal frame so door reads as continuous cladding

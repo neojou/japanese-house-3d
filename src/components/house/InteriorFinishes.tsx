@@ -3,6 +3,7 @@ import { useLayoutEffect, useMemo } from "react";
 import {
   BUILDING,
   FLOOR_LEVELS,
+  storyWallHeight,
   GENKAN_ENTRY,
   GENKAN_INTERIOR,
   INTERIOR_FLOOR_Y,
@@ -46,7 +47,7 @@ export function InteriorFinishes() {
   }, [matWood, matBeam]);
 
   const y0 = FLOOR_LEVELS["1f"];
-  const wallH = BUILDING.wallHeight;
+  const wallH = storyWallHeight("1f");
   const halfT = BUILDING.wallThickness / 2;
   const clad = 0.018;
 
@@ -224,13 +225,13 @@ export function InteriorFinishes() {
       {/* 2F G2 interior sill band (NE south @ clN = 2.73) */}
       <mesh
         position={[
-          (IR.genkanW + SX.xEast) / 2,
+          (IR.genkanW + 0.91 + SX.xEast) / 2,
           FLOOR_LEVELS["2f"] + 0.12,
           2.73 + halfT + 0.015,
         ]}
         material={matWood}
       >
-        <boxGeometry args={[SX.xEast - IR.genkanW - 0.16, 0.06, 0.03]} />
+        <boxGeometry args={[SX.xEast - IR.genkanW - 0.91 - 0.16, 0.06, 0.03]} />
       </mesh>
 
       {/* Soft ambient only (cove does the wash) */}

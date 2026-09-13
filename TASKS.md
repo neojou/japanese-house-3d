@@ -51,8 +51,8 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | Axes | +X east, +Z north, +Y up |
 | Display | House mirrored in X so north view matches PDF (LDK left, genkan right) — see `src/lib/coords.ts` |
 | Dimension source of truth | `src/data/dimensions.ts` |
-| Floor tops | 1F walk ≈ 0.5 (raised interior); story base 2F = 2.7, PH = 5.4 |
-| Wall height | 2.5 m per story shell |
+| Floor tops | 1F walk **0.609**; 2F = **3.509**; PH = **6.309** (2026-09-13 elevations) |
+| Wall height | 1F soffit **3.309** from grade; 2F/PH ~**2.6** (`storyWallHeight`) |
 | Eye height | 1.5 m above feet |
 
 ### Controls (current)
@@ -92,23 +92,23 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 
 | Element | Spec |
 |---------|------|
-| West wall | x = 6.37 (stair \| room); door in **corridor band** (z **2.73–3.64**); hinge S / handle N; open into room (+X) |
+| West wall | **x = 7.28**（北翼 CL 之東）。進房門在 **CL 南側**（x 6.37–7.28），不是西牆中段、不是陽台進房 |
 | North / East | Solid exterior |
-| South G2 | Floor-to-ceiling glass **4.55 m** = 2.73 + 1.82, z = **clN (2.73)**, west 6.37 → east **10.92** |
-| Balcony | **Two rects** south of G2 @ clN: west **2.73×1.11** (z **1.62–2.73**), east **1.82×0.91** (z **1.82–2.73**); warm-grey slab + soffit; 3 downlights + door-east sconce; **no parapet**; **no door** (T-202 deferred) |
+| South G2 | Floor-to-ceiling glass **3.64 m** @ z = **clN (2.73)**，west **7.28** → east **10.92**。（舊 4.55／6.37→10.92 **解除**，2026-09-13 方案 B） |
+| Balcony | 兩塊不變：西 **2.73×1.11**（z **1.62–2.73**，**x 仍 6.37 起、CL 下方**），東 **1.82×0.91**（z **1.82–2.73**）。**要門（T-202）+ 欄杆**（高度未標，建議 1.1 m） |
 | 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**; clN=2.73, corrN=3.64; well z 4.55–6.37 |
 | South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (2.73)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
-| Corridor | z **2.73–3.64**, x **1.82–6.37** (west jog 0.91); **east faces NE door** (not balcony) |
-| NE 洋室 | South = **clN (2.73)** = 廊南／南房北; z **2.73–6.37** (depth 3.64); G2 @ clN; west door in corridor band |
-| NW jog | x 1.82–2.73, NS **1.365** (corrN→nwJogN); solid wall to トイレ (no door); sink prop on north |
+| Corridor | z **2.73–3.64**, x **1.82–6.37** (west jog 0.91); **east faces 北翼 CL**（非陽台、非直接 NE 門） |
+| NE 洋室 | South = **clN (2.73)**; z **2.73–6.37** (depth 3.64); west **x=7.28**；EW **3.64**；G2 **3.64 m** @ clN |
+| 北翼 CL | EW **0.91** @ x **6.37–7.28**（梯井東、東北室西）。入戶門在 **CL 南側**。方案 B；梯井仍 4.55–6.37 |
+| NW jog | **2F 不做室內**（平面所見為 **1F 屋頂**）。刪 2F 凸角房間與 `PROP_2F_SINK` |
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
 | トイレ | North of corridor; door @ **corrN (3.64)** from corridor |
 | 2F ceiling | Soffit **Y=5.2**; indoor slabs only; balcony + stair well open |
 | PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37; 4 walls + ceiling; south door → roof |
 | PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
 | PH stair | Same L as 1F→2F; exit onto deck → corr → balcony |
-| PH balcony | x 0–6.37, z **0–3.64**, Y=5.4; parapet **1.4 m** (N only west of hall) |
-| Plan CL between stair\|NE | **Not built** (stair\|room direct @ x=6.37) |
+| PH balcony | 南 x 0–6.37 z **0–3.64**；**L 北塊** x 0–4.55 z **3.64–6.37** 可走；欄杆 **1.1 m**；東側 2F 屋頂不上人 |
 
 ### Height sampling (`src/lib/height.ts`)
 
@@ -137,7 +137,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M8** | Furniture | `in_progress` | Hero-prop conventions + SCL trench; rest of sparse set todo |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
-**Current milestone:** **M8 in progress** (SCL coat hero done). Next: more T-401 sparse furniture or T-501 deploy. T-202 balcony remains deferred.
+**Current milestone:** **M8 in progress** (SCL coat hero done). Next: more T-401, or 2026-09-13 plan locks (2F CL-B / T-202 balcony door+rail / heights) when owner says implement.
 
 ---
 
@@ -187,29 +187,30 @@ Phases map to milestones; **do not skip ahead** without owner request.
 #### T-201 · 2F remaining partitions (south wing + CL) · `done` · M5
 
 - DoD: South wing 2.73/0.91/2.73; mid-wall doors (西・中央洋室); stacked CL + bedroom passages; トイレ west of well; NE G2 4.55 unchanged.
-- Note: plan CL between stair|NE **not** added (T-105 lock: direct stair|room @ x=6.37).
+- Note: T-105 當時未加 stair\|NE CL。**2026-09-13 方案 B 取代該鎖**：CL 從東北室西挖 0.91；G2 改 3.64 m。尚未實作。
 - Verify: climb 2F → hall → south rooms + トイレ; NE regression; no slab over upper flight.
 
 ---
 
 ### Active / next
 
-#### T-202 · 2F balcony access (optional) · `deferred` · M5
+#### T-202 · 2F balcony access + railing · `todo` · M5
 
-**Goal:** Walk from NE room onto balcony.
+**Goal:** Walk from NE room onto balcony; balcony has a railing.
 
-**Status note (owner):** **暫緩** — do not implement until unblocked.
+**Status note (2026-09-13):** 解暫緩。進深仍 1.11／0.91；西塊仍 x=6.37（CL 下方）。門在 G2／室南；東北室入戶門在 CL 南側（另一扇，見 Design direction）。
 
-**DoD (when unblocked)**
+**DoD**
 
-- [ ] Opening + swing (or sliding) on G2; open onto balcony (−Z)
+- [ ] Opening + swing (or sliding) on G2 (7.28→10.92); open onto balcony (−Z)
 - [ ] Continuous floor through opening; no auto-snap bugs
-- [ ] Parapet only if owner requests (currently none)
+- [ ] Balcony **railing** (height unspecified on plan; default **1.1 m** unless owner says otherwise)
+- [ ] West slab still x **6.37–9.10** under north-wing CL
 
 **Grok Build prompt**
 
 ```text
-@TASKS.md implement T-202 balcony access from NE G2. Keep glass otherwise; hinge/open per plan. No parapet unless asked.
+@TASKS.md implement T-202: NE G2 balcony door + railing 1.1 m. Keep west slab from x=6.37 (under CL). Do not move 東北室入戶門 (that is south of 北翼 CL). No 2F NW jog room.
 ```
 
 ---
@@ -414,3 +415,6 @@ Every task also satisfies:
 | 2026-08-18 | Sit toilet real envelope: 720×380 mm, seat 420, tank 780 (`test:toilet`); 1F/2F share `SIT_TOILET` |
 | 2026-08-18 | House GLB pipeline (blender.md A–C): `bake:house` / `HouseGltf` default; KMP Desktop same glb, Wasm SoftRenderer fallback |
 | 2026-09-07 | blender.md strategy: R3F default; archive full-house GLB; genkan hero overlay; yaki/stucco less plastic |
+| 2026-09-13 | 2F 北翼 CL **方案 B**：東北室西 x=7.28；G2 **3.64 m**（解除 4.55）；梯井不變。只改文件，未實作 |
+| 2026-09-13 | 2F 續：西北凸角=1F 屋頂（2F 不做）；陽台 1.11／0.91、西塊 x=6.37、T-202 門+欄杆；東北室門在 CL 南側 |
+| 2026-09-13 | 樓高鎖定：1F 床 0.609、階高 2.90／2.80、PH 6.309；斜頂南高北低；PH L 北塊可走欄杆 1.1；東 2F 屋頂不上人；立面窗這一輪開 |

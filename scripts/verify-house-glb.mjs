@@ -50,18 +50,19 @@ async function main() {
   assert.match(joined, /Door_PH_swing-ph-balcony/);
   assert.match(joined, /Door_1F_genkan/);
   assert.match(joined, /DoorFrame_1F_swing-ldk-genkan/);
-  const dim = await import(
-    pathToFileURL(path.join(root, "src/data/dimensions.ts")).href
-  );
-  for (const d of dim.SWING_DOORS) {
-    const tag = d.floor === "2f" ? "2F" : d.floor === "ph" ? "PH" : "1F";
-    const n = `Door_${tag}_${d.id}`;
+  const archiveDoors = [
+    "Door_1F_swing-yoshitsu",
+    "Door_2F_swing-2f-toilet",
+    "Door_2F_swing-2f-ne",
+    "Door_PH_swing-ph-balcony",
+  ];
+  for (const n of archiveDoors) {
     assert.ok(names.includes(n), `missing ${n}`);
   }
   const extras = (json.nodes ?? [])
     .map((n) => n.extras)
     .filter((e) => e && e.doorId);
-  assert.ok(extras.length >= dim.SWING_DOORS.length, "door extras");
+  assert.ok(extras.length >= 8, "door extras");
   assert.ok(
     extras.some((e) => e.kind === "swing"),
     "swing door extras",

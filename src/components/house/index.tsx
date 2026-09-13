@@ -7,6 +7,7 @@ import { GenkanEntry } from "./GenkanEntry";
 import { BalconyExterior } from "./BalconyExterior";
 import { Ceilings } from "./Ceilings";
 import { InteriorFinishes } from "./InteriorFinishes";
+import { Roofs } from "./Roofs";
 import { PlanLabels } from "./PlanLabels";
 import { Compass } from "./Compass";
 import { Props } from "./Props";
@@ -56,6 +57,7 @@ export function House() {
           <GenkanEntry />
           <BalconyExterior />
           <InteriorFinishes />
+          <Roofs />
         </>
       )}
       <BathFinishes />

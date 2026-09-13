@@ -12,13 +12,13 @@ import {
  * Allow 0 → 0.5 interior floor and stair risers.
  * Higher story slabs ignored until feetY is high enough.
  */
-export const MAX_STEP_UP = 0.55;
+export const MAX_STEP_UP = 0.65;
 export const MAX_STEP_DOWN = 0.35;
-export const FEET_Y_IGNORE_2F_BELOW = 2.0;
+export const FEET_Y_IGNORE_2F_BELOW = 2.2;
 /** Ignore PH / roof slabs while still on 2F climb. */
-export const FEET_Y_IGNORE_PH_BELOW = 4.0;
-const Y_2F_SLAB_MIN = 2.5;
-const Y_PH_SLAB_MIN = 5.0;
+export const FEET_Y_IGNORE_PH_BELOW = 4.8;
+const Y_2F_SLAB_MIN = 3.2;
+const Y_PH_SLAB_MIN = 5.8;
 
 /** Horizontal padding on stair tread / width hitboxes (m). */
 const STAIR_PAD = 0.14;

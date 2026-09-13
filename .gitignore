@@ -3,6 +3,9 @@
 # grok
 mygrok
 
+# Floor plans — personal / private; do not upload to GitHub
+/docs/refs/
+
 # dependencies
 /node_modules
 /.pnp
@@ -65,8 +68,6 @@ next-env.d.ts
 docs/build-outlook-error*.png
 docs/*-error*.png
 
-# Floor plans — personal / private; do not upload to GitHub
-docs/2d-floors/
 
 # ─────────────────────────────────────────────────────────────
 # Kotlin Multiplatform / Gradle (from Hello2026; future KMP sibling)

@@ -1,9 +1,9 @@
 
 import { Fragment, useLayoutEffect, useMemo } from "react";
 import {
-  BUILDING,
   FLOOR_LEVELS,
   WALLS,
+  storyWallHeight,
   type Opening,
   type WallSegment,
 } from "@/data/dimensions";
@@ -29,7 +29,7 @@ type SolidPiece = {
  * (optional sill + clear opening + lintel above).
  */
 function solidPiecesForWall(wall: WallSegment): SolidPiece[] {
-  const wallHeight = wall.height ?? BUILDING.wallHeight;
+  const wallHeight = wall.height ?? storyWallHeight(wall.floor);
   const baseY = FLOOR_LEVELS[wall.floor];
   const openings = wall.openings ?? [];
   const alongX = wall.lengthX >= wall.lengthZ;

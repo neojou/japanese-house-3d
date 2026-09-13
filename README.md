@@ -103,21 +103,21 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 |------|----------|
 | Units / axes | Meters; plan origin SW; +X east, +Z north, +Y up |
 | Display | House X-mirrored so north view matches the PDF (LDK left) |
-| 1F floor | Raised interior **0.5 m**; genkan steps 0.25 × 2 |
+| 1F floor | Raised interior **0.609 m**; genkan two steps |
 | 1F SCL / 玄関 | NS **1.72** (z 2.83–4.55); SCL EW **1.21** 西通道無門; 北貼洗面南 |
 | Stairs | **L 形**：直線 0.91 + **90° 踢步** 0.91；轉完＝2F；**出口東橋** x5.46–6.37×z4.55–6.37（井開，可下看／下樓） |
 | 1F トイレ | **1.82×0.91**（x 6.37–8.19, z 5.46–6.37）；西半坐便朝東；南牆東側 0.7 通道 + **雙片門簾**；北牆**高窗小換氣**（磨砂，外看不進） |
 | 1F 洗面 | **EW 2.73**（x 8.19–10.92, 西貼トイレ）；NS 1.82；西牆**南側 0.91** 門（鉸鏈南／把手北，開進室內） |
 | 2F NS | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**（與 1F 南西切齊，無舊 0.91 凹槽） |
 | 2F south wing | 洋室6.5 / CL×2 / 洋室6；房門 @ **clN z=2.73** → **廊道**；兩門夾 CL、開向相對；南 CL 只東、北 CL 只西 |
-| 2F 廊道 | z **2.73–3.64**、**x 1.82–6.37**（西推 0.91），Y=2.7；**東端對 NE 西門**（非陽台） |
-| 2F 西北凸角 | 0.91×1.365；西牆 @1.82；與トイレ **實牆無門**；北牆簡易洗手台 |
-| 2F NE 洋室 | 南 = clN 2.73；West door @ x=6.37（廊道帶 z 2.73–3.64）；G2 **4.55 m** @ clN |
-| 2F トイレ | 廊道北側 z=**3.64** 開門（井西）；坐便靠北牆朝南 |
-| Balcony | Dual slabs S of G2 @ clN: W **2.73×1.11** (z 1.62–2.73), E **1.82×0.91** (z 1.82–2.73); soffit lights + door-east sconce; no parapet/door yet |
+| 2F 廊道 | z **2.73–3.64**、**x 1.82–6.37**（西推 0.91），Y=2.7；**東端對北翼 CL**（非陽台） |
+| 2F 西北凸角 | **2F 不做室內**（所見為 1F 屋頂） |
+| 2F NE 洋室 | 西牆 **x=7.28**；北翼 CL **6.37–7.28**；入戶門在 **CL 南側**；G2 **3.64 m**（7.28→10.92）。方案 B，**尚未寫進 dimensions** |
+| 2F トイレ | 廊道北側 z=**3.64** 開門（井西）；室內物入＋洗面器＋坐便 |
+| Balcony | W **2.73×1.11** from **x=6.37**（CL 下）, E **1.82×0.91**；**T-202 門 + 欄杆**（尚未實作） |
 | 1F ceiling | Soffit Y=2.5; open over stair well |
 | 2F ceiling | Soffit Y=5.2 over indoor rooms/corridor/toilet/NE; **no** slab on balcony or stair well |
-| PH / 3F | L 梯 + **ph-stair-deck** 蓋井 z4.55–6.37；廊 0.91→南門→陽台 6.37×3.64 @ Y=5.4；矮牆 **1.4 m** |
+| PH / 3F | 床 **Y=6.309**；L 梯；南陽台 6.37×3.64 **+ 北塊** 4.55×2.73 可走；欄杆 **1.1 m**；梯間斜頂南高北低 |
 | Height | Multi-level sampling; ignore 2F while feetY &lt; 2.0；ignore PH while feetY &lt; 4.0 |
 
 **Edit sizes in** `src/data/dimensions.ts` first.

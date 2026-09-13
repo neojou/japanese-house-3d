@@ -4,6 +4,7 @@ import {
   BUILDING,
   FLOOR_LEVELS,
   INTERIOR_FLOOR_Y,
+  storyWallHeight,
   IR,
   SX,
   SZ,
@@ -27,7 +28,7 @@ export function BathFinishes() {
 
   const halfT = BUILDING.wallThickness / 2;
   const cladT = UB_BATH.clad.thickness;
-  const wallH = BUILDING.wallHeight - INTERIOR_FLOOR_Y - 0.02;
+  const wallH = storyWallHeight("1f") - INTERIOR_FLOOR_Y - 0.02;
   const y0 = FLOOR_LEVELS["1f"] + INTERIOR_FLOOR_Y;
   const midY = y0 + wallH / 2;
 
