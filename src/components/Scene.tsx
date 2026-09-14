@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, PerspectiveCamera } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { House } from "@/components/house";
+import { Compass, House } from "@/components/house";
 import { Player } from "@/components/Player";
 import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
 import { MobileDpad } from "@/components/ui/MobileDpad";
@@ -112,6 +112,7 @@ function SceneContent() {
         <House />
         <axesHelper args={[2.5]} position={[0, 0.02, 0]} />
       </group>
+      <Compass />
     </>
   );
 }

@@ -63,7 +63,6 @@ export function House() {
       <BathFinishes />
       <Props />
       <PlanLabels />
-      <Compass />
     </group>
   );
 }
