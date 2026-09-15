@@ -255,7 +255,7 @@ function WindowPanel({
           metalness={frost ? 0.04 : MATERIAL_PRESETS.glass.metalness}
         />
       </mesh>
-      {opening.id === "1f-win-ldk-s-tall" && (
+      {opening.height > opening.width * 1.5 && (
         <mesh position={[x, y, z]}>
           <boxGeometry
             args={
@@ -267,7 +267,7 @@ function WindowPanel({
           <meshStandardMaterial color="#3a3632" roughness={0.55} metalness={0.2} />
         </mesh>
       )}
-      {opening.id === "1f-win-ldk-s-pair" && (
+      {opening.width > opening.height * 1.5 && (
         <mesh position={[x, y, z]}>
           <boxGeometry
             args={

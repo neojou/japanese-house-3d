@@ -95,7 +95,7 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 - 1F floor **0.609**; 1F rise **2.90**; 2F rise **2.80**; PH floor **6.309**; roofs south-high / north-low
 - Stair well NS **1.82** (option A: lower spur may enter LDK)
 - NE 洋室 west @ **x=7.28**; 北翼 CL **x 6.37–7.28**; south G2 **7.28→10.92 (3.64 m)**
-- 東北室入戶門：北翼 **CL 南側**（不是西牆中段、不是陽台進房）
+- 東北室入戶門：CL **西牆南端**（軸南、把北，開進室內）。衣櫥門在 CL **東面**。陽台僅南面 **東西向雙片拉門**
 - 2F 西北凸角：**不做室內**（1F 屋頂）
 - Balcony: 進深 1.11／0.91；西塊 **x=6.37**（CL 下）；**要門（T-202）+ 欄杆**
 - No 2F slab over rising upper stair treads

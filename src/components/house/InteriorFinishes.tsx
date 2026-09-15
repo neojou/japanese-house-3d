@@ -34,17 +34,14 @@ export function InteriorFinishes() {
   }, []);
 
   const matWood = useMemo(() => createInteriorWoodMaterial(0.5, 2.2), []);
-  const matBeam = useMemo(() => createInteriorWoodMaterial(6, 0.2), []);
 
   useLayoutEffect(() => {
     return () => {
-      for (const m of [matWood, matBeam]) {
-        m.map?.dispose();
-        m.normalMap?.dispose();
-        m.dispose();
-      }
+      matWood.map?.dispose();
+      matWood.normalMap?.dispose();
+      matWood.dispose();
     };
-  }, [matWood, matBeam]);
+  }, [matWood]);
 
   const y0 = FLOOR_LEVELS["1f"];
   const wallH = storyWallHeight("1f");
@@ -62,10 +59,6 @@ export function InteriorFinishes() {
   const rightW = Math.max(IR.genkanE - passX1 - 0.02, 0.08);
   const leftCx = IR.genkanW + 0.01 + leftW / 2;
   const rightCx = passX1 + 0.01 + rightW / 2;
-
-  const beamY = 2.5 - 0.08;
-  const beamZ = (SZ.outer + SZ.mid) / 2;
-  const beamX = SX.xLdkE / 2;
 
   // Genkan + SCL dust zone bounds for cove
   const dustX0 = SX.xLdkE;
@@ -216,11 +209,6 @@ export function InteriorFinishes() {
           color={sc.glow}
         />
       </group>
-
-      {/* LDK decorative beam */}
-      <mesh position={[beamX, beamY, beamZ]} castShadow material={matBeam}>
-        <boxGeometry args={[SX.xLdkE * 0.72, 0.12, 0.18]} />
-      </mesh>
 
       {/* 2F G2 interior sill band (NE south @ clN = 2.73) */}
       <mesh

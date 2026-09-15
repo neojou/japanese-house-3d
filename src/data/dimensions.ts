@@ -1783,34 +1783,34 @@ export const SWING_DOORS: SwingDoorDef[] = [
   {
     id: "swing-2f-ne",
     openingId: "2f-door-ne-yoshitsu",
-    wallX: 0,
-    wallZ: 3.64,
-    alongMin: IR.genkanW + (0.91 - 0.8) / 2,
-    alongMax: IR.genkanW + (0.91 - 0.8) / 2 + 0.8,
-    axis: "ew",
+    wallX: IR.genkanW,
+    wallZ: 0,
+    alongMin: 2.73 + 0.04,
+    alongMax: 2.73 + 0.04 + 0.8,
+    axis: "ns",
     sill: 0,
     height: 1.95,
     hingeAt: "min",
     openSign: -1,
     openAngleDeg: 90,
     floor: "2f",
-    label: "2F北翼CL南",
+    label: "2F東北室",
   },
   {
-    id: "swing-2f-balcony",
-    openingId: "2f-door-ne-balcony",
-    wallX: 0,
-    wallZ: 2.73,
-    alongMin: IR.genkanW + 0.91 + 0.35,
-    alongMax: IR.genkanW + 0.91 + 0.35 + 0.8,
-    axis: "ew",
+    id: "swing-2f-ne-cl",
+    openingId: "2f-door-ne-cl",
+    wallX: IR.genkanW + 0.91,
+    wallZ: 0,
+    alongMin: 3.64 + 0.45,
+    alongMax: 3.64 + 0.45 + 0.7,
+    axis: "ns",
     sill: 0,
     height: 1.95,
     hingeAt: "min",
     openSign: -1,
     openAngleDeg: 90,
     floor: "2f",
-    label: "2F陽台門",
+    label: "2F東北CL衣櫥",
   },
   // ── 2F south-wing doors @ clN=2.73 → corridor ──
   {
@@ -1887,6 +1887,25 @@ export const SWING_DOORS: SwingDoorDef[] = [
  * UB|洗面: dual frosted panels both stack west (openToward min) — no swing arc.
  */
 export const SLIDE_DOORS: SlideDoorDef[] = [
+  {
+    id: "slide-2f-ne-balcony",
+    openingId: "2f-door-ne-balcony",
+    style: "tokonoma-card",
+    wallX: 0,
+    wallZ: 2.73,
+    alongMin: IR.genkanW + 0.91 + 0.08,
+    alongMax: BUILDING.width - 0.08,
+    axis: "ew",
+    sill: 0,
+    height: storyWallHeight("2f") - 0.18,
+    openToward: "max",
+    panels: 2,
+    floor: "2f",
+    label: "2F陽台拉門",
+    glassColor: "#c5d4e0",
+    glassOpacity: 0.28,
+    frameColor: "#2c2824",
+  },
   {
     id: "slide-ub-shower",
     openingId: "1f-door-ub",
@@ -2563,7 +2582,7 @@ export const FLOORS_2F: FloorSlab[] = [
     rect: {
       x: X2_NW_JOG,
       z: Z2.clN,
-      width: IR.genkanW + M91 - X2_NW_JOG, // 1.82 → 7.28 (south of 北翼 CL)
+      width: IR.genkanW - X2_NW_JOG, // 1.82 → 6.37 (stops at CL west)
       depth: Z2.corrDepth, // 0.91
     },
     thickness: T2,
@@ -2623,7 +2642,7 @@ export const FLOORS_2F: FloorSlab[] = [
     color: "#c5c0b6",
   },
   /**
-   * 北翼 CL (plan B) west of NE room.
+   * 北翼 CL — x 6.37–7.28, z 3.64–6.37. Closet door east only.
    */
   {
     id: "2f-ne-cl",
@@ -2638,6 +2657,21 @@ export const FLOORS_2F: FloorSlab[] = [
     thickness: T2,
     label: "2F北翼CL",
     color: "#c8c2b8",
+  },
+  /** Inside NE room, south of CL (entered via west door). */
+  {
+    id: "2f-ne-foyer",
+    floor: "2f",
+    y: Y2,
+    rect: {
+      x: IR.genkanW,
+      z: Z2.clN,
+      width: M91,
+      depth: Z2.corrDepth,
+    },
+    thickness: T2,
+    label: "2F東北室(CL南)",
+    color: "#c5c0b6",
   },
   /**
    * NE 洋室6.5 — west x=7.28 (plan B).
@@ -2948,7 +2982,7 @@ export const CEILINGS_2F: FloorSlab[] = [
     rect: {
       x: X2_NW_JOG,
       z: Z2.clN,
-      width: IR.genkanW + 0.91 - X2_NW_JOG, // 1.82 → 7.28
+      width: IR.genkanW - X2_NW_JOG, // 1.82 → 6.37
       depth: Z2.corrDepth,
     },
     thickness: CEIL2_T,
@@ -2981,6 +3015,20 @@ export const CEILINGS_2F: FloorSlab[] = [
     },
     thickness: CEIL2_T,
     label: "天花 2F梯アプローチ",
+    color: CEIL2_COLOR,
+  },
+  {
+    id: "ceil-2f-ne-foyer",
+    floor: "2f",
+    y: CEIL2_TOP_Y,
+    rect: {
+      x: IR.genkanW,
+      z: Z2.clN,
+      width: 0.91,
+      depth: Z2.corrDepth,
+    },
+    thickness: CEIL2_T,
+    label: "天花 2F東北室(CL南)",
     color: CEIL2_COLOR,
   },
   {
@@ -3060,8 +3108,10 @@ const G2_EDGE = 0.08;
 const G2_FROM = G2_EDGE;
 const G2_W = NE_S_LEN - 2 * G2_EDGE;
 
-/** NE entry on south wall of 北翼 CL (along X from CL west). */
-const DOOR_2F_NE_FROM = (M91 - INT2_DOOR_W) / 2;
+/** Room door on CL west wall, south end (along +Z from clN). */
+const DOOR_2F_NE_FROM = 0.04;
+/** Closet door on CL east wall (along +Z from corrN). */
+const DOOR_2F_NE_CL_FROM = 0.45;
 
 /** Room doors flank CL on wall @ clN (fromStart from x=0). */
 const DOOR_2F_SW_FROM = X2_CL0 - INT2_DOOR_W - 0.04; // east-shifted, tight to CL
@@ -3081,20 +3131,27 @@ export const WALLS_2F: WallSegment[] = [
     floor: "2f",
     label: "2F南(西〜中央)",
     openings: [
+      /**
+       * South elevation: 2F west 洋室 — horizontal 2-pane, west of CL.
+       * Wall is 0–6.37; this room is 0–2.73.
+       */
       {
         id: "2f-win-sw-s",
-        fromStart: 0.7,
-        width: 1.35,
-        height: 1.15,
-        sill: 0.85,
+        fromStart: 0.78,
+        width: 1.32,
+        height: 0.78,
+        sill: 1.05,
         type: "window",
       },
+      /**
+       * South elevation: 2F center 洋室 — same 2-pane, east of CL (3.64–6.37).
+       */
       {
         id: "2f-win-sc-s",
-        fromStart: 4.1,
-        width: 1.35,
-        height: 1.15,
-        sill: 0.85,
+        fromStart: 4.36,
+        width: 1.32,
+        height: 0.78,
+        sill: 1.05,
         type: "window",
       },
     ],
@@ -3294,13 +3351,20 @@ export const WALLS_2F: WallSegment[] = [
     label: "2Fトイレ東|梯井",
   },
   // ═══════════════════════════════════════════════════════════
-  // 北翼 CL (plan B) x 6.37–7.28, z corrN→north; door on south
+  // 北翼 CL x 6.37–7.28, z corrN→north
+  // Room door: west wall south (from corridor). Closet door: east only.
   // ═══════════════════════════════════════════════════════════
   {
     id: "2f-int-ne-cl-s",
     ...wallEW(X2_NE_CL0, X2_NE_CL1, Z2_CORR_N),
     floor: "2f",
-    label: "2F北翼CL南←廊",
+    label: "2F北翼CL南",
+  },
+  {
+    id: "2f-int-ne-cl-w",
+    ...wallNS(X2_NE_CL0, Z2_CL_N, Z2.north),
+    floor: "2f",
+    label: "2F東北室門|CL西",
     openings: [
       {
         id: "2f-door-ne-yoshitsu",
@@ -3313,54 +3377,40 @@ export const WALLS_2F: WallSegment[] = [
     ],
   },
   {
-    id: "2f-int-ne-cl-w",
-    ...wallNS(X2_NE_CL0, Z2_CORR_N, Z2.north),
-    floor: "2f",
-    label: "2F北翼CL西|梯",
-  },
-  {
     id: "2f-int-ne-cl-e",
     ...wallNS(X2_NE_CL1, Z2_CORR_N, Z2.north),
     floor: "2f",
-    label: "2F北翼CL東|洋室",
+    label: "2F北翼CL東|衣櫥門",
     openings: [
       {
-        id: "2f-pass-ne-cl-room",
-        fromStart: 0.2,
+        id: "2f-door-ne-cl",
+        fromStart: DOOR_2F_NE_CL_FROM,
         width: 0.7,
         height: INT2_DOOR_H,
         sill: INT2_SILL,
-        type: "passage",
+        type: "door",
       },
     ],
   },
   {
-    id: "2f-int-ne-west",
-    ...wallNS(X2_NE_CL1, Z2_CL_N, Z2_CORR_N),
+    id: "2f-ne-foyer-s",
+    ...wallEW(X2_NE_CL0, X2_NE_CL1, Z2_CL_N),
     floor: "2f",
-    label: "2F洋室西(廊帶)",
+    label: "2F東北室南(CL下實牆)",
   },
   {
     id: "2f-ne-room-s",
     ...wallEW(NE_S_X0, NE_S_X1, Z2_CL_N),
     floor: "2f",
-    label: "2F洋室南 G2 3.64",
+    label: "2F洋室南 陽台拉門",
     openings: [
       {
         id: "2f-door-ne-balcony",
-        fromStart: 0.35,
-        width: INT2_DOOR_W,
-        height: INT2_DOOR_H,
+        fromStart: 0.08,
+        width: NE_S_LEN - 0.16,
+        height: G2_H,
         sill: INT2_SILL,
         type: "door",
-      },
-      {
-        id: "2f-win-ne-g2",
-        fromStart: 0.35 + INT2_DOOR_W + 0.08,
-        width: Math.max(0.8, NE_S_LEN - 0.35 - INT2_DOOR_W - 0.16),
-        height: G2_H,
-        sill: G2_SILL,
-        type: "window",
       },
     ],
   },

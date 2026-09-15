@@ -92,15 +92,15 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 
 | Element | Spec |
 |---------|------|
-| West wall | **x = 7.28**（北翼 CL 之東）。進房門在 **CL 南側**（x 6.37–7.28），不是西牆中段、不是陽台進房 |
+| West wall | CL 西牆 **x = 6.37**。**房間門**在此牆**南端**（廊帶 z 2.73–3.64）：門軸南、門把北，開進室內 +X。東北室西界仍 **x = 7.28** |
 | North / East | Solid exterior |
-| South G2 | Floor-to-ceiling glass **3.64 m** @ z = **clN (2.73)**，west **7.28** → east **10.92**。（舊 4.55／6.37→10.92 **解除**，2026-09-13 方案 B） |
-| Balcony | 兩塊不變：西 **2.73×1.11**（z **1.62–2.73**，**x 仍 6.37 起、CL 下方**），東 **1.82×0.91**（z **1.82–2.73**）。**要門（T-202）+ 欄杆**（高度未標，建議 1.1 m） |
+| South G2 | **透明雙片拉門**（東西向）@ z = clN **2.73**，x **7.28→10.92**。不能從廊／梯直通陽台。 |
+| Balcony | 西 **2.73×1.11**（x **6.37** 起）、東 **1.82×0.91**。出陽台僅經南面拉門。欄杆 **1.1 m** |
 | 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**; clN=2.73, corrN=3.64; well z 4.55–6.37 |
 | South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (2.73)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
-| Corridor | z **2.73–3.64**, x **1.82–6.37** (west jog 0.91); **east faces 北翼 CL**（非陽台、非直接 NE 門） |
-| NE 洋室 | South = **clN (2.73)**; z **2.73–6.37** (depth 3.64); west **x=7.28**；EW **3.64**；G2 **3.64 m** @ clN |
-| 北翼 CL | EW **0.91** @ x **6.37–7.28**（梯井東、東北室西）。入戶門在 **CL 南側**。方案 B；梯井仍 4.55–6.37 |
+| Corridor | z **2.73–3.64**, x **1.82–6.37**；東止於 CL 西牆（右轉不能直通陽台） |
+| NE 洋室 | z **2.73–6.37**；西 **x=7.28**（CL 南還有室內 0.91 進深）；南面拉門出陽台 |
+| 北翼 CL | EW **0.91** @ x **6.37–7.28**、z **3.64–6.37**。**衣櫥門在東面**；西／南／北實牆（西牆南端另開房間門） |
 | NW jog | **2F 不做室內**（平面所見為 **1F 屋頂**）。刪 2F 凸角房間與 `PROP_2F_SINK` |
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
 | トイレ | North of corridor; door @ **corrN (3.64)** from corridor |
@@ -202,7 +202,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 **DoD**
 
-- [ ] Opening + swing (or sliding) on G2 (7.28→10.92); open onto balcony (−Z)
+- [x] Dual EW sliding glass on G2 (7.28→10.92); must open to reach balcony
 - [ ] Continuous floor through opening; no auto-snap bugs
 - [ ] Balcony **railing** (height unspecified on plan; default **1.1 m** unless owner says otherwise)
 - [ ] West slab still x **6.37–9.10** under north-wing CL
@@ -418,3 +418,4 @@ Every task also satisfies:
 | 2026-09-13 | 2F 北翼 CL **方案 B**：東北室西 x=7.28；G2 **3.64 m**（解除 4.55）；梯井不變。只改文件，未實作 |
 | 2026-09-13 | 2F 續：西北凸角=1F 屋頂（2F 不做）；陽台 1.11／0.91、西塊 x=6.37、T-202 門+欄杆；東北室門在 CL 南側 |
 | 2026-09-13 | 樓高鎖定：1F 床 0.609、階高 2.90／2.80、PH 6.309；斜頂南高北低；PH L 北塊可走欄杆 1.1；東 2F 屋頂不上人；立面窗這一輪開 |
+| 2026-09-13 | 2F NE：入戶門 CL 西牆南端；衣櫥門東面；南面東西向雙片拉門出陽台（廊不直通） |
