@@ -255,6 +255,30 @@ function WindowPanel({
           metalness={frost ? 0.04 : MATERIAL_PRESETS.glass.metalness}
         />
       </mesh>
+      {opening.id === "1f-win-ldk-s-tall" && (
+        <mesh position={[x, y, z]}>
+          <boxGeometry
+            args={
+              alongX
+                ? [opening.width, frame, frameDeep]
+                : [frameDeep, frame, opening.width]
+            }
+          />
+          <meshStandardMaterial color="#3a3632" roughness={0.55} metalness={0.2} />
+        </mesh>
+      )}
+      {opening.id === "1f-win-ldk-s-pair" && (
+        <mesh position={[x, y, z]}>
+          <boxGeometry
+            args={
+              alongX
+                ? [frame, opening.height, frameDeep]
+                : [frameDeep, opening.height, frame]
+            }
+          />
+          <meshStandardMaterial color="#3a3632" roughness={0.55} metalness={0.2} />
+        </mesh>
+      )}
       {/* Slim charcoal frame (four sides) */}
       {(
         [

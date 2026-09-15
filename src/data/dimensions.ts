@@ -621,20 +621,16 @@ export const WALLS_1F: WallSegment[] = [
     floor: "1f",
     label: "LDK南 2.175",
     openings: [
+      /**
+       * South elevation: west tall 2-pane stack on LDK south.
+       * Sill from grade; tops align with the pair to the east.
+       */
       {
         id: "1f-win-ldk-s-tall",
-        fromStart: 0.35,
-        width: 0.59,
-        height: 1.35,
-        sill: 0.9,
-        type: "window",
-      },
-      {
-        id: "1f-win-ldk-s-pair",
-        fromStart: 1.05,
-        width: 0.78,
-        height: 1.1,
-        sill: 1.05,
+        fromStart: 0.72,
+        width: 0.6,
+        height: 1.3,
+        sill: 1.2,
         type: "window",
       },
     ],
@@ -645,6 +641,17 @@ export const WALLS_1F: WallSegment[] = [
     ...wallEW(SX.xLdkA, SX.xLdkE, SZ.outer),
     floor: "1f",
     label: "LDK南 4.195",
+    openings: [
+      /** South elevation: horizontal 2-pane; same head as the tall west window. */
+      {
+        id: "1f-win-ldk-s-pair",
+        fromStart: 0.12,
+        width: 1.28,
+        height: 0.64,
+        sill: 2.16,
+        type: "window",
+      },
+    ],
   },
 
   // 内縮 return: LDK 東外牆 (臨駐車) z: 0 → genkan/SCL 南
