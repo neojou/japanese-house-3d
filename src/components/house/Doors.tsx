@@ -337,9 +337,16 @@ function WindowPanel({
  * still inside the original bay (half the opening stays walkable).
  */
 function SlideDoor({ def }: { def: SlideDoorDef }) {
+  const idA = `${def.id}__A`;
+  const idB = `${def.id}__B`;
   const open = useViewerStore((s) => !!s.doorOpen[def.id]);
+  const openA = useViewerStore((s) => !!s.doorOpen[idA]);
+  const openB = useViewerStore((s) => !!s.doorOpen[idB]);
   const toggleDoor = useViewerStore((s) => s.toggleDoor);
-  const tRef = useRef(0); // 0 closed → 1 open
+  const setDoorOpen = useViewerStore((s) => s.setDoorOpen);
+  const tRef = useRef(0);
+  const tA = useRef(0);
+  const tB = useRef(0);
   const leafA = useRef<THREE.Group>(null);
   const leafB = useRef<THREE.Group>(null);
 
@@ -365,26 +372,25 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       : closedA;
 
   const stack = leafW - overlap;
-  const openDeltaA = overlapStyle
-    ? def.openToward === "min"
-      ? stack
-      : 0
-    : dir * leafW * 0.88;
-  const openDeltaB = overlapStyle
-    ? def.openToward === "min"
-      ? 0
-      : -stack
-    : dir * (leafW * 0.88 + leafW * 0.72);
+  const pocketDeltaA = dir * leafW * 0.88;
+  const pocketDeltaB = dir * (leafW * 0.88 + leafW * 0.72);
 
   const frameColor = def.frameColor ?? INTERIOR.accent;
   const glassColor = def.glassColor ?? "#f2ebe0";
   const glassOpacity = def.glassOpacity ?? 0.42;
 
-  // Track offset: dual on parallel rails slightly toward UB (−Z for ew wall)
-  const railOffA = def.axis === "ew" ? 0.012 : 0;
-  const railOffB = def.axis === "ew" ? -0.018 : 0;
+  /** Interior rail is closer to the room; east leaf is farther when closed. */
+  const railIn = def.axis === "ew" ? 0.012 : 0.012;
+  const railOut = def.axis === "ew" ? -0.018 : -0.018;
+  /**
+   * When the east leaf is stacked west, it must sit on the interior rail.
+   * Otherwise the west leaf (interior) eats the click → openA+closeB,
+   * both leaves travel east together.
+   */
+  const railOffA = overlapStyle && openB ? railOut : railIn;
+  const railOffB = overlapStyle && openB ? railIn : railOut;
 
-  const onClick = useCallback(
+  const onClickPocket = useCallback(
     (e: ThreeEvent<MouseEvent>) => {
       e.stopPropagation();
       toggleDoor(def.id);
@@ -392,12 +398,37 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
     [def.id, toggleDoor],
   );
 
+  const onClickLeaf = useCallback(
+    (leaf: "A" | "B") => (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      if (!overlapStyle) {
+        toggleDoor(def.id);
+        return;
+      }
+      if (leaf === "A") {
+        const next = !openA;
+        setDoorOpen(idA, next);
+        if (next) setDoorOpen(idB, false);
+      } else {
+        const next = !openB;
+        setDoorOpen(idB, next);
+        if (next) setDoorOpen(idA, false);
+      }
+    },
+    [overlapStyle, def.id, toggleDoor, openA, openB, idA, idB, setDoorOpen],
+  );
+
   useFrame((_, dt) => {
-    const target = open ? 1 : 0;
-    tRef.current = THREE.MathUtils.damp(tRef.current, target, 8, dt);
-    const t = tRef.current;
+    if (overlapStyle) {
+      tA.current = THREE.MathUtils.damp(tA.current, openA ? 1 : 0, 8, dt);
+      tB.current = THREE.MathUtils.damp(tB.current, openB ? 1 : 0, 8, dt);
+    } else {
+      tRef.current = THREE.MathUtils.damp(tRef.current, open ? 1 : 0, 8, dt);
+    }
+    const dA = overlapStyle ? stack * tA.current : pocketDeltaA * tRef.current;
+    const dB = overlapStyle ? -stack * tB.current : pocketDeltaB * tRef.current;
     if (leafA.current) {
-      const along = closedA + openDeltaA * t;
+      const along = closedA + dA;
       if (def.axis === "ew") {
         leafA.current.position.x = along;
         leafA.current.position.z = def.wallZ + railOffA;
@@ -407,7 +438,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       }
     }
     if (leafB.current && n === 2) {
-      const along = closedB + openDeltaB * t;
+      const along = closedB + dB;
       if (def.axis === "ew") {
         leafB.current.position.x = along;
         leafB.current.position.z = def.wallZ + railOffB;
@@ -418,8 +449,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
     }
   });
 
-  const ptr = {
-    onClick,
+  const hover = {
     onPointerOver: () => {
       document.body.style.cursor = "pointer";
     },
@@ -427,6 +457,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       document.body.style.cursor = "auto";
     },
   };
+  const ptr = { onClick: onClickPocket, ...hover };
 
   const midAlong = (def.alongMin + def.alongMax) / 2;
   const topY = sillY + def.height;
@@ -459,6 +490,22 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       def.axis === "ew"
         ? [along0, sillY + 0.02, def.wallZ + zOff]
         : [def.wallX + zOff, sillY + 0.02, along0];
+    const which = key === "B" ? "B" : "A";
+    const covered =
+      overlapStyle && ((which === "A" && openB) || (which === "B" && openA));
+    const leafRaycast = covered
+      ? () => {}
+      : THREE.Mesh.prototype.raycast;
+    const leafPtr = covered
+      ? {}
+      : {
+          onClick: onClickLeaf(which),
+          ...hover,
+        };
+    /** Overlap: west handle on west stile, east handle on east stile. */
+    const handleAlong = overlapStyle
+      ? (key === "B" ? 1 : -1) * (leafW / 2 - SLIDE_FRAME - 0.02)
+      : leafW * 0.28 * (key === "B" ? -1 : 1);
     return (
       <group
         key={key}
@@ -470,8 +517,9 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
         <mesh
           position={[0, leafH / 2, 0]}
           castShadow
-          userData={{ interactable: "door" }}
-          {...ptr}
+          raycast={leafRaycast}
+          userData={{ interactable: covered ? undefined : "door" }}
+          {...leafPtr}
         >
           <boxGeometry
             args={
@@ -515,8 +563,9 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
                 ? [lx, ly, 0]
                 : [0, ly, lx]
             }
-            userData={{ interactable: "door" }}
-            {...ptr}
+            raycast={leafRaycast}
+            userData={{ interactable: covered ? undefined : "door" }}
+            {...leafPtr}
           >
             <boxGeometry
               args={
@@ -536,11 +585,12 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
         <mesh
           position={
             def.axis === "ew"
-              ? [leafW * 0.28 * (key === "B" ? -1 : 1), leafH * 0.45, SLIDE_LEAF_T * 0.6]
-              : [SLIDE_LEAF_T * 0.6, leafH * 0.45, leafW * 0.28]
+              ? [handleAlong, leafH * 0.45, SLIDE_LEAF_T * 0.6]
+              : [SLIDE_LEAF_T * 0.6, leafH * 0.45, handleAlong]
           }
-          userData={{ interactable: "door" }}
-          {...ptr}
+          raycast={leafRaycast}
+          userData={{ interactable: covered ? undefined : "door" }}
+          {...leafPtr}
         >
           <boxGeometry args={[0.012, 0.28, 0.014]} />
           <meshStandardMaterial
@@ -606,8 +656,16 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
         <boxGeometry
           args={
             def.axis === "ew"
-              ? [openingW + leafW + 0.15, 0.004, 0.012]
-              : [0.012, 0.004, openingW + leafW + 0.15]
+              ? [
+                  overlapStyle ? openingW + 0.06 : openingW + leafW + 0.15,
+                  0.004,
+                  0.012,
+                ]
+              : [
+                  0.012,
+                  0.004,
+                  overlapStyle ? openingW + 0.06 : openingW + leafW + 0.15,
+                ]
           }
         />
         <meshStandardMaterial color="#1a1816" roughness={0.8} />
