@@ -94,7 +94,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 |---------|------|
 | West wall | CL 西牆 **x = 6.37**。**房間門**在此牆**南端**（廊帶 z 2.73–3.64）：門軸南、門把北，開進室內 +X。東北室西界仍 **x = 7.28** |
 | North / East | Solid exterior |
-| South G2 | **透明雙片拉門**（東西向）@ z = clN **2.73**，x **7.28→10.92**。不能從廊／梯直通陽台。 |
+| South G2 | 雙片拉門 **2.10 × 2.15**，x **7.00–9.10**（東緣距東牆 **1.82**）。西扇往東疊、不超出開口。 |
 | Balcony | 西 **2.73×1.11**（x **6.37** 起）、東 **1.82×0.91**。出陽台僅經南面拉門。欄杆 **1.1 m** |
 | 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**; clN=2.73, corrN=3.64; well z 4.55–6.37 |
 | South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (2.73)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |

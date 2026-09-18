@@ -333,7 +333,8 @@ function WindowPanel({
 /**
  * Tokonoma-card sliding shower / pocket door.
  * Leaves translate along the wall (no quarter-arc into the room).
- * Dual bypass: both panels stack toward openToward when open.
+ * Dual bypass: pocket = stack past the jamb; overlap = one leaf on the other,
+ * still inside the original bay (half the opening stays walkable).
  */
 function SlideDoor({ def }: { def: SlideDoorDef }) {
   const open = useViewerStore((s) => !!s.doorOpen[def.id]);
@@ -351,6 +352,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
   const baseY = FLOOR_LEVELS[def.floor ?? "1f"];
   const sillY = baseY + def.sill;
   const dir = def.openToward === "min" ? -1 : 1;
+  const overlapStyle = def.slideStyle === "overlap" && n === 2;
 
   // Closed centers along wall
   const closedA =
@@ -362,10 +364,17 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       ? def.alongMax - leafW / 2 + overlap * 0.25
       : closedA;
 
-  // Open: stack west of opening (for openToward min)
-  // Lead leaf (B, was east) travels farther; trail leaf (A) parks just west of opening
-  const openTravelA = leafW * 0.88;
-  const openTravelB = leafW * 0.88 + leafW * 0.72;
+  const stack = leafW - overlap;
+  const openDeltaA = overlapStyle
+    ? def.openToward === "min"
+      ? stack
+      : 0
+    : dir * leafW * 0.88;
+  const openDeltaB = overlapStyle
+    ? def.openToward === "min"
+      ? 0
+      : -stack
+    : dir * (leafW * 0.88 + leafW * 0.72);
 
   const frameColor = def.frameColor ?? INTERIOR.accent;
   const glassColor = def.glassColor ?? "#f2ebe0";
@@ -388,7 +397,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
     tRef.current = THREE.MathUtils.damp(tRef.current, target, 8, dt);
     const t = tRef.current;
     if (leafA.current) {
-      const along = closedA + dir * openTravelA * t;
+      const along = closedA + openDeltaA * t;
       if (def.axis === "ew") {
         leafA.current.position.x = along;
         leafA.current.position.z = def.wallZ + railOffA;
@@ -398,7 +407,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       }
     }
     if (leafB.current && n === 2) {
-      const along = closedB + dir * openTravelB * t;
+      const along = closedB + openDeltaB * t;
       if (def.axis === "ew") {
         leafB.current.position.x = along;
         leafB.current.position.z = def.wallZ + railOffB;

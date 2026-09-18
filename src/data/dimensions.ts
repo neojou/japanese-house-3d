@@ -105,11 +105,17 @@ export type SlideDoorDef = {
   height: number;
   /**
    * Open travel toward alongMin ("min") or alongMax ("max").
-   * Dual bypass panels both stack this side.
+   * Dual bypass: pocket stacks past the jamb; overlap stacks on the other leaf
+   * and stays inside the original opening.
    */
   openToward: "min" | "max";
-  /** 1 = single leaf; 2 = bypass pair (both stack openToward) */
+  /** 1 = single leaf; 2 = bypass pair */
   panels: 1 | 2;
+  /**
+   * pocket (default): both leaves travel toward openToward, may leave the bay
+   * (shower). overlap: one leaf slides over the other; passage is the free half.
+   */
+  slideStyle?: "pocket" | "overlap";
   floor?: FloorId;
   label?: string;
   /** Frosted glass look */
@@ -1893,13 +1899,15 @@ export const SLIDE_DOORS: SlideDoorDef[] = [
     style: "tokonoma-card",
     wallX: 0,
     wallZ: 2.73,
-    alongMin: IR.genkanW + 0.91 + 0.08,
-    alongMax: BUILDING.width - 0.08,
+    /** East edge 1.82 m west of room east wall (10.92 − 1.82 = 9.10). */
+    alongMin: BUILDING.width - 1.82 - 2.1,
+    alongMax: BUILDING.width - 1.82,
     axis: "ew",
     sill: 0,
-    height: storyWallHeight("2f") - 0.18,
-    openToward: "max",
+    height: 2.15,
+    openToward: "min",
     panels: 2,
+    slideStyle: "overlap",
     floor: "2f",
     label: "2F陽台拉門",
     glassColor: "#c5d4e0",
@@ -3393,22 +3401,16 @@ export const WALLS_2F: WallSegment[] = [
     ],
   },
   {
-    id: "2f-ne-foyer-s",
-    ...wallEW(X2_NE_CL0, X2_NE_CL1, Z2_CL_N),
-    floor: "2f",
-    label: "2F東北室南(CL下實牆)",
-  },
-  {
     id: "2f-ne-room-s",
-    ...wallEW(NE_S_X0, NE_S_X1, Z2_CL_N),
+    ...wallEW(X2_NE_CL0, NE_S_X1, Z2_CL_N),
     floor: "2f",
     label: "2F洋室南 陽台拉門",
     openings: [
       {
         id: "2f-door-ne-balcony",
-        fromStart: 0.08,
-        width: NE_S_LEN - 0.16,
-        height: G2_H,
+        fromStart: BUILDING.width - 1.82 - 2.1 - X2_NE_CL0,
+        width: 2.1,
+        height: 2.15,
         sill: INT2_SILL,
         type: "door",
       },
