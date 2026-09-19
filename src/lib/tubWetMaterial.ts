@@ -59,10 +59,9 @@ uniform vec3 uDry;
 uniform vec3 uWet;
 uniform vec3 uSheen;
 void main() {
-  vec2 n = (vPlan - uTub) / uHalf;
-  float e = length(n);
-  if (e < 0.93) discard;
-  float outside = max(0.0, e - 1.0);
+  vec2 d = abs(vPlan - uTub) - uHalf;
+  float outside = length(max(d, 0.0));
+  if (outside < 0.002 && min(d.x, d.y) < 0.0) discard;
   float reached = 1.0 - smoothstep(uWetR, uWetR + 0.18, outside);
   if (reached * uMoisture < 0.01) discard;
   float nearAmt = 1.0 - smoothstep(0.0, max(uWetR, 0.08), outside);

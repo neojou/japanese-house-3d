@@ -16,6 +16,7 @@ import {
   createStuccoNormalMap,
   createStuccoRoughnessMap,
   createBathDiatomFloorAlbedoMap,
+  createLideaFloorNormalMap,
   createBathHexPatchworkAlbedoMap,
   createBathHexPatchworkNormalMap,
   createBathMarbleFloorAlbedoMap,
@@ -93,6 +94,8 @@ export const INTERIOR_SECONDARY_WALL_IDS = new Set<string>([
   "1f-int-toilet-e",
   "1f-int-toilet-s",
   "1f-int-senmen-w",
+  "1f-int-senmen-ub",
+  "1f-int-scl-ub-w",
   "1f-int-scl-n-west",
   "1f-int-scl-w",
   "1f-int-cl-s",
@@ -111,13 +114,10 @@ export const INTERIOR_SECONDARY_WALL_IDS = new Set<string>([
 ]);
 
 /**
- * UB bath marble walls (darker seamless smoke veins).
- * Shared SCL|UB and 洗面|UB partitions use bath finish on the whole wall.
+ * UB interior is the Type-M hero liner (GLB). Partition walls facing
+ * SCL / 洗面 stay interior secondary — do not paint both sides marble/hex.
  */
-export const BATH_MARBLE_WALL_IDS = new Set<string>([
-  "1f-int-scl-ub-w",
-  "1f-int-senmen-ub",
-]);
+export const BATH_MARBLE_WALL_IDS = new Set<string>([]);
 
 /**
  * Interior accent (~5%): charcoal character walls only.
@@ -355,16 +355,16 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
     },
     {
       weight: 6,
-      step: "UB 鵝黃色珪藻土地…",
+      step: "UB 防滑地…",
       run: () => {
         bathDiatomAlbedo = createBathDiatomFloorAlbedoMap(512);
       },
     },
     {
       weight: 5,
-      step: "UB 珪藻土法線…",
+      step: "UB 防滑地法線…",
       run: () => {
-        bathDiatomNormal = createInteriorPlasterNormalMap(512, 0.42);
+        bathDiatomNormal = createLideaFloorNormalMap(512);
       },
     },
     {
@@ -738,32 +738,31 @@ export function createGenkanSlateMaterial(
 }
 
 /**
- * UB floor: seamless goose-yellow diatomaceous earth (no tile joints).
- * tileM = large UV scale for subtle grit variation.
+ * UB floor: Type-M beige anti-slip grid (replaces goose-yellow diatom).
  */
 export function createBathFloorMaterial(
   sizeX: number,
   sizeZ: number,
-  tileM = 1.4,
+  tileM = 0.18,
 ): THREE.MeshStandardMaterial {
   ensureFaçadeTextures();
   if (!_ready || !bathDiatomAlbedo) {
     return new THREE.MeshStandardMaterial({
-      color: "#ead9b0",
-      roughness: 0.94,
+      color: "#e4d4bc",
+      roughness: 0.9,
     });
   }
   const repU = Math.max(sizeX / tileM, 0.6);
   const repV = Math.max(sizeZ / tileM, 0.6);
   const maps = cloneMaps(bathDiatomAlbedo, bathDiatomNormal, null, repU, repV);
   return new THREE.MeshStandardMaterial({
-    color: "#f5ecd4",
+    color: "#f0e6d4",
     map: maps.map,
     normalMap: maps.normalMap,
-    normalScale: new THREE.Vector2(0.4, 0.4),
-    roughness: 0.94,
-    metalness: 0,
-    envMapIntensity: 0.12,
+    normalScale: new THREE.Vector2(0.85, 0.85),
+    roughness: 0.88,
+    metalness: 0.02,
+    envMapIntensity: 0.16,
   });
 }
 

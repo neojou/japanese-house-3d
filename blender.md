@@ -1,6 +1,6 @@
 # blender.md — 現行策略：Vite／R3F 主體 + 英雄道具 GLB
 
-最後更新：2026-09-07（R3F 預設；整棟 GLB 已歸檔；玄關大門英雄 overlay 已接）
+最後更新：2026-09-19（R3F 預設；英雄 overlay：玄關大門 + 1F UB Type-M）
 
 本文件是 [japanese-house-3d](https://github.com/neojou/japanese-house-3d) 的視覺升級規範。  
 **Grok Build 必須遵守本檔「現行策略」，不要再整棟用 GLB 換掉 R3F 牆與門。**
@@ -24,10 +24,9 @@
 
 英雄道具優先順序（有尺寸與 DESIGN.md 依據才做，沒有就跳過）：
 
-1. 玄關大門＋門框／燒杉門套  
-2. 玄關 yaki-sugi 飾面或門楣  
-3. tokonoma-card（若 DESIGN.md 已有）  
-4. 其他近看物件（最多 2–3 件）
+1. 玄關大門＋門框（Giesta 2 inspired）— **done** `public/models/hero/genkan-door.glb`  
+2. 1F UB Type-M 內襯＋エプロン浴槽 — **done** `public/models/hero/ub-bath.glb`  
+3. tokonoma-card 其他近看物件（senmen basin 已在 `public/props/`）
 
 結構網格繼續用 R3F；GLB 當 overlay，對齊同一套公尺座標與既有 X 鏡像。
 
@@ -59,7 +58,7 @@
 建議：
 
 - 舊整棟 glb 改名歸檔，例如 `public/models/archive/house-full-box-bevel.glb`
-- 新英雄道具用獨立檔名：`public/models/hero/genkan-door.glb` 等
+- 新英雄道具用獨立檔名：`public/models/hero/genkan-door.glb`、`public/models/hero/ub-bath.glb` 等
 - `build_house.py` 可留作之後在 Blender 重開／重匯出整棟的來源，本輪不要用它覆蓋主場景
 
 Vite 預設場景：**R3F 結構 + 英雄 GLB overlay**。可用 query 或旗標預覽舊整棟 glb，預設關閉。

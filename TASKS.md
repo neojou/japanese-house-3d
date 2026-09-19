@@ -257,10 +257,10 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
 - [x] `hero-2f-toilet` — 2F トイレ北牆坐便朝南（進門轉身坐下；同 tokonoma-card 瓷；一般住宅組み合わせ 720×380、座面 420、水箱頂 780）
 - [x] `slide-ub-shower` — UB｜洗面 雙片西向淋浴拉門（磨砂／炭灰／地軌／加高；無平開佔位）
-- [x] `hero-1f-ub-tub` — UB 東半南北獨立浴缸（弧線瓷白、南落地香檳金龍頭、裝飾水面）
-- [x] `hero-1f-ub-tub` wet — click faucet on/off; lift-out plug; fill / drain (`docs/ub-tub.md`, `npm run test:tub`)
-- [x] `ub-bath-finish` — UB：南 seamless 深灰；東 hex 青拼布；地鵝黃珪藻土整片；浴缸實底＋龍頭
-- [x] `hero-1f-ub-bathmat` — 浴缸西側白羊毛腳踏（0.5×0.75）
+- [x] `hero-1f-ub-tub` — UB 東牆 Type-M エプロン浴槽（W1200 NS、靠東、內盆薄唇～90% 水面、西北甲板鉻鈕開底部塞）Path B `ub-bath.glb`
+- [x] `hero-1f-ub-tub` wet — click mixer on/off; corner **push-button** plug; fill / drain (`docs/ub-tub.md`, `npm run test:tub` / `test:ub-bath`)
+- [x] `ub-bath-finish` — Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東 TW-FIX **1.20×1.20** 在浴缸上方
+- [x] `hero-1f-ub-bathmat` — **retired**（Type-M 洗い場無羊毛腳踏）
 - [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
 - [x] `hero-1f-ldk-kitchen` — LDK 西 2.175 m 開放廚（南北島＋水槽、南冰箱、暖木淺石）
 - [x] `hero-1f-senmen` — 洗面北牆：西置物籃＋中洗面台豎鏡＋東前開洗衣機
@@ -422,3 +422,5 @@ Every task also satisfies:
 | 2026-09-13 | 東立面：LDK 東拉門、UB 東窗、洗面東門；2F 東北／東南東牆各一雙格窗 |
 | 2026-09-13 | 玄關大門 Giesta 2 inspired 英雄 GLB：西鉸東把、向西南開；燒杉門扇移除 |
 | 2026-09-13 | 玄關大門開角 **85°**（原 100° 會掃過 LDK 東拉門） |
+| 2026-09-19 | 1F UB → LIXIL リデア Mタイプ / BDUS-1616LBM-A+H inspired：英雄 `ub-bath.glb`、東窗特注 1200×1200、按壓排水、防滑地 |
+| 2026-09-19 | UB 浴缸內盆放大（唇 40 mm，對齊 bath_tank-1/2）；鉻鈕改西北甲板，連動底部塞 |

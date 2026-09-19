@@ -36,6 +36,17 @@ Blender is **optional**. This machine often has none. The Node baker is still Pa
 7. Update TASKS.md changelog + DESIGN hang-point status
 ```
 
+UB Type-M liner (same idea):
+
+```text
+1. Edit UB_BATH / PROP_1F_UB_TUB / UB_EAST_WINDOW in dimensions.ts
+2. Keep tools/dcc/build_ub_bath.py numbers in sync
+3. npm run bake:ub-bath
+4. npm run test:ub-bath && npm run test:tub
+5. npx tsc --noEmit
+6. Visual gate: /japanese-house-3d/?pose=tub
+```
+
 Do **not**:
 
 - Wait for the owner to open Blender
@@ -53,7 +64,10 @@ Do **not**:
 | Script | Role |
 |--------|------|
 | `npm run bake:senmen-basin` | Blender if on `PATH` / `BLENDER` / Blender.app; else Node DCC → `public/props/senmen-basin/basin.glb` |
+| `npm run bake:ub-bath` | Type-M UB liner + Minamo apron + chrome → `public/models/hero/ub-bath.glb` |
 | `npm run test:basin` | Profile + mesh + glTF + loader contracts |
+| `npm run test:ub-bath` | UB GLB names + window 1.20 + push drain + overlay |
+| `npm run test:tub` | Fill / drain / wet-floor contracts |
 | `npm run test:mirror` | Unrelated; still required if you touch mirrors |
 
 Bake is **not** a `dev` dependency of the walkthrough: the glTF is committed so `npm run dev` works without Blender.
@@ -70,6 +84,11 @@ Bake is **not** a `dev` dependency of the walkthrough: the glTF is committed so 
 | `tools/dcc/senmen_basin.py` | Optional Blender boolean + subdiv |
 | `public/props/senmen-basin/basin.glb` | Runtime asset |
 | `src/components/house/SenmenVanity.tsx` | Deck / chrome / faucet + `useGLTF` |
+| `src/lib/ubBathHero.ts` | UB Type-M layout + Node DCC |
+| `scripts/bake-ub-bath.mjs` | Orchestrator (Blender preferred) |
+| `tools/dcc/build_ub_bath.py` | Optional Blender boolean tub + packed maps |
+| `public/models/hero/ub-bath.glb` | Runtime UB liner |
+| `src/components/house/TubDisplay.tsx` | Water / click mixer / push-button + `useGLTF` |
 
 ---
 

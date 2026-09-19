@@ -268,8 +268,12 @@ function WindowPanel({
   const sizeX = alongX ? opening.width * 0.88 : t;
   const sizeZ = alongX ? t : opening.width * 0.88;
   const frost = opening.glazing === "frosted";
-  const frame = 0.028;
-  const frameDeep = BUILDING.wallThickness * 1.08;
+  const whiteFrame = opening.frameFinish === "white";
+  const frame = whiteFrame ? 0.036 : 0.028;
+  const frameDeep = BUILDING.wallThickness * (whiteFrame ? 1.18 : 1.08);
+  const frameColor = whiteFrame ? "#f4f1ec" : "#3a3632";
+  const frameRough = whiteFrame ? 0.42 : 0.55;
+  const frameMetal = whiteFrame ? 0.06 : 0.2;
 
   return (
     <group>
@@ -292,7 +296,11 @@ function WindowPanel({
                 : [frameDeep, frame, opening.width]
             }
           />
-          <meshStandardMaterial color="#3a3632" roughness={0.55} metalness={0.2} />
+          <meshStandardMaterial
+            color={frameColor}
+            roughness={frameRough}
+            metalness={frameMetal}
+          />
         </mesh>
       )}
       {opening.width > opening.height * 1.2 && (
@@ -304,7 +312,11 @@ function WindowPanel({
                 : [frameDeep, opening.height, frame]
             }
           />
-          <meshStandardMaterial color="#3a3632" roughness={0.55} metalness={0.2} />
+          <meshStandardMaterial
+            color={frameColor}
+            roughness={frameRough}
+            metalness={frameMetal}
+          />
         </mesh>
       )}
       {/* Slim charcoal frame (four sides) */}
@@ -347,13 +359,29 @@ function WindowPanel({
           >
             <boxGeometry args={args} />
             <meshStandardMaterial
-              color="#3a3632"
-              roughness={0.55}
-              metalness={0.2}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
         );
       })}
+      {whiteFrame && (
+        <mesh position={[x, y, z]}>
+          <boxGeometry
+            args={
+              alongX
+                ? [frame, opening.height * 0.96, frameDeep]
+                : [frameDeep, opening.height * 0.96, frame]
+            }
+          />
+          <meshStandardMaterial
+            color={frameColor}
+            roughness={frameRough}
+            metalness={frameMetal}
+          />
+        </mesh>
+      )}
     </group>
   );
 }

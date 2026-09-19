@@ -52,6 +52,8 @@ export type Opening = {
   type: OpeningType;
   /** Windows: frosted for wet rooms so the street cannot look in. */
   glazing?: "clear" | "frosted";
+  /** Default charcoal slim frame; unit-bath TW-FIX uses white. */
+  frameFinish?: "charcoal" | "white";
 };
 
 /**
@@ -336,6 +338,21 @@ export const SZ = {
   yoshitsuW: 1.82,
 } as const;
 
+/**
+ * 1F UB east opening — LIXIL リデア Mタイプ BD21B catalog
+ * 「TW FIX窓 … W1200×H1200（特注寸法）」.
+ * That 特注 size is the **window**, not the tub. Aligns above the east apron tub
+ * (`docs/refs/images/bath_tank.jpg`, outlook_E).
+ */
+export const UB_EAST_WINDOW = {
+  width: 1.2,
+  height: 1.2,
+  /** Story-base Y (1F = 0). Deck is 0.609; ~0.73 m above floor = rim + tile band. */
+  sill: 1.34,
+  /** From east-wall start at SZ.ubSouth; matches 1.20 m NS tub. */
+  fromStart: 0.125,
+} as const;
+
 // ─────────────────────────────────────────────────────────────
 // Parking + genkan entry (for GenkanEntry component)
 // ─────────────────────────────────────────────────────────────
@@ -576,7 +593,7 @@ export const FLOORS: FloorSlab[] = [
     },
     thickness: INTERIOR_SLAB_THICKNESS,
     label: "UB",
-    color: "#ead9b0",
+    color: "#e4d4bc",
   },
   {
     id: "1f-senmen",
@@ -732,11 +749,13 @@ export const WALLS_1F: WallSegment[] = [
     openings: [
       {
         id: "1f-win-ub-e",
-        fromStart: 0.4,
-        width: 1.05,
-        height: 1.05,
-        sill: 1.2,
+        fromStart: UB_EAST_WINDOW.fromStart,
+        width: UB_EAST_WINDOW.width,
+        height: UB_EAST_WINDOW.height,
+        sill: UB_EAST_WINDOW.sill,
         type: "window",
+        glazing: "clear",
+        frameFinish: "white",
       },
       {
         id: "1f-door-senmen-east",
@@ -948,108 +967,124 @@ export const PROP_1F_TOILET = {
 } as const;
 
 /**
- * UB bath finishes — tokonoma-card wet zone (DESIGN.md §2.7).
- * South/partitions: darker seamless smoke marble.
- * East clad: elongated hex cyan patchwork.
- * Floor: seamless goose-yellow diatomaceous earth (no joints).
+ * 1F UB — LIXIL リデア Mタイプ / BDUS-1616LBM-A+H *inspired* (no trademarks).
+ * Interior liner + ミナモ-style apron tub are the hero GLB (`ub-bath.glb`).
+ * Visual lock: `docs/refs/images/bath_tank.jpg` + Type-M BD21B catalog.
  */
 export const UB_BATH = {
   floorIds: ["1f-ub"] as const,
-  /** UV scale for seamless diatom grit (large = subtle) */
-  floorTileM: 1.4,
-  wallTileM: 1.2,
-  /** East hex feature wall */
-  eastHex: {
-    tileM: 0.55,
-    aspect: 1.8,
-    seed: 42,
-  },
-  /** Interior clad on exterior shell faces (keep outer stucco) */
+  style: "lidea-type-m" as const,
+  /** Interior faces of the room (plan, inside the 0.15 m shells). */
+  x0: SX.xSclE + BUILDING.wallThickness / 2,
+  x1: SX.xEast - BUILDING.wallThickness,
+  z0: SZ.ubSouth + BUILDING.wallThickness / 2,
+  z1: IR.wetS - BUILDING.wallThickness / 2,
+  y0: INTERIOR_FLOOR_Y,
+  /** Liner ceiling above deck (catalog 天井高 2225). */
+  ceilingH: 2.225,
+  cladT: 0.014,
+  /** Anti-slip floor UV (small grid). */
+  floorTileM: 0.18,
+  wallTileM: 0.33,
+  /** R3F extra clads off — the GLB is the liner. */
   clad: {
-    thickness: 0.018,
-    south: true,
-    east: true,
+    thickness: 0.014,
+    south: false,
+    east: false,
+    north: false,
+    west: false,
   },
+  /** 洗面|UB shower slide (north wall), plan X. */
+  showerDoor: {
+    x0: SX.xSclE + 0.5,
+    width: 0.8,
+    height: 2.0,
+  },
+  gltf: "/models/hero/ub-bath.glb",
 } as const;
 
 /**
- * White wool bath mat west of freestanding tub (tokonoma-card accessory).
- */
-export const PROP_1F_UB_BATHMAT = {
-  id: "hero-1f-ub-bathmat",
-  style: "tokonoma-card" as const,
-  floor: "1f" as FloorId,
-  label: "UB白羊毛腳踏",
-  /** Sized relative to tub; placed on west long side */
-  width: 0.5, // EW
-  depth: 0.75, // NS
-  thickness: 0.02,
-  /** Gap from tub west face */
-  gap: 0.06,
-  color: "#f5f2ec",
-} as const;
-
-/**
- * 1F UB east-half freestanding tub — tokonoma-card wet fixture (DESIGN.md §2.7).
- * Long axis NS; faucet on south; boutique sculptural porcelain + champagne metal.
+ * 1F UB Type-M apron tub against the east wall.
+ * Owner W1200 = NS length along the window wall. Catalog W1200×H1200 特注 is the
+ * east window (`UB_EAST_WINDOW`), not the tub height. Apron depth ~700 mm.
  */
 export const PROP_1F_UB_TUB = {
   id: "hero-1f-ub-tub",
   style: "tokonoma-card" as const,
   floor: "1f" as FloorId,
-  label: "UB獨立浴缸",
-  /** East half of UB (x 9.10–10.92) */
-  x: SX.xSclE + (SX.xEast - SX.xSclE) * 0.72, // ≈ 10.41
-  /** NS center; length leaves ~0.16 m clear N/S */
-  z: (SZ.ubSouth + IR.wetS) / 2, // ≈ 3.635
+  label: "UBユニットバス",
+  /** East face almost on the east interior; 0.70 m apron depth. */
+  x: SX.xEast - BUILDING.wallThickness - 0.008 - 0.7 / 2,
+  /** South-biased so the wash floor / dark wall sit to the north. */
+  z: SZ.ubSouth + BUILDING.wallThickness / 2 + 0.05 + 1.2 / 2,
   y: INTERIOR_FLOOR_Y,
-  /** Outer length along Z (north–south) */
-  length: 1.5,
-  /** Outer width along X (east–west) */
-  width: 0.73,
-  /** Rim height above finished floor */
-  rimH: 0.56,
-  /** Inner basin depth below rim */
-  basinDepth: 0.38,
-  porcelain: "#f7f2ea",
-  porcelainInner: "#d4cdc4",
-  /** Bath water — fills only when plug is seated and faucet is on */
+  /** Outer length along Z (north–south) — W1200. */
+  length: 1.2,
+  /** Outer width along X (east–west) — Type-M apron. */
+  width: 0.7,
+  rimH: 0.55,
+  basinDepth: 0.42,
+  /**
+   * Deck lip around the water (m). Photos `bath_tank-1.png` / `bath_tank-2.png`:
+   * thin rim, inner fill ~90% of the top.
+   */
+  innerInset: 0.04,
+  /** Inner rounded-rect corner (Minamo). */
+  innerCornerR: 0.11,
+  porcelain: "#f4f1ec",
+  porcelainInner: "#ebe6de",
   water: {
-    color: "#9ec0d0",
-    opacity: 0.62,
-    /** Surface below rim when full */
-    insetY: 0.1,
+    color: "#8eb8c8",
+    opacity: 0.58,
+    insetY: 0.028,
     fillRate: 0.12,
     drainRate: 0.32,
     streamR: 0.006,
     spreadRate: 0.085,
     dryRate: 0.05,
   },
-  /** Lift-out plug (seated on drain, or set on the west rim) */
+  /**
+   * Deck push-button on the **northwest** top surface (photo lower-right).
+   * Press toggles the **bottom** plug — does not lift out.
+   */
   plug: {
-    r: 0.028,
-    h: 0.014,
-    ringR: 0.01,
+    kind: "push-button" as const,
+    r: 0.018,
+    h: 0.006,
+    travel: 0.003,
+    /** Inset from the outer west + north edges of the deck. */
+    deckInset: 0.036,
   },
-  /** Champagne / soft gold metal */
-  metal: "#c4a574",
-  metalness: 0.72,
-  /** Floor-mount faucet south of tub (full assembly) */
+  /** Basin-floor drain that opens when the deck button is pressed. */
+  drain: {
+    r: 0.024,
+    travel: 0.016,
+  },
+  /** Inner I-bar 600 mm (catalog 浴槽内握りバー). */
+  grab: {
+    length: 0.6,
+    r: 0.014,
+    belowRim: 0.07,
+  },
+  /** Chrome, not champagne. */
+  metal: "#c5c8cc",
+  metalness: 0.92,
   faucet: {
-    /** Offset south of tub south end (m) */
-    southGap: 0.08,
-    columnH: 0.95,
-    spoutReach: 0.22,
-    spoutDrop: 0.1,
+    kind: "column-shower" as const,
+    mixerH: 0.95,
+    barH: 1.85,
+    spoutReach: 0.14,
+    spoutDrop: 0.08,
   },
   light: {
-    dx: -0.25,
-    dy: 0.7,
-    dz: 0.15,
-    intensity: 0.28,
-    distance: 1.9,
-    color: "#fff0e0",
+    dx: -0.35,
+    dy: 1.55,
+    dz: 0.05,
+    intensity: 0.42,
+    distance: 2.2,
+    color: "#fff4e6",
   },
+  gltf: "/models/hero/ub-bath.glb",
 } as const;
 
 /**

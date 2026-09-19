@@ -33,10 +33,11 @@ export function poseFromQuery(): DebugPose | null {
   }
   if (id === "tub") {
     return {
-      x: PROP_1F_UB_TUB.x - 0.82,
-      z: PROP_1F_UB_TUB.z,
-      yaw: -Math.PI / 2,
-      pitch: -0.28,
+      x: PROP_1F_UB_TUB.x - 0.72,
+      z: PROP_1F_UB_TUB.z - 0.22,
+      /** East + a little north so the NW deck button is in frame. */
+      yaw: Math.PI / 2 + 0.42,
+      pitch: -0.55,
     };
   }
   if (id === "toilet2f") {

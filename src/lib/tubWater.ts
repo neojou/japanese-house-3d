@@ -91,6 +91,20 @@ export function ellipseOutside(
   return Math.max(0, e - 1);
 }
 
+/** Axis-aligned apron footprint: 0 on/inside the rim, metres outside. */
+export function rectOutside(
+  x: number,
+  z: number,
+  cx: number,
+  cz: number,
+  halfW: number,
+  halfL: number,
+): number {
+  const dx = Math.abs(x - cx) - halfW;
+  const dz = Math.abs(z - cz) - halfL;
+  return Math.hypot(Math.max(dx, 0), Math.max(dz, 0));
+}
+
 export function wetnessAt(
   outside: number,
   wetR: number,

@@ -307,8 +307,8 @@ export function createYakiSugiRoughnessMap(size = 512): THREE.CanvasTexture {
 }
 
 /**
- * Goose-yellow diatomaceous earth floor (seamless, no grout).
- * Warm cream-yellow grit — UB bath floor (tokonoma-card wet calm base).
+ * Type-M wash-floor: warm beige anti-slip grid (キレイサーモフロア inspired).
+ * Replaces the old goose-yellow seamless diatom.
  */
 export function createBathDiatomFloorAlbedoMap(size = 512): THREE.CanvasTexture {
   const canvas = makeCanvas(size);
@@ -316,28 +316,73 @@ export function createBathDiatomFloorAlbedoMap(size = 512): THREE.CanvasTexture 
   const img = ctx.createImageData(size, size);
   const cache = new Map<string, number>();
   const rand = mulberry32(0xd1a0);
-  // Cream goose-yellow base
-  const br = 234,
-    bg = 217,
-    bb = 176;
-
+  const cells = 10;
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const u = x / size;
       const v = y / size;
-      const n = fbm(u * 12, v * 12, 5, cache, rand);
-      const g = fbm(u * 40, v * 40, 3, cache, rand);
-      const cloud = fbm(u * 4 + 0.2, v * 5, 3, cache, rand);
-      const t = (n - 0.5) * 14 + (g - 0.5) * 8 + (cloud - 0.5) * 6;
+      const fx = (u * cells) % 1;
+      const fy = (v * cells) % 1;
+      const groove = fx < 0.12 || fy < 0.12;
+      const n = fbm(u * 18, v * 18, 4, cache, rand);
+      const t = (n - 0.5) * 10;
+      let r: number, g: number, b: number;
+      if (groove) {
+        r = 196 + t;
+        g = 184 + t * 0.9;
+        b = 166 + t * 0.7;
+      } else {
+        r = 226 + t;
+        g = 214 + t * 0.85;
+        b = 194 + t * 0.6;
+      }
       const i = (y * size + x) * 4;
-      img.data[i] = Math.min(255, Math.max(0, br + t));
-      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.85));
-      img.data[i + 2] = Math.min(255, Math.max(0, bb + t * 0.55));
+      img.data[i] = Math.min(255, Math.max(0, r));
+      img.data[i + 1] = Math.min(255, Math.max(0, g));
+      img.data[i + 2] = Math.min(255, Math.max(0, b));
       img.data[i + 3] = 255;
     }
   }
   ctx.putImageData(img, 0, 0);
   return canvasToTexture(canvas, { colorSpace: THREE.SRGBColorSpace });
+}
+
+/** Raised anti-slip nubs; grooves read as shadows under raking light. */
+export function createLideaFloorNormalMap(size = 512): THREE.CanvasTexture {
+  const canvas = makeCanvas(size);
+  const ctx = canvas.getContext("2d")!;
+  const img = ctx.createImageData(size, size);
+  const cells = 10;
+  const strength = 1.15;
+  const heightAt = (u: number, v: number) => {
+    const fx = (u * cells) % 1;
+    const fy = (v * cells) % 1;
+    if (fx < 0.12 || fy < 0.12) return 0.12;
+    const inset = Math.min(fx - 0.12, fy - 0.12, 1 - fx, 1 - fy);
+    return 0.55 + Math.min(inset, 0.08) * 3;
+  };
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size;
+      const v = y / size;
+      const h0 = heightAt(u, v);
+      const hx = heightAt(u + 1 / size, v);
+      const hy = heightAt(u, v + 1 / size);
+      const dx = (hx - h0) * strength * 4;
+      const dy = (hy - h0) * strength * 4;
+      const nx = -dx;
+      const ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      const i = (y * size + x) * 4;
+      img.data[i] = Math.round(((nx / len) * 0.5 + 0.5) * 255);
+      img.data[i + 1] = Math.round(((ny / len) * 0.5 + 0.5) * 255);
+      img.data[i + 2] = Math.round(((nz / len) * 0.5 + 0.5) * 255);
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvasToTexture(canvas);
 }
 
 /** Soft wool / pile normal for bath mat (medium fluff). */

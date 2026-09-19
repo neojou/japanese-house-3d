@@ -210,8 +210,8 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET` / `PROP_2F_TOILET`  
 - **Residential envelope (JP 組み合わせ):** tank-back → bowl-front **720 mm**, width **380 mm**, sit **420 mm** (rim ~380 + seat), close-coupled tank top **780 mm**. Declared `SIT_TOILET.depth` / `width` **are** the visual box — oval bowl + rear deck, not a packed circular lathe. `src/lib/sitToilet.ts`, `npm run test:toilet`  
 - **1F senmen vessel:** opaque rectangular porcelain (liner + drain bore) on a **hollow pale-hinoki cabinet**; running mixer + P-trap to the wall; **click doors** to see the waste. `SenmenVanity.tsx` + `docs/senmen-vanity.md`  
-- **Freestanding tub:** sculptural oval shell; **clickable floor faucet**; **lift-out plug** (seated or west rim); water rises only when plugged + faucet on — `TubDisplay.tsx` + `docs/ub-tub.md`  
-- **UB room finishes:** darker **seamless** smoke-marble on south/partitions; **east clad** = elongated **hex cyan patchwork**; floor **seamless goose-yellow diatomaceous earth** (no joints); white wool bath mat west of tub; exterior stucco kept via clad (`BathFinishes`, `UB_BATH`); tub solid basin + denser water + full faucet
+- **1F UB unit bath:** LIXIL リデア Mタイプ / BDUS-1616LBM-A+H **inspired** (no trademarks). Path B hero `public/models/hero/ub-bath.glb`. Visual lock: `docs/refs/images/bath_tank.jpg` + inner fill `bath_tank-1.png` / `bath_tank-2.png`. Apron tub against **east** wall (NS **W1200**, depth ~700 mm, inner lip **40 mm**); **click chrome mixer**; **NW-deck chrome button** opens/closes the **bottom plug**. East **TW FIX 特注 W1200×H1200** window above the tub. `TubDisplay.tsx` + `docs/ub-tub.md`  
+- **UB room finishes:** cream tile liner (N/E/W) + charcoal textured shower wall (S, right of the east window); beige **anti-slip grid** floor; white window reveal; chrome column shower + inner I-bar grab. Exterior stucco kept (liner sits inside the shell). Dropped hex-cyan / smoke-marble / goose-yellow diatom / wool mat.
 
 ### Sliding wet door variant (淋浴拉門)
 
@@ -233,9 +233,9 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
 | `hero-2f-toilet` | 2F トイレ北牆 — 坐便朝南（進門轉身坐下） | `tokonoma-card` (潔具) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
-| `hero-1f-ub-tub` | 1F UB 東半 — 獨立浴缸＋可開關龍頭＋可拿起塞子／蓄排水 | `tokonoma-card` (潔具) | **Done** |
-| `ub-bath-finish` | 1F UB 牆 seamless／東 hex 青拼布／地鵝黃珪藻土整片 | `tokonoma-card` (濕區) | **Done** |
-| `hero-1f-ub-bathmat` | 1F UB 浴缸西側白羊毛腳踏 | `tokonoma-card` (配件) | **Done** |
+| `hero-1f-ub-tub` | 1F UB 東牆 — Type-M 大內盆＋西北角甲板鉻鈕開底部塞 | `tokonoma-card` (潔具 / Path B GLB) | **Done** |
+| `ub-bath-finish` | 1F UB Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東窗 1.20×1.20 | `tokonoma-card` (濕區) | **Done** |
+| `hero-1f-ub-bathmat` | （已撤）羊毛腳踏不符 Type-M 洗い場 | — | **Retired** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
 | `hero-1f-ldk-kitchen` | 1F LDK 西 2.175 m 開放廚（島台朝東＋西牆冰箱高櫃） | `tokonoma-card` (廚房 vignette) | **Done** |
 | `hero-1f-senmen` | 1F 洗面：不透明瓷盆＋流水＋P 型存水彎＋可開檜木櫃門 | `tokonoma-card` (洗面 vignette) | **Done** |
@@ -352,6 +352,8 @@ When changing look, verify in first-person:
 | 2026-08-02 | UB bath marble: wall seamless dark, floor light tiled; split 1f-ub/1f-senmen; south/east clad |
 | 2026-08-02 | UB east hex cyan patchwork; floor 0.6 m tiles; tub solid bottom + denser water + full faucet |
 | 2026-08-02 | UB floor → goose-yellow seamless diatom; white wool bath mat west of tub |
+| 2026-09-19 | 1F UB → Lidea Type-M inspired hero GLB (apron tub, push drain, 1200×1200 east window, beige anti-slip); hex/diatom/wool retired |
+| 2026-09-19 | UB tub inner ~90% fill (40 mm lip, bath_tank-1/2); chrome button on NW deck opens basin-floor plug |
 | 2026-08-02 | Toilet café curtains upper 1/3 pink; kawaii chihuahua / Pomeranian panels |
 | 2026-08-02 | LDK west open kitchen 2.175 m: NS island sink, fridge S, wood+stone, bar overhang |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |

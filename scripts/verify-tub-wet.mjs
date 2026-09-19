@@ -50,8 +50,9 @@ async function main() {
   assert.match(src, /runoffVisible/);
   assert.match(src, /stepFloorWet/);
   assert.match(src, /tub-spill/);
-  assert.match(src, /cylinderGeometry/);
-  console.log("  ✓ TubDisplay: click faucet + lift-out plug");
+  assert.match(src, /useGLTF/);
+  assert.doesNotMatch(src, /makeTubOuterLathe/);
+  console.log("  ✓ TubDisplay: click faucet + corner push-button");
 
   assert.equal(tw.isTubSpilling(1, true, true), true);
   assert.equal(tw.isTubSpilling(0.5, true, true), false);
@@ -66,11 +67,12 @@ async function main() {
   assert.equal(wet.front, 0, "fully dry resets front");
   wet = tw.stepFloorWet({ front: 0.4, moisture: 0.4 }, 1, 0.5, true, true);
   assert.equal(wet.front, 0.4, "filling but not full: no new spill");
-  const near = tw.ellipseOutside(10.41 - 0.4, 3.64, 10.41, 3.64, 0.365, 0.75);
-  const far = tw.ellipseOutside(10.41 - 1.2, 3.64, 10.41, 3.64, 0.365, 0.75);
+  const near = tw.rectOutside(10.41 - 0.4, 3.45, 10.41, 3.45, 0.35, 0.6);
+  const far = tw.rectOutside(10.41 - 1.2, 3.45, 10.41, 3.45, 0.35, 0.6);
   assert.ok(near < far, "near the tub is less 'outside' than far");
   assert.ok(tw.wetnessAt(near, 0.5) >= tw.wetnessAt(far, 0.5));
-  console.log("  ✓ overflow: near-first wet; uniform dry (front holds)");
+  assert.equal(tw.rectOutside(10.41, 3.45, 10.41, 3.45, 0.35, 0.6), 0);
+  console.log("  ✓ overflow: near-first wet (apron rect); uniform dry (front holds)");
 
   assert.equal(tw.runoffVisible(true, false, 0), true, "tap on, plug out → rivulet");
   assert.equal(tw.runoffVisible(false, false, 0), false, "tap off → no rivulet");
