@@ -33,6 +33,11 @@ function cloneNamed(
     }
     if (!hit) return;
     const mesh = src.clone();
+    if (src.material) {
+      mesh.material = Array.isArray(src.material)
+        ? src.material.map((m) => m.clone())
+        : src.material.clone();
+    }
     src.getWorldPosition(wp);
     src.getWorldQuaternion(wq);
     src.getWorldScale(ws);
@@ -44,16 +49,44 @@ function cloneNamed(
   return g;
 }
 
+function enhanceMaterials(root: THREE.Object3D) {
+  root.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData.interactable = "door";
+    mesh.userData.doorId = "genkan";
+    const name = mesh.name + (mesh.parent?.name ?? "");
+    const src = mesh.material as THREE.MeshStandardMaterial;
+    if (!src || Array.isArray(mesh.material)) return;
+    if (/glass/i.test(name) || /Glass/.test(mesh.name)) {
+      const phys = new THREE.MeshPhysicalMaterial({
+        color: src.color,
+        roughness: 0.16,
+        metalness: 0,
+        transmission: 0.72,
+        thickness: 0.012,
+        ior: 1.48,
+        transparent: true,
+        opacity: 0.82,
+        envMapIntensity: 1.15,
+      });
+      src.dispose();
+      mesh.material = phys;
+      return;
+    }
+    src.envMapIntensity = src.metalness > 0.3 ? 0.85 : 0.28;
+  });
+}
+
 /**
- * Hero genkan door overlay. Mesh only — yaki material from houseMaterials.
- * Parent this at the hinge; pass `staticFrame` for the non-rotating frame.
+ * Giesta-inspired hero. Keep baked PBR; only boost glass + shadows for R3F.
  */
 export function GenkanDoorHero({
-  material,
   ptr,
   part,
 }: {
-  material: THREE.MeshStandardMaterial;
   ptr: Ptr;
   part: "door" | "frame";
 }) {
@@ -63,25 +96,28 @@ export function GenkanDoorHero({
     const pred =
       part === "door"
         ? (n: string) =>
-            n.startsWith("Hero_GenkanDoor") || n.startsWith("board-")
+            /Hero_GenkanDoor|Hero_GenkanGlass|Hero_GenkanSlat|Hero_GenkanHandle|Hero_GenkanHinge|^board-/.test(
+              n,
+            )
         : (n: string) =>
-            n.startsWith("Hero_GenkanFrame") || n.startsWith("frame-");
-    return cloneNamed(gltf.scene, pred);
+            /Hero_GenkanFrame|^frame-/.test(n);
+    const g = cloneNamed(gltf.scene, pred);
+    enhanceMaterials(g);
+    return g;
   }, [gltf.scene, part]);
 
   useLayoutEffect(() => {
     group.traverse((o) => {
-      const mesh = o as THREE.Mesh;
-      if (!mesh.isMesh) return;
-      mesh.material = material;
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      mesh.userData.interactable = "door";
-      mesh.userData.doorId = "genkan";
+      if ((o as THREE.Mesh).isMesh) {
+        o.userData.interactable = "door";
+        o.userData.doorId = "genkan";
+      }
     });
-  }, [group, material]);
+  }, [group]);
 
-  return <primitive object={group} userData={{ interactable: "door" }} {...ptr} />;
+  return (
+    <primitive object={group} userData={{ interactable: "door" }} {...ptr} />
+  );
 }
 
 useGLTF.preload(HERO_URL);

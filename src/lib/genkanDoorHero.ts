@@ -1,17 +1,19 @@
 /**
- * Locked genkan-door hero sizes — must match GENKAN_ENTRY + GenkanEntry.tsx.
- * Local space: hinge at origin; leaf extends −X; +Y up; exterior −Z.
+ * Giesta 2 fire-door inspired hero (no trademarks).
+ * Local: hinge origin WEST; leaf +X east (handle); +Y up; exterior −Z.
  */
 export const GENKAN_DOOR_HERO = {
   id: "hero-1f-genkan-door",
-  /** Matches GenkanEntry frameReveal */
-  frameReveal: 0.012,
-  leafW: 1.52 - 0.012 * 2,
-  leafH: 1.95 - 0.012 * 0.5,
-  leafT: 0.048,
-  boards: 5,
-  gap: 0.004,
-  bevel: 0.0035,
+  frameReveal: 0.05,
+  leafW: 1.52 - 0.05 * 2,
+  leafH: 1.95 - 0.02,
+  leafT: 0.052,
+  boards: 9,
+  glassSlats: [2, 4] as const,
+  bevel: 0.0022,
+  openSign: 1,
+  hingeSide: "west" as const,
+  handleSide: "east" as const,
 } as const;
 
 export type HeroMesh = {
@@ -68,90 +70,98 @@ function boxGeo(
   return { positions, normals, indices };
 }
 
-/** Node DCC meshes (Blender bevels these if CLI is present). */
+export type HeroMeshWithMat = HeroMesh & { material: number };
+
+/** Node DCC fallback (Blender path is preferred). */
 export function buildGenkanDoorMeshes(): {
-  meshes: HeroMesh[];
+  meshes: HeroMeshWithMat[];
+  materials: {
+    name: string;
+    color: [number, number, number];
+    roughness: number;
+    metalness: number;
+    opacity?: number;
+  }[];
   root: {
     name: string;
     children: { name: string; mesh: number; extras: Record<string, unknown> }[];
   };
 } {
   const h = GENKAN_DOOR_HERO;
-  const meshes: HeroMesh[] = [];
+  const materials = [
+    { name: "GiestaWoodExt", color: [0.18, 0.11, 0.07] as [number, number, number], roughness: 0.78, metalness: 0.02 },
+    { name: "GiestaFrame", color: [0.07, 0.06, 0.055] as [number, number, number], roughness: 0.42, metalness: 0.55 },
+    { name: "GiestaGlass", color: [0.86, 0.88, 0.9] as [number, number, number], roughness: 0.2, metalness: 0, opacity: 0.55 },
+    { name: "GiestaHandle", color: [0.12, 0.12, 0.12] as [number, number, number], roughness: 0.35, metalness: 0.7 },
+  ];
+  const meshes: HeroMeshWithMat[] = [];
   const children: { name: string; mesh: number; extras: Record<string, unknown> }[] =
     [];
-  const inner = h.leafW - h.gap * (h.boards - 1);
-  const boardW = inner / h.boards;
-  for (let i = 0; i < h.boards; i++) {
-    const x0 = -h.leafW + i * (boardW + h.gap);
-    const cx = x0 + boardW / 2;
-    const name = i === 0 ? "Hero_GenkanDoor" : `Hero_GenkanDoor_${i}`;
-    meshes.push({
-      name,
-      ...boxGeo(boardW, h.leafH, h.leafT, cx, h.leafH / 2, 0),
-    });
-    children.push({
-      name,
-      mesh: meshes.length - 1,
-      extras: { hinge: true, doorId: "genkan" },
-    });
-  }
-  const frame = [
-    {
-      name: "Hero_GenkanFrame",
-      ...boxGeo(
-        h.frameReveal,
-        h.leafH + h.frameReveal,
-        h.leafT * 0.95,
-        -h.leafW - h.frameReveal / 2,
-        h.leafH / 2,
-        0,
-      ),
-    },
-    {
-      name: "Hero_GenkanFrame_east",
-      ...boxGeo(
-        h.frameReveal,
-        h.leafH + h.frameReveal,
-        h.leafT * 0.95,
-        h.frameReveal / 2,
-        h.leafH / 2,
-        0,
-      ),
-    },
-    {
-      name: "Hero_GenkanFrame_head",
-      ...boxGeo(
-        h.leafW + h.frameReveal * 2,
-        h.frameReveal,
-        h.leafT * 0.95,
-        -h.leafW / 2,
-        h.leafH + h.frameReveal / 2,
-        0,
-      ),
-    },
-    {
-      name: "Hero_GenkanFrame_sill",
-      ...boxGeo(
-        h.leafW + h.frameReveal,
-        0.016,
-        h.leafT * 1.05,
-        -h.leafW / 2,
-        0.008,
-        0,
-      ),
-    },
-  ];
-  for (const f of frame) {
-    meshes.push(f);
-    children.push({
-      name: f.name,
-      mesh: meshes.length - 1,
-      extras: { static: true },
-    });
-  }
-  return {
-    meshes,
-    root: { name: "Hero_GenkanPortal", children },
+  const push = (
+    name: string,
+    geo: ReturnType<typeof boxGeo>,
+    material: number,
+    extras: Record<string, unknown>,
+  ) => {
+    meshes.push({ name, ...geo, material });
+    children.push({ name, mesh: meshes.length - 1, extras });
   };
+  push(
+    "Hero_GenkanDoor",
+    boxGeo(h.leafW, h.leafH, h.leafT, h.leafW / 2, h.leafH / 2, 0),
+    0,
+    { hinge: true, doorId: "genkan", hingeSide: "west" },
+  );
+  const slatW = h.leafW / h.boards;
+  for (let i = 0; i < h.boards; i++) {
+    const cx = slatW * (i + 0.5);
+    const isGlass = (h.glassSlats as readonly number[]).includes(i);
+    if (isGlass) {
+      push(
+        `Hero_GenkanGlass_ext_${i}`,
+        boxGeo(slatW * 0.42, h.leafH * 0.78, 0.01, cx, h.leafH * 0.52, -h.leafT / 2 + 0.004),
+        2,
+        { hinge: true, doorId: "genkan" },
+      );
+    } else {
+      push(
+        `Hero_GenkanSlat_${i}`,
+        boxGeo(slatW * 0.88, h.leafH - 0.04, 0.01, cx, h.leafH / 2, -h.leafT / 2 + 0.003),
+        0,
+        { hinge: true, doorId: "genkan" },
+      );
+    }
+  }
+  push(
+    "Hero_GenkanGlass_int",
+    boxGeo(0.22, h.leafH * 0.72, 0.01, h.leafW - 0.2, h.leafH * 0.52, h.leafT / 2 - 0.003),
+    2,
+    { hinge: true, doorId: "genkan" },
+  );
+  push(
+    "Hero_GenkanHandle_out",
+    boxGeo(0.022, 0.92, 0.032, h.leafW - 0.065, 0.92, -h.leafT / 2 - 0.018),
+    3,
+    { hinge: true, doorId: "genkan" },
+  );
+  const fw = h.frameReveal;
+  push(
+    "Hero_GenkanFrame",
+    boxGeo(fw, h.leafH + fw, h.leafT * 1.2, -fw / 2, h.leafH / 2, 0),
+    1,
+    { static: true },
+  );
+  push(
+    "Hero_GenkanFrame_east",
+    boxGeo(fw, h.leafH + fw, h.leafT * 1.2, h.leafW + fw / 2, h.leafH / 2, 0),
+    1,
+    { static: true },
+  );
+  push(
+    "Hero_GenkanFrame_head",
+    boxGeo(h.leafW + fw * 2, fw, h.leafT * 1.2, h.leafW / 2, h.leafH + fw / 2, 0),
+    1,
+    { static: true },
+  );
+  return { meshes, materials, root: { name: "Hero_GenkanPortal", children } };
 }

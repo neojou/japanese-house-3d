@@ -34,8 +34,15 @@ async function main() {
     path.join(root, "src/components/house/GenkanDoorHero.tsx"),
     "utf8",
   );
-  assert.match(overlay, /createYakiSugiMaterial|material/);
+  assert.match(overlay, /MeshPhysicalMaterial|enhanceMaterials/);
   assert.match(overlay, /models\/hero\/genkan-door\.glb/);
+  const entry = readFileSync(
+    path.join(root, "src/components/house/GenkanEntry.tsx"),
+    "utf8",
+  );
+  assert.match(entry, /hingeX = g\.x0/);
+  assert.doesNotMatch(entry, /createYakiSugiMaterial/);
+  assert.match(joined, /Hero_GenkanHandle|Handle/);
   console.log(`  ✓ ${names.length} nodes, overlay + store door`);
 }
 

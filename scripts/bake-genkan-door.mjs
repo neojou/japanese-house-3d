@@ -43,18 +43,11 @@ async function bakeNode() {
   const bytes = writeGlb(
     {
       sceneName: "Hero_GenkanPortal",
-      materials: [
-        {
-          name: "placeholder",
-          color: [0.72, 0.69, 0.64],
-          roughness: 0.93,
-          metalness: 0,
-        },
-      ],
-      meshes: built.meshes.map((m) => ({ ...m, material: 0 })),
+      materials: built.materials,
+      meshes: built.meshes,
       root: built.root,
     },
-    { hero: "genkan-door", author: "node-dcc" },
+    { hero: "genkan-door", author: "node-dcc", style: "giesta2-inspired" },
   );
   writeFileSync(outGlb, bytes);
   return { engine: "node-dcc", bytes: bytes.byteLength };
@@ -67,8 +60,9 @@ function bakeBlender(bin) {
     ["--background", "--python", blenderPy, "--", "--out", outGlb],
     { encoding: "utf8" },
   );
-  if (r.status !== 0) {
-    throw new Error(`blender genkan door failed:\n${r.stderr || r.stdout}`);
+  const log = `${r.stdout || ""}\n${r.stderr || ""}`;
+  if (r.status !== 0 || !log.includes("wrote ")) {
+    throw new Error(`blender genkan door failed:\n${log}`);
   }
   if (!existsSync(outGlb)) throw new Error("blender did not write genkan-door.glb");
   return { engine: "blender" };

@@ -374,7 +374,8 @@ export const GENKAN_ENTRY = {
   frameDepth: BUILDING.wallThickness,
   leafThickness: 0.04,
   leafClearance: 0.006,
-  openAngleDeg: 100,
+  /** Stop short of LDK east slider (was 100°, overswung into the room). */
+  openAngleDeg: 85,
   stepCount: 2,
   stepDepth: 0.32,
   stepHeight: STORY.floor1f / 2,

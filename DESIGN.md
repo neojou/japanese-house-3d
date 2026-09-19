@@ -100,20 +100,23 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 | Priority | Location | Status |
 |----------|----------|--------|
 | 1 | **玄関駐車凹口** 左壁 | **Done** — `1f-jog-ldk-east` |
-| 1b | **玄関大门立面**（凹口背面） | **Done** — `1f-south-genkan-door` + flush yaki leaf |
+| 1b | **玄関大门立面**（凹口背面） | **Done** — Giesta 2 防火戸 inspired hero GLB（西鉸東把，無商標） |
 | 1c | **凹口頂 / 右頰**（portal soffit + east cheek） | **Done** — cladding in `GenkanEntry` (no plan wall change) |
 | 2 | 陽台內側、屋簷／天花下緣 | Partial: NE balcony dual slab + genkan soffit lights (no yaki on balc yet) |
 | 3 | 其他凹入（門廊、局部 jog） | Only with explicit owner list |
 
-### 2.6 玄関大门（外牆即大門）
+### 2.6 玄関大门（Giesta 2 防火戸 inspired）
+
+南面玄關：**深色豎紋木皮 + 細長採光 + 金屬框**，英雄 GLB `public/models/hero/genkan-door.glb`。  
+鉸鏈**西**、長柄**東**；開啟向駐車（西南）**85°**（避免掃進 LDK 東拉門）。內側另有採光條與執手。不貼 LIXIL／ジエスタ商標。燒杉不再做門扇。
+
+### 2.6b 凹口燒杉（外牆口袋，不含門扇）
 
 | Rule | Detail |
 |------|--------|
-| **Portal** | 内凹三面燒杉：左壁、右頰、頂 soffit + 背面立面 |
-| **Leaf** | 與燒杉 **同材、同色、同豎紋**；無亮玻璃腰窗（減法） |
-| **Seam** | 極窄 reveal；遠看門消融於黑木凹口 |
-| **Handle** | **一體式垂直長條**，霧面消光黑 only；禁圓形／歐式雕花把手 |
-| **Layout** | 不改平面牆線；細部可加 clad mesh |
+| **Portal walls** | 駐車凹口側壁仍可燒杉（`1f-jog-ldk-east`） |
+| **Door** | **不是**燒杉葉扇；見 §2.6 英雄 GLB |
+| **Layout** | 不改平面牆線 |
 
 **Rule:** expand yaki-sugi only by adding ids to `YAKI_SUGI_WALL_IDS` (or equivalent data), after owner confirmation—do not invent new wood fields in freeform.
 
@@ -369,6 +372,7 @@ When changing look, verify in first-person:
 | 2026-08-18 | Sit toilet: JP 組み合わせ envelope 720×380, sit 420, tank 780 (1F+2F share `SIT_TOILET`) |
 | 2026-08-18 | House GLB: DESIGN 70/25/5 PBR colors in `house.glb`; Vite `HouseGltf` default |
 | 2026-09-07 | R3F default again; yaki/stucco matte + genkan rake; hero genkan-door GLB overlay |
+| 2026-09-13 | Genkan door: Giesta 2 fire-door inspired GLB; west hinge, east handle, swing SW; no yaki leaf |
 
 ---
 
