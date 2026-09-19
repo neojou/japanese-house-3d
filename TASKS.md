@@ -105,7 +105,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
 | トイレ | North of corridor; door @ **corrN (3.64)** from corridor |
 | 2F ceiling | Soffit **Y=5.2**; indoor slabs only; balcony + stair well open |
-| PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37; 4 walls + ceiling; south door → roof |
+| PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37；南牆拉高至斜頂（南高 9.577）；東西牆南高北低貼頂；南門出陽台 |
 | PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
 | PH stair | Same L as 1F→2F; exit onto deck → corr → balcony |
 | PH balcony | 南 x 0–6.37 z **0–3.64**；**L 北塊** x 0–4.55 z **3.64–6.37** 可走；欄杆 **1.1 m**；東側 2F 屋頂不上人 |

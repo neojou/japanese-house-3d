@@ -93,6 +93,7 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 **Geometry / plan locks:** full table in `TASKS.md` → **Design direction**. Highlights:
 
 - 1F floor **0.609**; 1F rise **2.90**; 2F rise **2.80**; PH floor **6.309**; roofs south-high / north-low
+- PH hall walls follow the shed: south wall to peak; east/west walls sloped south-high north-low
 - Stair well NS **1.82** (option A: lower spur may enter LDK)
 - NE 洋室 west @ **x=7.28**; 北翼 CL **x 6.37–7.28**; south G2 **7.28→10.92 (3.64 m)**
 - 東北室入戶門：CL **西牆南端**（軸南、把北，開進室內）。衣櫥門在 CL **東面**。陽台僅南面 **東西向雙片拉門**

@@ -2087,6 +2087,14 @@ export const PH_HALL = {
   wellDepth: M182,
 } as const;
 
+/** PH hall shed roof: south high (peak), north low. */
+export function phHallRoofY(z: number): number {
+  return STORY.peak - STORY.roofPitch * (z - PH_HALL.z0);
+}
+
+/** South wall height from PH floor to roof ridge. */
+export const PH_HALL_SOUTH_H = STORY.peak - FLOOR_LEVELS.ph;
+
 const PH_JOIN_OVERLAP = 0.08;
 const PH_STR_Z1 = PH_HALL.flightZ1 + PH_JOIN_OVERLAP; // ≈ 5.54
 
@@ -2346,7 +2354,7 @@ const PH_DOOR_H = 1.95;
 const PH_DOOR_FROM = (PH_HALL.width - PH_DOOR_W) / 2;
 
 export const WALLS_PH: WallSegment[] = [
-  // Stair hall — four walls, full height
+  // Stair hall — south to roof peak; E/W sloped in Walls.tsx
   {
     id: "ph-hall-n",
     ...wallEW(PH_HALL.x0, PH_HALL.x1, PH_HALL.z1),
@@ -2369,6 +2377,7 @@ export const WALLS_PH: WallSegment[] = [
     id: "ph-hall-s",
     ...wallEW(PH_HALL.x0, PH_HALL.x1, PH_HALL.z0),
     floor: "ph",
+    height: PH_HALL_SOUTH_H,
     label: "PH梯間南→陽台",
     openings: [
       {

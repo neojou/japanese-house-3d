@@ -117,7 +117,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 | Balcony | W **2.73×1.11** from **x=6.37**（CL 下）, E **1.82×0.91**；**T-202 門 + 欄杆**（尚未實作） |
 | 1F ceiling | Soffit Y=2.5; open over stair well |
 | 2F ceiling | Soffit Y=5.2 over indoor rooms/corridor/toilet/NE; **no** slab on balcony or stair well |
-| PH / 3F | 床 **Y=6.309**；L 梯；南陽台 6.37×3.64 **+ 北塊** 4.55×2.73 可走；欄杆 **1.1 m**；梯間斜頂南高北低 |
+| PH / 3F | 床 **Y=6.309**；L 梯；南陽台 + 北塊可走；欄杆 1.1 m；梯間斜頂南高北低，南牆／東西牆貼頂 |
 | Height | Multi-level sampling; ignore 2F while feetY &lt; 2.0；ignore PH while feetY &lt; 4.0 |
 
 **Edit sizes in** `src/data/dimensions.ts` first.

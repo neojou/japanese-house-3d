@@ -1,8 +1,12 @@
 
 import { Fragment, useLayoutEffect, useMemo } from "react";
+import * as THREE from "three";
 import {
+  BUILDING,
   FLOOR_LEVELS,
+  PH_HALL,
   WALLS,
+  phHallRoofY,
   storyWallHeight,
   type Opening,
   type WallSegment,
@@ -146,8 +150,117 @@ function WallMesh({
   );
 }
 
+function slopedNsWallGeometry(
+  x: number,
+  zS: number,
+  zN: number,
+  y0: number,
+  yS: number,
+  yN: number,
+  t: number,
+): THREE.BufferGeometry {
+  const x0 = x - t / 2;
+  const x1 = x + t / 2;
+  const quads: [number, number, number][][] = [
+    [
+      [x0, y0, zS],
+      [x0, y0, zN],
+      [x0, yN, zN],
+      [x0, yS, zS],
+    ],
+    [
+      [x1, y0, zN],
+      [x1, y0, zS],
+      [x1, yS, zS],
+      [x1, yN, zN],
+    ],
+    [
+      [x0, y0, zS],
+      [x0, yS, zS],
+      [x1, yS, zS],
+      [x1, y0, zS],
+    ],
+    [
+      [x1, y0, zN],
+      [x1, yN, zN],
+      [x0, yN, zN],
+      [x0, y0, zN],
+    ],
+    [
+      [x0, y0, zN],
+      [x0, y0, zS],
+      [x1, y0, zS],
+      [x1, y0, zN],
+    ],
+    [
+      [x0, yS, zS],
+      [x0, yN, zN],
+      [x1, yN, zN],
+      [x1, yS, zS],
+    ],
+  ];
+  const pos = new Float32Array(quads.length * 6 * 3);
+  let i = 0;
+  for (const q of quads) {
+    const tris = [q[0], q[1], q[2], q[0], q[2], q[3]];
+    for (const p of tris) {
+      pos[i++] = p[0];
+      pos[i++] = p[1];
+      pos[i++] = p[2];
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  return g;
+}
+
+function PhHallSlopeWall({
+  wall,
+  finish,
+}: {
+  wall: WallSegment;
+  finish: WallFinish;
+}) {
+  const t = BUILDING.wallThickness;
+  const y0 = FLOOR_LEVELS.ph;
+  const yS = phHallRoofY(PH_HALL.z0);
+  const yN = phHallRoofY(PH_HALL.z1);
+  const geom = useMemo(
+    () =>
+      slopedNsWallGeometry(
+        wall.x,
+        PH_HALL.z0,
+        PH_HALL.z1,
+        y0,
+        yS,
+        yN,
+        t,
+      ),
+    [wall.x, y0, yS, yN, t],
+  );
+  const spanY = yS - y0;
+  const material = useMemo(
+    () => createWallMaterial(finish, t, spanY, PH_HALL.depth),
+    [finish, t, spanY],
+  );
+  useLayoutEffect(() => {
+    return () => {
+      geom.dispose();
+      material.map?.dispose();
+      material.normalMap?.dispose();
+      material.roughnessMap?.dispose();
+      material.dispose();
+    };
+  }, [geom, material]);
+  return (
+    <mesh geometry={geom} material={material} castShadow receiveShadow />
+  );
+}
+
+const PH_SLOPE_WALL_IDS = new Set(["ph-hall-w", "ph-hall-e"]);
+
 export function Walls() {
-  // Ensure maps exist before first material build (client only)
   useLayoutEffect(() => {
     ensureFaçadeTextures();
   }, []);
@@ -156,6 +269,11 @@ export function Walls() {
     <group name="walls">
       {WALLS.map((wall) => {
         const finish = wallFinishForId(wall.id);
+        if (PH_SLOPE_WALL_IDS.has(wall.id)) {
+          return (
+            <PhHallSlopeWall key={wall.id} wall={wall} finish={finish} />
+          );
+        }
         const pieces = solidPiecesForWall(wall);
         return (
           <Fragment key={wall.id}>
