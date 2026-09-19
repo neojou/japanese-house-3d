@@ -6,6 +6,8 @@ import {
   FLOOR_LEVELS,
   PH_HALL,
   WALLS,
+  Z2,
+  neRoomRoofY,
   phHallRoofY,
   storyWallHeight,
   type Opening,
@@ -258,6 +260,40 @@ function PhHallSlopeWall({
   );
 }
 
+function NeRoomEastSlopeCap({
+  wall,
+  finish,
+}: {
+  wall: WallSegment;
+  finish: WallFinish;
+}) {
+  const t = BUILDING.wallThickness;
+  const y0 = FLOOR_LEVELS["2f"] + storyWallHeight("2f");
+  const yS = neRoomRoofY(Z2.clN);
+  const yN = neRoomRoofY(Z2.north);
+  const geom = useMemo(
+    () =>
+      slopedNsWallGeometry(wall.x, Z2.clN, Z2.north, y0, yS, yN, t),
+    [wall.x, y0, yS, yN, t],
+  );
+  const material = useMemo(
+    () => createWallMaterial(finish, t, yS - y0, Z2.north - Z2.clN),
+    [finish, t, yS, y0],
+  );
+  useLayoutEffect(() => {
+    return () => {
+      geom.dispose();
+      material.map?.dispose();
+      material.normalMap?.dispose();
+      material.roughnessMap?.dispose();
+      material.dispose();
+    };
+  }, [geom, material]);
+  return (
+    <mesh geometry={geom} material={material} castShadow receiveShadow />
+  );
+}
+
 const PH_SLOPE_WALL_IDS = new Set(["ph-hall-w", "ph-hall-e"]);
 
 export function Walls() {
@@ -280,6 +316,9 @@ export function Walls() {
             {pieces.map((piece) => (
               <WallMesh key={piece.key} piece={piece} finish={finish} />
             ))}
+            {wall.id === "2f-ext-east" && (
+              <NeRoomEastSlopeCap wall={wall} finish={finish} />
+            )}
           </Fragment>
         );
       })}

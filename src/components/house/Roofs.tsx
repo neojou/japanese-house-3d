@@ -7,6 +7,7 @@ import {
   SX,
   SZ,
   Z2,
+  neRoomRoofY,
 } from "@/data/dimensions";
 
 /**
@@ -70,13 +71,13 @@ export function Roofs() {
         zN={Z2.north}
         ySouth={y2 + 0.45}
       />
-      {/* 2F NE + CL — not walkable east of 6.37 on PH */}
+      {/* 2F NE + CL — south high, north = 2F wall top */}
       <Shed
         x0={6.37}
         x1={BUILDING.width}
         zS={Z2.clN}
         zN={Z2.north}
-        ySouth={y2 + 0.55}
+        ySouth={neRoomRoofY(Z2.clN)}
       />
       {/* PH hall: south high 9.577, north low */}
       <Shed

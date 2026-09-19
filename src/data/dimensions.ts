@@ -666,6 +666,16 @@ export const WALLS_1F: WallSegment[] = [
     ...wallNS(SX.xLdkE, SZ.outer, SZ.recess),
     floor: "1f",
     label: "内縮西壁→玄関南",
+    openings: [
+      {
+        id: "1f-door-ldk-east",
+        fromStart: (SZ.recess - SZ.outer - 1.7) / 2,
+        width: 1.7,
+        height: 2.15,
+        sill: STORY.floor1f,
+        type: "door",
+      },
+    ],
   },
 
   // 玄関大门牆 1.520 at genkan/SCL 南 — full-bay opening; frame/leaf in GenkanEntry
@@ -720,28 +730,20 @@ export const WALLS_1F: WallSegment[] = [
     label: "東外牆",
     openings: [
       {
-        id: "1f-win-ub-e-glass",
-        fromStart: 0.25,
-        width: 1.4,
-        height: 2.1,
-        sill: STORY.floor1f,
-        type: "window",
-      },
-      {
-        id: "1f-win-ub-e-small",
-        fromStart: 1.8,
-        width: 0.94,
+        id: "1f-win-ub-e",
+        fromStart: 0.4,
+        width: 1.05,
         height: 1.05,
-        sill: 1.15,
+        sill: 1.2,
         type: "window",
       },
       {
-        id: "1f-door-ub-e-grid",
-        fromStart: 2.9,
-        width: 0.8,
-        height: 2.0,
+        id: "1f-door-senmen-east",
+        fromStart: SZ.north - SZ.ubSouth - 0.85 - 0.35,
+        width: 0.85,
+        height: 2.05,
         sill: STORY.floor1f,
-        type: "window",
+        type: "door",
       },
     ],
   },
@@ -1733,6 +1735,22 @@ export const WALLS_1F_NORTH: WallSegment[] = [
 /** Interactive interior swing doors (90° quarter-arc, plan-accurate hinge). */
 export const SWING_DOORS: SwingDoorDef[] = [
   {
+    id: "swing-1f-senmen-east",
+    openingId: "1f-door-senmen-east",
+    wallX: SX.xEast - BUILDING.wallThickness / 2,
+    wallZ: 0,
+    alongMin: SZ.ubSouth + (SZ.north - SZ.ubSouth) - 0.85 - 0.35,
+    alongMax: SZ.ubSouth + (SZ.north - SZ.ubSouth) - 0.35,
+    axis: "ns",
+    sill: STORY.floor1f,
+    height: 2.05,
+    hingeAt: "max",
+    openSign: 1,
+    openAngleDeg: 90,
+    floor: "1f",
+    label: "1F洗面東門",
+  },
+  {
     id: "swing-yoshitsu",
     openingId: "1f-door-yoshitsu",
     wallX: 0,
@@ -1893,6 +1911,26 @@ export const SWING_DOORS: SwingDoorDef[] = [
  * UB|洗面: dual frosted panels both stack west (openToward min) — no swing arc.
  */
 export const SLIDE_DOORS: SlideDoorDef[] = [
+  {
+    id: "slide-1f-ldk-east",
+    openingId: "1f-door-ldk-east",
+    style: "tokonoma-card",
+    wallX: SX.xLdkE,
+    wallZ: 0,
+    alongMin: (SZ.recess - 1.7) / 2,
+    alongMax: (SZ.recess - 1.7) / 2 + 1.7,
+    axis: "ns",
+    sill: STORY.floor1f,
+    height: 2.15,
+    openToward: "min",
+    panels: 2,
+    slideStyle: "overlap",
+    floor: "1f",
+    label: "1F LDK東拉門",
+    glassColor: "#c5d4e0",
+    glassOpacity: 0.28,
+    frameColor: "#2c2824",
+  },
   {
     id: "slide-2f-ne-balcony",
     openingId: "2f-door-ne-balcony",
@@ -3140,6 +3178,14 @@ const CL_PASS_S_FROM = (Z2_CL_SPLIT - Z2.south - CL_PASS_W) / 2;
 const CL_PASS_N_FROM =
   Z2_CL_SPLIT - Z2.south + (Z2_CL_N - Z2_CL_SPLIT - CL_PASS_W) / 2;
 
+/** 2F NE room shed: north = 2F wall top, south higher by pitch × 3.64. */
+export function neRoomRoofY(z: number): number {
+  const yNorth = FLOOR_LEVELS["2f"] + storyWallHeight("2f");
+  return yNorth + STORY.roofPitch * (Z2.north - z);
+}
+
+export const NE_ROOM_SOUTH_H = neRoomRoofY(Z2.clN) - FLOOR_LEVELS["2f"];
+
 export const WALLS_2F: WallSegment[] = [
   // ── South face of south block ──
   {
@@ -3235,19 +3281,11 @@ export const WALLS_2F: WallSegment[] = [
     label: "2F東(NE)",
     openings: [
       {
-        id: "2f-win-ne-e-s",
-        fromStart: 0.35,
-        width: 1.25,
-        height: 1.25,
-        sill: 0.8,
-        type: "window",
-      },
-      {
-        id: "2f-win-ne-e-n",
-        fromStart: 2.0,
-        width: 1.25,
-        height: 1.25,
-        sill: 0.8,
+        id: "2f-win-ne-e",
+        fromStart: 2.05,
+        width: 1.4,
+        height: 1.1,
+        sill: 0.85,
         type: "window",
       },
     ],
@@ -3258,6 +3296,16 @@ export const WALLS_2F: WallSegment[] = [
     ...wallNS(X2_SE, Z2.south, Z2_CL_N),
     floor: "2f",
     label: "2F南翼東",
+    openings: [
+      {
+        id: "2f-win-se-e",
+        fromStart: (2.73 - 1.4) / 2,
+        width: 1.4,
+        height: 1.1,
+        sill: 0.9,
+        type: "window",
+      },
+    ],
   },
 
   // ═══════════════════════════════════════════════════════════
@@ -3413,6 +3461,7 @@ export const WALLS_2F: WallSegment[] = [
     id: "2f-ne-room-s",
     ...wallEW(X2_NE_CL0, NE_S_X1, Z2_CL_N),
     floor: "2f",
+    height: NE_ROOM_SOUTH_H,
     label: "2F洋室南 陽台拉門",
     openings: [
       {

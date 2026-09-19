@@ -200,6 +200,34 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
             metalness={MATERIAL_PRESETS.doorWood.metalness}
           />
         </mesh>
+        {def.id === "swing-1f-senmen-east" &&
+          [0.22, 0.44, 0.66].map((t) => (
+            <mesh
+              key={`g-v-${t}`}
+              position={[(leafDir * leafW) * t, leafH / 2, LEAF_T / 2 + 0.004]}
+              userData={{ interactable: "door" }}
+              {...ptr}
+            >
+              <boxGeometry args={[0.012, leafH * 0.92, 0.008]} />
+              <meshStandardMaterial color="#3a3632" roughness={0.55} />
+            </mesh>
+          ))}
+        {def.id === "swing-1f-senmen-east" &&
+          [0.28, 0.5, 0.72].map((t) => (
+            <mesh
+              key={`g-h-${t}`}
+              position={[
+                (leafDir * leafW) / 2,
+                leafH * t,
+                LEAF_T / 2 + 0.004,
+              ]}
+              userData={{ interactable: "door" }}
+              {...ptr}
+            >
+              <boxGeometry args={[leafW * 0.88, 0.012, 0.008]} />
+              <meshStandardMaterial color="#3a3632" roughness={0.55} />
+            </mesh>
+          ))}
         {/* Handle near free edge */}
         <mesh
           position={[leafDir * leafW * 0.85, leafH * 0.45, LEAF_T / 2 + 0.015]}
@@ -255,7 +283,7 @@ function WindowPanel({
           metalness={frost ? 0.04 : MATERIAL_PRESETS.glass.metalness}
         />
       </mesh>
-      {opening.height > opening.width * 1.5 && (
+      {opening.height > opening.width * 1.2 && (
         <mesh position={[x, y, z]}>
           <boxGeometry
             args={
@@ -267,7 +295,7 @@ function WindowPanel({
           <meshStandardMaterial color="#3a3632" roughness={0.55} metalness={0.2} />
         </mesh>
       )}
-      {opening.width > opening.height * 1.5 && (
+      {opening.width > opening.height * 1.2 && (
         <mesh position={[x, y, z]}>
           <boxGeometry
             args={

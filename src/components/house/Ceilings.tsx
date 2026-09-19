@@ -38,7 +38,13 @@ export function Ceilings() {
 
   return (
     <group name="ceilings">
-      {ALL_CEILINGS.filter((slab) => slab.id !== "ceil-ph-hall").map((slab) => {
+      {ALL_CEILINGS.filter(
+        (slab) =>
+          slab.id !== "ceil-ph-hall" &&
+          slab.id !== "ceil-2f-ne" &&
+          slab.id !== "ceil-2f-ne-cl" &&
+          slab.id !== "ceil-2f-ne-foyer",
+      ).map((slab) => {
         const { rect, thickness, y, id } = slab;
         const centerX = rect.x + rect.width / 2;
         const centerZ = rect.z + rect.depth / 2;
