@@ -63,7 +63,15 @@ export function Roofs() {
     <group name="roofs">
       {/* 2F south wing */}
       <Shed x0={0} x1={6.37} zS={Z2.south} zN={Z2.clN} ySouth={y2 + 0.55} />
-      {/* 2F toilet + north of south wing */}
+      {/* 2F corridor x 2.73–6.37, z 3.64–4.55 */}
+      <Shed
+        x0={2.73}
+        x1={6.37}
+        zS={Z2.clN}
+        zN={Z2.corrN}
+        ySouth={y2 + 0.5}
+      />
+      {/* 2F トイレ／洗手／物入 */}
       <Shed
         x0={2.73}
         x1={4.55}

@@ -397,8 +397,7 @@ export function ToiletDisplay() {
 }
 
 /**
- * 2F toilet — tank on north wall, sit facing south (−Z).
- * Local +X fixture yawed +π/2 so tank maps to +Z.
+ * 2F toilet — same as 1F: west half, face +X (tank west, bowl east).
  */
 export function Toilet2FDisplay() {
   const p = PROP_2F_TOILET;
@@ -409,26 +408,29 @@ export function Toilet2FDisplay() {
   }, []);
 
   const floorY = p.y;
-  const wallFaceZ = TOILET_2F.z1 - halfT;
-  const boardZ = wallFaceZ - p.board.standoff - p.board.thickness / 2;
+  const wallFaceX = TOILET_2F.x0 + halfT;
+  const boardX = wallFaceX + p.board.standoff + p.board.thickness / 2;
   const boardY = floorY + p.board.height * 0.48;
+  const lightPos: [number, number, number] = [
+    p.x + p.light.dx,
+    floorY + p.light.dy,
+    p.z + p.light.dz,
+  ];
 
   return (
-    <group name={p.label}>
+    <group name={p.label} position={[p.x, 0, p.z]}>
       <WoodEndscape
         p={p}
-        position={[p.x, boardY, boardZ]}
-        size={[p.board.width, p.board.height, p.board.thickness]}
+        position={[boardX - p.x, boardY, 0]}
+        size={[p.board.thickness, p.board.height, p.board.width]}
       />
-      <mesh position={[p.x, boardY, boardZ - p.board.thickness * 0.55]}>
-        <boxGeometry args={[p.board.width + 0.02, p.board.height + 0.02, 0.005]} />
+      <mesh position={[boardX - p.x + p.board.thickness * 0.55, boardY, 0]}>
+        <boxGeometry args={[0.005, p.board.height + 0.02, p.board.width + 0.02]} />
         <meshStandardMaterial color="#1e1c1a" roughness={0.92} />
       </mesh>
-      <group position={[p.x, 0, p.z]} rotation={[0, Math.PI / 2, 0]}>
-        <SitToilet p={p} />
-      </group>
+      <SitToilet p={p} />
       <pointLight
-        position={[p.x + p.light.dx, floorY + p.light.dy, p.z + p.light.dz]}
+        position={[lightPos[0] - p.x, lightPos[1], lightPos[2] - p.z]}
         intensity={p.light.intensity}
         distance={p.light.distance}
         decay={2}

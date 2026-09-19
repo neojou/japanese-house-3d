@@ -231,7 +231,10 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-scl-trench` | 1F SCL 東牆 — 蜜金 trench | `tokonoma-card` | **Done** |
 | `hero-1f-scl-getabako` | 1F SCL 北牆 — 象牙白 getabako + 紅細跟 | `tokonoma-card` (落地·細作) | **Done** |
 | `hero-1f-toilet` | 1F トイレ西半 — 精品圓潤坐便（面東） | `tokonoma-card` (潔具) | **Done** |
-| `hero-2f-toilet` | 2F トイレ北牆 — 坐便朝南（進門轉身坐下） | `tokonoma-card` (潔具) | **Done** |
+| `hero-2f-toilet` | 2F トイレ西半 — 坐便朝東（同一樓） | `tokonoma-card` (潔具) | **Done** |
+| `hero-2f-toilet-curtain` | 2F トイレ南牆東側 0.7 — 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
+| `hero-2f-wash` | 2F 南半東牆 — 洗手台朝西（Path B senmen 瓷盆＋檜木櫃） | `tokonoma-card` (潔具) | **Done** |
+| `hero-2f-mono` | 2F 物入 x 2.73–3.23 — 開東檜木格架 | `tokonoma-card` (收納) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
 | `hero-1f-ub-tub` | 1F UB 東牆 — Type-M 大內盆＋西北角甲板鉻鈕開底部塞 | `tokonoma-card` (潔具 / Path B GLB) | **Done** |
 | `ub-bath-finish` | 1F UB Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東窗 1.20×1.20 | `tokonoma-card` (濕區) | **Done** |
@@ -354,6 +357,7 @@ When changing look, verify in first-person:
 | 2026-08-02 | UB floor → goose-yellow seamless diatom; white wool bath mat west of tub |
 | 2026-09-19 | 1F UB → Lidea Type-M inspired hero GLB (apron tub, push drain, 1200×1200 east window, beige anti-slip); hex/diatom/wool retired |
 | 2026-09-19 | UB tub inner ~90% fill (40 mm lip, bath_tank-1/2); chrome button on NW deck opens basin-floor plug |
+| 2026-09-19 | 2F 西灣：トイレ同一樓（西半朝東＋門簾）；南半東洗手 Path B、西物入開東 |
 | 2026-08-02 | Toilet café curtains upper 1/3 pink; kawaii chihuahua / Pomeranian panels |
 | 2026-08-02 | LDK west open kitchen 2.175 m: NS island sink, fridge S, wood+stone, bar overhang |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |

@@ -10,6 +10,7 @@ import {
   IR,
   SX,
   SZ,
+  Z2,
 } from "@/data/dimensions";
 import {
   createInteriorWoodMaterial,
@@ -210,12 +211,12 @@ export function InteriorFinishes() {
         />
       </group>
 
-      {/* 2F G2 interior sill band (NE south @ clN = 2.73) */}
+      {/* 2F G2 interior sill band (NE south @ clN = 3.64) */}
       <mesh
         position={[
           (IR.genkanW + 0.91 + SX.xEast) / 2,
           FLOOR_LEVELS["2f"] + 0.12,
-          2.73 + halfT + 0.015,
+          Z2.clN + halfT + 0.015,
         ]}
         material={matWood}
       >

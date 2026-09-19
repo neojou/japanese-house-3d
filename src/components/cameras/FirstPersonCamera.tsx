@@ -66,7 +66,8 @@ export function FirstPersonCamera() {
     const planX = pose?.x ?? PLAYER.spawn.x;
     const planZ = pose?.z ?? PLAYER.spawn.z;
     const worldX = planToWorldX(planX);
-    const groundY = getGroundHeight(planX, planZ, PLAYER.spawn.y);
+    const feetHint = pose?.y ?? PLAYER.spawn.y;
+    const groundY = getGroundHeight(planX, planZ, feetHint);
     const eyeY = groundY + PLAYER.eyeHeight;
     camera.position.set(worldX, eyeY, planZ);
     camera.up.set(0, 1, 0);

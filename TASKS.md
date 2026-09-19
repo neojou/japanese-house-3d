@@ -92,18 +92,18 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 
 | Element | Spec |
 |---------|------|
-| West wall | CL 西牆 **x = 6.37**。**房間門**在此牆**南端**（廊帶 z 2.73–3.64）：門軸南、門把北，開進室內 +X。東北室西界仍 **x = 7.28** |
-| North / East | Solid exterior |
+| West wall at x=6.37 | z **0–3.64** 東南室東牆；z **3.64–4.55** 東北室西門（**0.91**）；z **4.55–6.37** 東北室／CL 西牆 |
+| North / East | Solid exterior。東牆雙格窗 **靠近南牆／陽台**（`2f-win-ne-e` fromStart **0.28** from clN），不靠北牆 |
 | South G2 | 雙片拉門 **2.10 × 2.15**，x **7.00–9.10**（東緣距東牆 **1.82**）。關為預設。西把西、東把東。點西：西→東疊開；點東：東→西疊開；再點同一扇關回。疊上時被蓋扇不 raycast。 |
-| Balcony | 西 **2.73×1.11**（x **6.37** 起）、東 **1.82×0.91**。出陽台僅經南面拉門。欄杆 **1.1 m** |
-| 2F NS total | **2.73 + 0.91 + 2.73 = 6.37** from **z=0**; clN=2.73, corrN=3.64; well z 4.55–6.37 |
-| South wing | X 2.73/0.91/2.73; room NS **2.73**; doors @ **clN (2.73)** → corridor; SW door east-tight to CL, SC west-tight; open opposite |
-| Corridor | z **2.73–3.64**, x **1.82–6.37**；東止於 CL 西牆（右轉不能直通陽台） |
-| NE 洋室 | z **2.73–6.37**；西 **x=7.28**；南面拉門出陽台。屋頂南高北低：南牆拉高貼頂，東牆梯形貼頂 |
-| 北翼 CL | EW **0.91** @ x **6.37–7.28**、z **3.64–6.37**。**衣櫥門在東面**；西／南／北實牆（西牆南端另開房間門） |
-| NW jog | **2F 不做室內**（平面所見為 **1F 屋頂**）。刪 2F 凸角房間與 `PROP_2F_SINK` |
+| Balcony | 北緣 z **3.64**。西南角 **z=2.685**（= 東南室東窗北緣）。西 NS **0.955**（x **6.37** 起 EW 2.73）；東 NS **0.91**。出陽台僅經南面拉門。欄杆 **1.1 m** |
+| 2F NS total | **3.64 + 0.91 + 1.82 = 6.37** from **z=0**; clN=**3.64**, corrN=wellS=**4.55** |
+| South wing | X 2.73/0.91/2.73; room NS **3.64**。北門相鄰：西南 **x 2.73–3.64**（把西軸東，南開 85°）；東南 **x 3.64–4.55**（把東軸西，南開 85°） |
+| Corridor | z **3.64–4.55**, x **2.73–6.37**（EW **3.64**）。z=4.1、x=2.73 為西北角西側牆 |
+| NE 洋室 | z **3.64–6.37**（NS **2.73**）；西門 x=6.37 z 3.64–4.55；主室西 **x=7.28**；南面拉門出陽台。屋頂南高北低 |
+| 北翼 CL | EW **0.91** @ x **6.37–7.28**、z **4.55–6.37**（NS **1.82**）。**無東牆**（向房間開敞）；南有短隔、西／北實牆 |
+| NW jog | **2F 不做室內**（平面所見為 **1F 屋頂**）。洗手台改在 2F 洗面南半東牆（`PROP_2F_SINK` / `hero-2f-wash`） |
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
-| トイレ | North of corridor; door @ **corrN (3.64)** from corridor |
+| 西灣 x **2.73–4.55**、z **4.55–6.37** | 北半 **トイレ** z **5.46–6.37**（同一樓：西半坐便朝東、南牆東 **0.7** 門簾、無門）。南半東 **洗手台**、西 **物入** x **2.73–3.23**（東面開放，南／北／西有牆）。南側無門，開向廊道 |
 | 2F ceiling | Soffit **Y=5.2**; indoor slabs only; balcony + stair well open |
 | PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37；南牆拉高至斜頂（南高 9.577）；東西牆南高北低貼頂；南門出陽台 |
 | PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
@@ -255,7 +255,10 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
 - [x] `hero-1f-scl-getabako` — SCL 北牆象牙白鞋罐（車腳／圓角頂／雙扇框心門／尖頭細跟並攏；落地 tokonoma-card）
 - [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
-- [x] `hero-2f-toilet` — 2F トイレ北牆坐便朝南（進門轉身坐下；同 tokonoma-card 瓷；一般住宅組み合わせ 720×380、座面 420、水箱頂 780）
+- [x] `hero-2f-toilet` — 2F トイレ西半坐便朝東（同一樓；tokonoma-card 瓷；組み合わせ 720×380、座面 420、水箱頂 780）
+- [x] `hero-2f-toilet-curtain` — 2F トイレ南牆東側 0.7 粉紅短簾（同一樓吉娃娃／博美）
+- [x] `hero-2f-wash` — 2F 南半東牆洗手台（Path B senmen 瓷盆＋檜木櫃，朝西；南側無門）
+- [x] `hero-2f-mono` — 2F 物入 x 2.73–3.23 開東檜木格架（南／北／西有牆）
 - [x] `slide-ub-shower` — UB｜洗面 雙片西向淋浴拉門（磨砂／炭灰／地軌／加高；無平開佔位）
 - [x] `hero-1f-ub-tub` — UB 東牆 Type-M エプロン浴槽（W1200 NS、靠東、內盆薄唇～90% 水面、西北甲板鉻鈕開底部塞）Path B `ub-bath.glb`
 - [x] `hero-1f-ub-tub` wet — click mixer on/off; corner **push-button** plug; fill / drain (`docs/ub-tub.md`, `npm run test:tub` / `test:ub-bath`)
@@ -424,3 +427,7 @@ Every task also satisfies:
 | 2026-09-13 | 玄關大門開角 **85°**（原 100° 會掃過 LDK 東拉門） |
 | 2026-09-19 | 1F UB → LIXIL リデア Mタイプ / BDUS-1616LBM-A+H inspired：英雄 `ub-bath.glb`、東窗特注 1200×1200、按壓排水、防滑地 |
 | 2026-09-19 | UB 浴缸內盆放大（唇 40 mm，對齊 bath_tank-1/2）；鉻鈕改西北甲板，連動底部塞 |
+| 2026-09-19 | 2F 東北室東窗 `2f-win-ne-e` 南移，靠南牆／陽台（fromStart 2.05→0.28） |
+| 2026-09-19 | 2F 南室 NS **3.64**、東北室 NS **2.73**；廊 3.64–4.55；CL NS 1.82 無東牆；門 0.91；陽台西南 z=2.685 |
+| 2026-09-19 | 2F 廊道 x **2.73–6.37**；西南／東南北門相鄰（2.73–3.64｜3.64–4.55），南開 85° |
+| 2026-09-19 | 2F 西灣：トイレ z **5.46–6.37** 同一樓（西半朝東＋門簾）；南半東洗手、西物入開東；南側無門 |

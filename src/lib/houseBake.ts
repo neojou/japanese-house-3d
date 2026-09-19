@@ -109,7 +109,7 @@ const INTERIOR_SECONDARY_WALL_IDS = new Set([
   "2f-int-cl-sc",
   "2f-int-toilet-s",
   "2f-int-toilet-e",
-  "2f-int-nw-jog-toilet",
+  "2f-int-mono-s",
   "ph-hall-n",
   "ph-hall-w",
   "ph-hall-e",

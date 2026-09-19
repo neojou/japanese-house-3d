@@ -2,8 +2,8 @@
 import { useLayoutEffect, useMemo } from "react";
 import * as THREE from "three";
 import {
-  INTERIOR_FLOOR_Y,
   PROP_1F_TOILET_CURTAIN,
+  PROP_2F_TOILET_CURTAIN,
 } from "@/data/dimensions";
 import {
   createToiletCurtainMaterials,
@@ -15,8 +15,11 @@ import {
  * upper third pink fabric; enter-view left brown chihuahua, right black Pomeranian;
  * slim rod + rings. Lower 2/3 clear.
  */
-export function ToiletCurtainDisplay() {
-  const c = PROP_1F_TOILET_CURTAIN;
+function ToiletCurtain({
+  c,
+}: {
+  c: typeof PROP_1F_TOILET_CURTAIN | typeof PROP_2F_TOILET_CURTAIN;
+}) {
 
   useLayoutEffect(() => {
     ensureFaçadeTextures();
@@ -35,7 +38,7 @@ export function ToiletCurtainDisplay() {
 
   const curtainH = c.openingH * c.heightFrac;
   const panelW = (c.passW - c.panelGap) / 2;
-  const sillY = INTERIOR_FLOOR_Y;
+  const sillY = c.floorY;
   const topY = sillY + c.openingH - 0.04;
   const midY = topY - curtainH / 2;
   const z = c.z + c.thickness + 0.01;
@@ -119,5 +122,14 @@ export function ToiletCurtainDisplay() {
         <boxGeometry args={[panelW, curtainH, c.thickness]} />
       </mesh>
     </group>
+  );
+}
+
+export function ToiletCurtainDisplay() {
+  return (
+    <>
+      <ToiletCurtain c={PROP_1F_TOILET_CURTAIN} />
+      <ToiletCurtain c={PROP_2F_TOILET_CURTAIN} />
+    </>
   );
 }

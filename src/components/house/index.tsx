@@ -17,7 +17,9 @@ import { Toilet2FDisplay, ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
 import { KitchenDisplay } from "./KitchenDisplay";
+import { Mono2FDisplay } from "./Mono2FDisplay";
 import { SenmenDisplay } from "./SenmenDisplay";
+import { Wash2FDisplay } from "./Wash2FDisplay";
 import { BathFinishes } from "./BathFinishes";
 import { HouseGltf } from "./HouseGltf";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
@@ -86,6 +88,8 @@ export {
   TubDisplay,
   KitchenDisplay,
   SenmenDisplay,
+  Wash2FDisplay,
+  Mono2FDisplay,
   BathFinishes,
   PlanLabels,
   Compass,

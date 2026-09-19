@@ -70,23 +70,60 @@ async function main() {
   );
 
   const p2 = dim.PROP_2F_TOILET;
-  const wall2 = dim.TOILET_2F.z1 - halfT;
+  const wall2 = dim.TOILET_2F.x0 + halfT;
   const want2 = st.sitToiletOriginFromWallFace(
     wall2,
-    -1,
+    1,
     env.depth,
     env.wallGap,
   );
-  assert.ok(Math.abs(p2.z - want2) < 1e-9, `2F z ${p2.z} vs ${want2}`);
-  // yaw +π/2: world Z = originZ − localX → tank back is north
-  const tankBack2 = p2.z - L.tankBackX;
+  assert.ok(Math.abs(p2.x - want2) < 1e-9, `2F x ${p2.x} vs ${want2}`);
+  const tankBack2 = p2.x + L.tankBackX;
+  assert.ok(tankBack2 >= wall2 + env.wallGap - 1e-9, "2F tank clears west wall");
   assert.ok(
-    tankBack2 <= wall2 - env.wallGap + 1e-9,
-    `2F tank back ${tankBack2} vs wall ${wall2}`,
+    p2.x + L.bowlFrontX < dim.TOILET_2F.x0 + dim.TOILET_2F.solidW,
+    "2F bowl stays in west half",
   );
-  const bowlFront2 = p2.z - L.bowlFrontX;
-  assert.ok(bowlFront2 > dim.TOILET_2F.z0 + 0.4, "2F sit space south of bowl");
-  console.log("  ✓ 1F west / 2F north wall clearance from shared envelope");
+  console.log("  ✓ 1F / 2F west wall clearance from shared envelope");
+
+  const near = (a, b, msg) =>
+    assert.ok(Math.abs(a - b) < 1e-9, msg ?? `${a} ≉ ${b}`);
+  assert.equal(dim.TOILET_2F.width, dim.TOILET_1F.width);
+  assert.equal(dim.TOILET_2F.depth, dim.TOILET_1F.depth);
+  assert.equal(dim.TOILET_2F.passW, dim.TOILET_1F.passW);
+  near(dim.TOILET_2F.z0, 5.46, "TOILET_2F.z0");
+  near(dim.TOILET_2F.z1, 6.37, "TOILET_2F.z1");
+  near(dim.TOILET_2F.x0, 2.73, "TOILET_2F.x0");
+  near(dim.TOILET_2F.x1, 4.55, "TOILET_2F.x1");
+  near(dim.MONO_2F.x0, 2.73, "MONO_2F.x0");
+  near(dim.MONO_2F.x1, 3.23, "MONO_2F.x1");
+  near(dim.MONO_2F.z0, 4.55, "MONO_2F.z0");
+  near(dim.MONO_2F.z1, 5.46, "MONO_2F.z1");
+  near(dim.WASH_2F.x0, 3.23, "WASH_2F.x0");
+  near(dim.WASH_2F.x1, 4.55, "WASH_2F.x1");
+  const dimSrc = readFileSync(
+    path.join(root, "src/data/dimensions.ts"),
+    "utf8",
+  );
+  assert.doesNotMatch(dimSrc, /swing-2f-toilet/);
+  assert.doesNotMatch(dimSrc, /2f-door-toilet/);
+  assert.match(dimSrc, /2f-pass-toilet-s/);
+  assert.match(dimSrc, /2f-int-mono-s/);
+  const washSrc = readFileSync(
+    path.join(root, "src/components/house/Wash2FDisplay.tsx"),
+    "utf8",
+  );
+  const monoSrc = readFileSync(
+    path.join(root, "src/components/house/Mono2FDisplay.tsx"),
+    "utf8",
+  );
+  assert.match(washSrc, /SenmenVanity/);
+  assert.match(monoSrc, /PROP_2F_MONO/);
+  assert.match(
+    readFileSync(path.join(root, "src/components/house/Props.tsx"), "utf8"),
+    /Wash2FDisplay/,
+  );
+  console.log("  ✓ 2F トイレ z 5.46–6.37 like 1F; 物入 open east; no south door");
 
   assert.match(src, /sitToiletLayout/);
   assert.match(src, /bowlScaleX/);

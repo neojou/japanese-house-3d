@@ -96,10 +96,14 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 - PH hall walls follow the shed: south wall to peak; east/west walls sloped south-high north-low
 - 2F NE room: south wall to shed peak; east wall sloped south-high north-low to the roof
 - Stair well NS **1.82** (option A: lower spur may enter LDK)
-- NE 洋室 west @ **x=7.28**; 北翼 CL **x 6.37–7.28**; south G2 **7.28→10.92 (3.64 m)**
-- 東北室入戶門：CL **西牆南端**（軸南、把北，開進室內）。衣櫥門在 CL **東面**。陽台僅南面 **東西向雙片拉門**
+- NE 洋室 west @ **x=7.28**（門在 x=6.37 z 3.64–4.55）；北翼 CL **x 6.37–7.28、z 4.55–6.37、無東牆**；south G2 **7.28→10.92 (3.64 m)**
+- 東北室入戶門：西牆 **x=6.37、z 3.64–4.55**（寬 **0.91**）。CL **無東牆**（NS **1.82** @ z 4.55–6.37）。陽台僅南面 **東西向雙片拉門**
+- 2F 南翼兩室 NS **3.64**；東北室 NS **2.73**。東南室東窗北緣 **z=2.685** = 陽台西南角
+- 2F 廊道 x **2.73–6.37**（z 3.64–4.55）。西南室北門 **x 2.73–3.64** 把西軸東南開 85°；東南室北門 **x 3.64–4.55** 把東軸西南開 85°
+- 東北室東窗靠**南牆／陽台**，不靠北牆（`2f-win-ne-e`）
 - 2F 西北凸角：**不做室內**（1F 屋頂）
-- Balcony: 進深 1.11／0.91；西塊 **x=6.37**（CL 下）；**要門（T-202）+ 欄杆**
+- 2F 西灣 x **2.73–4.55**、z **4.55–6.37**：北半 **トイレ** z **5.46–6.37**（同一樓：西半坐便朝東、南牆東 0.7 門簾、無門）；南半東洗手台、西物入 x **2.73–3.23**（東面開放；南／北／西有牆）；南側無門
+- Balcony: 西 NS **0.955**（z 2.685–3.64）、東 **0.91**；西塊 **x=6.37**（CL 下）；**要門（T-202）+ 欄杆**
 - No 2F slab over rising upper stair treads
 
 **Visual / material locks:** see **`DESIGN.md`**. Highlights:
