@@ -240,7 +240,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `ub-bath-finish` | 1F UB Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東窗 1.20×1.20 | `tokonoma-card` (濕區) | **Done** |
 | `hero-1f-ub-bathmat` | （已撤）羊毛腳踏不符 Type-M 洗い場 | — | **Retired** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
-| `hero-1f-ldk-kitchen` | 1F LDK 西 2.175 m 開放廚（島台朝東＋西牆冰箱高櫃） | `tokonoma-card` (廚房 vignette) | **Done** |
+| `hero-1f-ldk-kitchen` | 1F LDK 壁付 I 型（x=2.175 裝飾牆 75 cm；南 IH＋抽油煙機、中烘碗機、北水槽抽屜）Path B GLB | `tokonoma-card` (廚房) | **Done** |
 | `hero-1f-senmen` | 1F 洗面：不透明瓷盆＋流水＋P 型存水彎＋可開檜木櫃門 | `tokonoma-card` (洗面 vignette) | **Done** |
 
 **SCL 落塵 vignette:** trench + getabako as a **paired** scene; both keys stay weak; shared **noble / detail-first** bar.
@@ -361,6 +361,9 @@ When changing look, verify in first-person:
 | 2026-09-19 | 北立面 outlook_N：廁所直窗、廚房北拉門、梯間低窗、西南室北雙扇；洋室／洗面／東北室北實牆 |
 | 2026-08-02 | Toilet café curtains upper 1/3 pink; kawaii chihuahua / Pomeranian panels |
 | 2026-08-02 | LDK west open kitchen 2.175 m: NS island sink, fridge S, wood+stone, bar overhang |
+| 2026-09-19 | LDK kitchen → Noct-inspired wall I at x=2.175 fin (IH/hood 75, DW, sink drawers). West-wall fridge/uppers removed. `bake:kitchen` |
+| 2026-09-23 | West elevation: NW room west slider 1.70×2.10; LDK west window 0.72×1.10 at the north end |
+| 2026-09-23 | LDK SE closet x 5.915–6.37, z 0–1.365, open west. East slider moved to z 1.37–2.73 |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |
 | 2026-08-04 | Senmen washer refine: tokonoma-card porthole stack + drum + drawer + honey wood plinth/side rail |
 | 2026-08-04 | Senmen washer: remove wood + door handle; large high-gloss glass; subtle controls; drum laundry |

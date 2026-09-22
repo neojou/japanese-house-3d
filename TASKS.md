@@ -105,6 +105,9 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | CL openings | 南 CL: only **east** → 東房; 北 CL: only **west** → 西房 |
 | 西灣 x **2.73–4.55**、z **4.55–6.37** | 北半 **トイレ** z **5.46–6.37**（同一樓：西半坐便朝東、南牆東 **0.7** 門簾、無門）。南半東 **洗手台**、西 **物入** x **2.73–3.23**（東面開放，南／北／西有牆）。南側無門，開向廊道 |
 | 北立面 `outlook_N` | 從北往南看（圖右＝西）。**1F トイレ**直窗 **0.48×0.92** 磨砂、窗台離地坪 **1.38**（x **7.04–7.52**）。**1F 廚房北拉門** **1.64×2.15**（x **0.09–1.73**，z=3.64，窗台＝室內地坪）。**2F 梯間**北低直窗 **0.46×0.78**（x **4.75–5.21**，窗台 0.22）。**2F トイレ**高直窗 **0.46×0.78** 磨砂（x **3.53–3.99**，窗台 1.05）。**2F 西南室北**雙扇橫窗 **1.52×1.12**（x **1.00–2.52**，z=3.64，窗台 0.92）。洋室北、洗面北、東北室北 **實牆** |
+| 西立面 `outlook_W` | 從西往東看（圖左＝北）。**1F 西北洋室西拉門** **1.70×2.10**（x=1.82，z **3.79–5.49**，門檻＝室內地坪）。**1F LDK 西窗**在北端、緊鄰該室 **0.72×1.10**、窗台離地坪 **1.50**（z **2.80–3.52**）。舊的 LDK 西落地大窗已移除 |
+| 1F LDK 物入 | x **5.915–6.37**、z **0–1.365**。東＝LDK 東外牆、南＝南外牆、北短牆；**西側無牆**，從 LDK 走入。室內先空 | 
+| 1F LDK 東拉門 | x=**6.37**，z **1.37–2.73**（寬 **1.36**，高 2.15）。在物入北牆以北 |
 | 2F ceiling | Soffit **Y=5.2**; indoor slabs only; balcony + stair well open |
 | PH hall | 1.82×2.73 @ x 4.55–6.37, z 3.64–6.37；南牆拉高至斜頂（南高 9.577）；東西牆南高北低貼頂；南門出陽台 |
 | PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
@@ -266,7 +269,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `ub-bath-finish` — Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東 TW-FIX **1.20×1.20** 在浴缸上方
 - [x] `hero-1f-ub-bathmat` — **retired**（Type-M 洗い場無羊毛腳踏）
 - [x] `hero-1f-toilet-curtain` — トイレ通道上 1/3 粉紅短簾＋吉娃娃／博美（進入視角）
-- [x] `hero-1f-ldk-kitchen` — LDK 西 2.175 m 開放廚（南北島＋水槽、南冰箱、暖木淺石）
+- [x] `hero-1f-ldk-kitchen` — LDK 壁付 I 型（裝飾牆 x=2.175、NS 75 cm；南 IH＋同寬抽油煙機、中烘碗機、北水槽可拉抽屜）。西牆冰箱／高櫃已移除。Path B `kitchen-noct.glb`
 - [x] `hero-1f-senmen` — 洗面北牆：西置物籃＋中洗面台豎鏡＋東前開洗衣機
 - [x] `hero-1f-senmen` basin **Path B** — `public/props/senmen-basin/basin.glb` (lofted inner bowl, no inner extrude); `npm run bake:senmen-basin` / `test:basin`
 - [x] `hero-1f-senmen` hinoki cabinet — flush W×D with vessel; no white deck / chrome legs
@@ -433,3 +436,6 @@ Every task also satisfies:
 | 2026-09-19 | 2F 廊道 x **2.73–6.37**；西南／東南北門相鄰（2.73–3.64｜3.64–4.55），南開 85° |
 | 2026-09-19 | 2F 西灣：トイレ z **5.46–6.37** 同一樓（西半朝東＋門簾）；南半東洗手、西物入開東；南側無門 |
 | 2026-09-19 | 北立面 outlook_N：1F トイレ直窗、廚房北拉門、2F 梯間低窗、2F トイレ高窗、西南室北雙扇橫窗；洋室／洗面／東北室北實牆 |
+| 2026-09-19 | LDK 廚具改壁付 I 型：裝飾牆 x=2.175／NS 75 cm；IH＋抽油煙機、烘碗機、水槽抽屜。西牆廚具移除 |
+| 2026-09-23 | 西立面 outlook_W：西北洋室西雙片拉門 1.70×2.10；LDK 西牆北端窗 0.72×1.10。移除 LDK 西落地大窗 |
+| 2026-09-23 | 1F LDK 東南物入 x 5.915–6.37、z 0–1.365（西開）；東拉門北移至 z 1.37–2.73 |

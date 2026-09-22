@@ -65,6 +65,8 @@ Do **not**:
 |--------|------|
 | `npm run bake:senmen-basin` | Blender if on `PATH` / `BLENDER` / Blender.app; else Node DCC → `public/props/senmen-basin/basin.glb` |
 | `npm run bake:ub-bath` | Type-M UB liner + Minamo apron + chrome → `public/models/hero/ub-bath.glb` |
+| `npm run bake:kitchen` | Noct-inspired wall-I kitchen (Blender boolean sink) → `public/models/hero/kitchen-noct.glb` |
+| `npm run test:kitchen` | GLB node names + fin wall + no west-wall fridge stack |
 | `npm run test:basin` | Profile + mesh + glTF + loader contracts |
 | `npm run test:ub-bath` | UB GLB names + window 1.20 + push drain + overlay |
 | `npm run test:tub` | Fill / drain / wet-floor contracts |

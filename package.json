@@ -18,7 +18,9 @@
     "bake:genkan-door": "node --experimental-strip-types scripts/bake-genkan-door.mjs",
     "test:genkan-door": "node --experimental-strip-types scripts/verify-genkan-door.mjs",
     "bake:ub-bath": "node --experimental-strip-types scripts/bake-ub-bath.mjs",
-    "test:ub-bath": "node --experimental-strip-types scripts/verify-ub-bath.mjs"
+    "test:ub-bath": "node --experimental-strip-types scripts/verify-ub-bath.mjs",
+    "bake:kitchen": "node --experimental-strip-types scripts/bake-kitchen.mjs",
+    "test:kitchen": "node --experimental-strip-types scripts/verify-kitchen.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

@@ -1,6 +1,8 @@
 import {
   FLOOR_LEVELS,
+  INTERIOR_FLOOR_Y,
   MONO_2F,
+  PROP_1F_LDK_KITCHEN,
   PROP_1F_UB_TUB,
   PROP_2F_SINK,
   PROP_2F_TOILET_CURTAIN,
@@ -66,6 +68,17 @@ export function poseFromQuery(): DebugPose | null {
       y: FLOOR_LEVELS["2f"],
       yaw: Math.PI / 2,
       pitch: -0.28,
+    };
+  }
+  if (id === "kitchen") {
+    const k = PROP_1F_LDK_KITCHEN;
+    return {
+      x: k.originX - 0.85,
+      z: k.originZ + 1.05,
+      y: INTERIOR_FLOOR_Y,
+      /** Look east at the Noct run (IH south, sink north). */
+      yaw: Math.PI / 2,
+      pitch: -0.22,
     };
   }
   if (id === "mono2f") {

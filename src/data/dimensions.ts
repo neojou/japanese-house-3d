@@ -651,6 +651,19 @@ const N_ELEV = {
   sw2f: { from: 1.0, w: 1.52, h: 1.12, sill: 0.92 },
 } as const;
 
+/**
+ * West elevation `outlook_W.jpg`, viewed from the west (sheet left = north).
+ * 1F story band is 2.90 m above the 0.609 floor.
+ * The double slider is the NW 洋室 west wall (x=1.82, z 3.64–6.37).
+ * The smaller window is the LDK west wall, at its north end next to that room.
+ */
+const W_ELEV = {
+  /** fromStart from the south end of the 洋室 west wall (z=3.64). */
+  yoshitsuDoor: { from: 0.15, w: 1.7, h: 2.1, sill: STORY.floor1f },
+  /** fromStart from the south end of the LDK west wall (z=0). North edge near z=3.64. */
+  ldkWin: { from: 2.8, w: 0.72, h: 1.1, sill: 1.5 },
+} as const;
+
 // ─────────────────────────────────────────────────────────────
 // Walls — 1F EXTERIOR shell only (Phase 1 focus)
 // ─────────────────────────────────────────────────────────────
@@ -711,8 +724,9 @@ export const WALLS_1F: WallSegment[] = [
     openings: [
       {
         id: "1f-door-ldk-east",
-        fromStart: (SZ.recess - SZ.outer - 1.7) / 2,
-        width: 1.7,
+        /** North of the SE 物入 (z 0–1.365). Clear z 1.37–2.73. */
+        fromStart: 1.37,
+        width: 2.73 - 1.37,
         height: 2.15,
         sill: STORY.floor1f,
         type: "door",
@@ -806,6 +820,16 @@ export const WALLS_1F: WallSegment[] = [
     ...wallNS(SZ.yoshitsuW, SZ.mid, SZ.north),
     floor: "1f",
     label: "洋室西外牆",
+    openings: [
+      {
+        id: "1f-door-yoshitsu-w",
+        fromStart: W_ELEV.yoshitsuDoor.from,
+        width: W_ELEV.yoshitsuDoor.w,
+        height: W_ELEV.yoshitsuDoor.h,
+        sill: W_ELEV.yoshitsuDoor.sill,
+        type: "door",
+      },
+    ],
   },
 
   // LDK 北 jog — kitchen north slider (outlook_N, west end)
@@ -834,19 +858,12 @@ export const WALLS_1F: WallSegment[] = [
     label: "西外牆 LDK",
     openings: [
       {
-        id: "1f-win-ldk-w-glass",
-        fromStart: 0.55,
-        width: 1.52,
-        height: 2.15,
-        sill: STORY.floor1f,
-        type: "window",
-      },
-      {
-        id: "1f-win-ldk-w-small",
-        fromStart: 2.25,
-        width: 0.7,
-        height: 1.2,
-        sill: 1.1,
+        /** North end, next to the NW 洋室. */
+        id: "1f-win-ldk-w",
+        fromStart: W_ELEV.ldkWin.from,
+        width: W_ELEV.ldkWin.w,
+        height: W_ELEV.ldkWin.h,
+        sill: W_ELEV.ldkWin.sill,
         type: "window",
       },
     ],
@@ -1137,70 +1154,42 @@ export const PROP_1F_TOILET_CURTAIN = {
 } as const;
 
 /**
- * 1F LDK west open kitchen — tokonoma-card vignette (DESIGN.md §2.7).
- * Zone x 0–2.175 (ldkA). Island on east of zone faces living (east);
- * west wall: fridge (south) + tall storage + wall cabs.
+ * 1F LDK Noct 壁付 I 型 (inspired, no trademarks).
+ * West-wall fridge / tall cab / uppers are gone.
+ * Decorative fin at x=2.175, NS 0.75 from the south interior face.
+ * Counter is west of that fin: south IH + hood (75 cm, flush to the fin),
+ * dishwasher, then sink with pull-out drawers. Counter height 0.85.
+ * GLB local: origin front-south on the floor, +X east, +Z north.
+ * Numbers stay in sync with tools/dcc/build_kitchen_noct.py.
  */
 export const PROP_1F_LDK_KITCHEN = {
   id: "hero-1f-ldk-kitchen",
   style: "tokonoma-card" as const,
   floor: "1f" as FloorId,
-  label: "LDK開放廚房",
-  /** Kitchen strip (south façade ldkA) */
-  x0: 0,
-  x1: SX.xLdkA, // 2.175
+  label: "LDK Noct壁付I型",
+  gltf: "/models/hero/kitchen-noct.glb",
   y: INTERIOR_FLOOR_Y,
-  /** Island: long N–S, short E–W, east edge near x1 */
-  island: {
-    length: 2.8, // NS
-    depth: 0.62, // EW
-    height: 0.9,
-    topT: 0.04,
-    /** Bar overhang toward LDK (+X) */
-    barOverhang: 0.12,
-    /** Island center z (south of mid, clear of 洋室) */
-    z: 1.55,
-    /** Island center x — leave ~0.8 m aisle to west wall gear */
-    x: 1.78,
-    wood: "#c4a882",
-    stone: "#e8e4dc",
-    handle: "#3a3632",
-  },
-  sink: {
-    w: 0.48,
-    d: 0.38,
-    depth: 0.16,
-  },
-  fridge: {
-    w: 0.7,
-    d: 0.68,
-    h: 1.92,
-    /** Center — south on west wall */
-    x: 0.04 + 0.68 / 2,
-    z: 0.12 + 0.7 / 2,
-    body: "#f0eeea",
-    door: "#e8e4de",
-    seal: "#2a2826",
-  },
-  /** Tall cabinet north of fridge */
-  tallCab: {
-    w: 0.6,
-    d: 0.58,
-    h: 2.15,
-  },
-  /** West wall uppers */
-  upper: {
-    depth: 0.35,
-    height: 0.72,
-    yBottom: 1.45,
-    /** NS span along west wall */
-    z0: 0.15,
-    z1: 2.95,
-  },
+  /** Fin centerline (south-façade break 2.175). */
+  finX: SX.xLdkA, // 2.175
+  /** Clear of the south wall interior face. */
+  finZ0: BUILDING.wallThickness / 2, // 0.075
+  finLen: 0.75,
+  finT: BUILDING.wallThickness,
+  depth: 0.65,
+  height: 0.85,
+  /** South → north modules. */
+  ih: 0.75,
+  dw: 0.45,
+  sinkW: 0.9,
+  /** Drawer slides west, toward the cook. */
+  drawerTravel: 0.38,
+  /** GLB origin (front / west edge, south end, floor). */
+  originX: SX.xLdkA - BUILDING.wallThickness / 2 - 0.65, // 1.45
+  originZ: BUILDING.wallThickness / 2, // 0.075
   light: {
-    intensity: 0.32,
-    distance: 2.4,
-    color: "#fff0e0",
+    intensity: 0.55,
+    distance: 1.6,
+    color: "#fff2e0",
   },
 } as const;
 
@@ -1574,6 +1563,27 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     label: "階段東屏(玄関視線)",
   },
 
+  /**
+   * LDK 東南物入 — x 5.915–6.37 (進深 0.455)，z 0–1.365.
+   * East = 1f-jog-ldk-east, south = exterior. West is open to the LDK.
+   */
+  {
+    id: "1f-int-ldk-mono-n",
+    ...wallEW(SX.xLdkE - 0.455, SX.xLdkE - BUILDING.wallThickness / 2, 1.365),
+    floor: "1f",
+    label: "LDK物入北",
+  },
+  // ── LDK 廚房裝飾牆：x=2.175，自南牆內側往北 75 cm（IH／抽油煙機背牆）──
+  {
+    id: "1f-int-ldk-kitchen-fin",
+    ...wallNS(
+      SX.xLdkA,
+      BUILDING.wallThickness / 2,
+      BUILDING.wallThickness / 2 + 0.75,
+    ),
+    floor: "1f",
+    label: "LDK廚房裝飾牆",
+  },
   // ── LDK | 玄関：南→北 全高實牆（玄関 NS 1.72）──
   {
     id: "1f-int-ldk-genkan",
@@ -1927,8 +1937,8 @@ export const SLIDE_DOORS: SlideDoorDef[] = [
     style: "tokonoma-card",
     wallX: SX.xLdkE,
     wallZ: 0,
-    alongMin: (SZ.recess - 1.7) / 2,
-    alongMax: (SZ.recess - 1.7) / 2 + 1.7,
+    alongMin: 1.37,
+    alongMax: 2.73,
     axis: "ns",
     sill: STORY.floor1f,
     height: 2.15,
@@ -1957,6 +1967,26 @@ export const SLIDE_DOORS: SlideDoorDef[] = [
     slideStyle: "overlap",
     floor: "1f",
     label: "1F LDK北拉門(廚房)",
+    glassColor: "#c5d4e0",
+    glassOpacity: 0.28,
+    frameColor: "#2c2824",
+  },
+  {
+    id: "slide-1f-yoshitsu-w",
+    openingId: "1f-door-yoshitsu-w",
+    style: "tokonoma-card",
+    wallX: SZ.yoshitsuW,
+    wallZ: 0,
+    alongMin: SZ.mid + W_ELEV.yoshitsuDoor.from,
+    alongMax: SZ.mid + W_ELEV.yoshitsuDoor.from + W_ELEV.yoshitsuDoor.w,
+    axis: "ns",
+    sill: W_ELEV.yoshitsuDoor.sill,
+    height: W_ELEV.yoshitsuDoor.h,
+    openToward: "min",
+    panels: 2,
+    slideStyle: "overlap",
+    floor: "1f",
+    label: "1F西北洋室西拉門",
     glassColor: "#c5d4e0",
     glassOpacity: 0.28,
     frameColor: "#2c2824",
