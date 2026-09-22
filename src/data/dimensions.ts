@@ -629,6 +629,28 @@ export const FLOORS: FloorSlab[] = [
   },
 ];
 
+/**
+ * North elevation `outlook_N.jpg`, viewed from the north (sheet right = west).
+ * Sills are above each story's `FLOOR_LEVELS` base (1F base = grade 0).
+ * Tall narrow windows get a mid rail in `WindowPanel` (日); the wide 2F
+ * window gets a center stile (雙扇).
+ */
+const N_ELEV = {
+  /** 1F トイレ — narrow vertical, frosted, centered on x 6.37–8.19. */
+  toilet1f: { w: 0.48, h: 0.92, sill: 1.38 },
+  /** 1F LDK / kitchen north slider on the setback wall x 0–1.82, z=3.64. */
+  ldkN: { from: 0.09, w: 1.64, h: 2.15, sill: STORY.floor1f },
+  /** 2F トイレ — higher narrow vent, slightly east of the bay center. */
+  toilet2f: { from: 0.8, w: 0.46, h: 0.78, sill: 1.05 },
+  /**
+   * 2F stair-hall north — low narrow window at the west side of x 4.55–6.37.
+   * fromStart is on `2f-ext-north` (wall starts at x=2.73).
+   */
+  stair2f: { from: 2.02, w: 0.46, h: 0.78, sill: 0.22 },
+  /** 2F SW room north — horizontal 2-pane on the setback wall x 0–2.73. */
+  sw2f: { from: 1.0, w: 1.52, h: 1.12, sill: 0.92 },
+} as const;
+
 // ─────────────────────────────────────────────────────────────
 // Walls — 1F EXTERIOR shell only (Phase 1 focus)
 // ─────────────────────────────────────────────────────────────
@@ -786,12 +808,22 @@ export const WALLS_1F: WallSegment[] = [
     label: "洋室西外牆",
   },
 
-  // LDK 北 jog (south edge of NW courtyard)
+  // LDK 北 jog — kitchen north slider (outlook_N, west end)
   {
     id: "1f-ldk-north-jog",
     ...wallEW(SX.x0, SZ.yoshitsuW, SZ.mid),
     floor: "1f",
-    label: "LDK北外牆(L凹)",
+    label: "LDK北外牆(廚房)",
+    openings: [
+      {
+        id: "1f-door-ldk-north",
+        fromStart: N_ELEV.ldkN.from,
+        width: N_ELEV.ldkN.w,
+        height: N_ELEV.ldkN.h,
+        sill: N_ELEV.ldkN.sill,
+        type: "door",
+      },
+    ],
   },
 
   // ═══ WEST LDK ═══
@@ -870,17 +902,6 @@ export const IR = {
 const INT_DOOR_W = 0.8;
 const INT_DOOR_H = 1.95;
 const INT_SILL = INTERIOR_FLOOR_Y;
-/**
- * 1F トイレ north high vent (日式高窓).
- * Small + high: ventilates, seated / standing user is below the sill,
- * so the street cannot look in. Story-base Y (1F = 0); walk floor is +0.5.
- */
-const TOILET_WIN = {
-  w: 0.48,
-  h: 0.36,
-  /** 1.88 above grade ≈ 1.38 above interior floor; top 2.24 < wall 2.5 */
-  sill: 1.88,
-} as const;
 
 /**
  * 1F トイレ — NS 0.91 × EW 1.82, north strip.
@@ -1707,16 +1728,6 @@ export const WALLS_1F_NORTH: WallSegment[] = [
     ...wallEW(IR.yoshitsuW, IR.yoshitsuE, IR.north),
     floor: "1f",
     label: "北外牆 洋室",
-    openings: [
-      {
-        id: "1f-win-yoshitsu-n",
-        fromStart: 0.45,
-        width: 0.765,
-        height: 1.05,
-        sill: 1.2,
-        type: "window",
-      },
-    ],
   },
   {
     id: "1f-north-cl",
@@ -1744,10 +1755,10 @@ export const WALLS_1F_NORTH: WallSegment[] = [
     openings: [
       {
         id: "1f-win-toilet",
-        fromStart: (TOILET_1F.width - TOILET_WIN.w) / 2,
-        width: TOILET_WIN.w,
-        height: TOILET_WIN.h,
-        sill: TOILET_WIN.sill,
+        fromStart: (TOILET_1F.width - N_ELEV.toilet1f.w) / 2,
+        width: N_ELEV.toilet1f.w,
+        height: N_ELEV.toilet1f.h,
+        sill: N_ELEV.toilet1f.sill,
         type: "window",
         glazing: "frosted",
       },
@@ -1758,16 +1769,6 @@ export const WALLS_1F_NORTH: WallSegment[] = [
     ...wallEW(SENMEN_1F.x0, IR.east, IR.north),
     floor: "1f",
     label: "北外牆 洗面 2.73",
-    openings: [
-      {
-        id: "1f-win-senmen-n",
-        fromStart: 1.4,
-        width: 1.2,
-        height: 1.85,
-        sill: STORY.floor1f,
-        type: "window",
-      },
-    ],
   },
 ];
 
@@ -1936,6 +1937,26 @@ export const SLIDE_DOORS: SlideDoorDef[] = [
     slideStyle: "overlap",
     floor: "1f",
     label: "1F LDK東拉門",
+    glassColor: "#c5d4e0",
+    glassOpacity: 0.28,
+    frameColor: "#2c2824",
+  },
+  {
+    id: "slide-1f-ldk-north",
+    openingId: "1f-door-ldk-north",
+    style: "tokonoma-card",
+    wallX: 0,
+    wallZ: SZ.mid,
+    alongMin: N_ELEV.ldkN.from,
+    alongMax: N_ELEV.ldkN.from + N_ELEV.ldkN.w,
+    axis: "ew",
+    sill: N_ELEV.ldkN.sill,
+    height: N_ELEV.ldkN.h,
+    openToward: "min",
+    panels: 2,
+    slideStyle: "overlap",
+    floor: "1f",
+    label: "1F LDK北拉門(廚房)",
     glassColor: "#c5d4e0",
     glassOpacity: 0.28,
     frameColor: "#2c2824",
@@ -3245,9 +3266,12 @@ const G2_W = NE_S_LEN - 2 * G2_EDGE;
 /** Room door on NE west wall: full corridor bay z 3.64–4.55 (0.91). */
 const DOOR_2F_NE_FROM = 0;
 
-/** Adjacent north doors on corridor south wall (fromStart from x=0). */
-const DOOR_2F_SW_FROM = X2_CL0; // 2.73–3.64 (CL north = SW entry)
-const DOOR_2F_SC_FROM = X2_CL1; // 3.64–4.55, adjacent to SW door
+/**
+ * North doors on the corridor wall. The exterior SW north face (x 0–2.73)
+ * is a separate wall, so fromStart is from x=2.73.
+ */
+const DOOR_2F_SW_FROM = 0; // x 2.73–3.64
+const DOOR_2F_SC_FROM = X2_CL1 - X2_CL0; // 0.91 → x 3.64–4.55
 
 const CL_PASS_W = 0.7;
 const CL_PASS_H = INT2_DOOR_H;
@@ -3316,36 +3340,22 @@ export const WALLS_2F: WallSegment[] = [
     label: "2F北",
     openings: [
       {
+        /** 2F トイレ — higher narrow frosted vent (outlook_N). */
         id: "2f-win-toilet-n",
-        fromStart: (TOILET_2F.width - TOILET_WIN.w) / 2,
-        width: TOILET_WIN.w,
-        height: TOILET_WIN.h,
-        sill: TOILET_WIN.sill,
+        fromStart: N_ELEV.toilet2f.from,
+        width: N_ELEV.toilet2f.w,
+        height: N_ELEV.toilet2f.h,
+        sill: N_ELEV.toilet2f.sill,
         type: "window",
         glazing: "frosted",
       },
       {
-        id: "2f-win-n-small-a",
-        fromStart: 2.1,
-        width: 0.45,
-        height: 1.05,
-        sill: 1.15,
-        type: "window",
-      },
-      {
-        id: "2f-win-n-small-b",
-        fromStart: 3.15,
-        width: 0.45,
-        height: 1.05,
-        sill: 1.15,
-        type: "window",
-      },
-      {
-        id: "2f-win-ne-n",
-        fromStart: 5.6,
-        width: 1.6,
-        height: 1.4,
-        sill: 0.8,
+        /** 2F stair hall — low narrow window, west side of the well. */
+        id: "2f-win-stair-n",
+        fromStart: N_ELEV.stair2f.from,
+        width: N_ELEV.stair2f.w,
+        height: N_ELEV.stair2f.h,
+        sill: N_ELEV.stair2f.sill,
         type: "window",
       },
     ],
@@ -3391,13 +3401,29 @@ export const WALLS_2F: WallSegment[] = [
   },
 
   // ═══════════════════════════════════════════════════════════
-  // South-wing north wall @ clN → corridor (not outdoors)
-  // Doors flank CL; open opposite into rooms.
+  // South-wing north @ clN.
+  // x 0–2.73 is exterior (1F roof beyond); x 2.73–6.37 faces the corridor.
   // ═══════════════════════════════════════════════════════════
 
   {
+    id: "2f-ext-sw-n",
+    ...wallEW(X2_SW0, X2_CL0, Z2_CL_N),
+    floor: "2f",
+    label: "2F西南室北外牆",
+    openings: [
+      {
+        id: "2f-win-sw-n",
+        fromStart: N_ELEV.sw2f.from,
+        width: N_ELEV.sw2f.w,
+        height: N_ELEV.sw2f.h,
+        sill: N_ELEV.sw2f.sill,
+        type: "window",
+      },
+    ],
+  },
+  {
     id: "2f-int-sroom-n",
-    ...wallEW(X2_SW0, X2_SE, Z2_CL_N),
+    ...wallEW(X2_CL0, X2_SE, Z2_CL_N),
     floor: "2f",
     label: "2F南翼北牆→廊",
     openings: [

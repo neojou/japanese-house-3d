@@ -358,6 +358,7 @@ When changing look, verify in first-person:
 | 2026-09-19 | 1F UB → Lidea Type-M inspired hero GLB (apron tub, push drain, 1200×1200 east window, beige anti-slip); hex/diatom/wool retired |
 | 2026-09-19 | UB tub inner ~90% fill (40 mm lip, bath_tank-1/2); chrome button on NW deck opens basin-floor plug |
 | 2026-09-19 | 2F 西灣：トイレ同一樓（西半朝東＋門簾）；南半東洗手 Path B、西物入開東 |
+| 2026-09-19 | 北立面 outlook_N：廁所直窗、廚房北拉門、梯間低窗、西南室北雙扇；洋室／洗面／東北室北實牆 |
 | 2026-08-02 | Toilet café curtains upper 1/3 pink; kawaii chihuahua / Pomeranian panels |
 | 2026-08-02 | LDK west open kitchen 2.175 m: NS island sink, fridge S, wood+stone, bar overhang |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |
