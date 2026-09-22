@@ -364,6 +364,7 @@ When changing look, verify in first-person:
 | 2026-09-19 | LDK kitchen → Noct-inspired wall I at x=2.175 fin (IH/hood 75, DW, sink drawers). West-wall fridge/uppers removed. `bake:kitchen` |
 | 2026-09-23 | West elevation: NW room west slider 1.70×2.10; LDK west window 0.72×1.10 at the north end |
 | 2026-09-23 | LDK SE closet x 5.915–6.37, z 0–1.365, open west. East slider moved to z 1.37–2.73 |
+| 2026-09-23 | 1F NW room is one volume x 1.82–4.55, z 4.55–6.37; x=3.64 closet wall and lintel removed |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |
 | 2026-08-04 | Senmen washer refine: tokonoma-card porthole stack + drum + drawer + honey wood plinth/side rail |
 | 2026-08-04 | Senmen washer: remove wood + door handle; large high-gloss glass; subtle controls; drum laundry |

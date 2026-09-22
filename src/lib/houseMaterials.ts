@@ -98,9 +98,7 @@ export const INTERIOR_SECONDARY_WALL_IDS = new Set<string>([
   "1f-int-scl-ub-w",
   "1f-int-scl-n-west",
   "1f-int-scl-w",
-  "1f-int-cl-s",
   "1f-int-cl-e",
-  "1f-int-yoshitsu-e", // CL channel side
   "2f-int-cl-split",
   "2f-int-sw-cl",
   "2f-int-cl-sc",

@@ -658,8 +658,11 @@ const N_ELEV = {
  * The smaller window is the LDK west wall, at its north end next to that room.
  */
 const W_ELEV = {
-  /** fromStart from the south end of the 洋室 west wall (z=3.64). */
-  yoshitsuDoor: { from: 0.15, w: 1.7, h: 2.1, sill: STORY.floor1f },
+  /**
+   * fromStart from the south end of the west wall (wall still begins at z=3.64).
+   * The room itself is z 4.55–6.37, so the leaf sits inside that bay.
+   */
+  yoshitsuDoor: { from: 4.55 - 3.64 + 0.06, w: 1.7, h: 2.1, sill: STORY.floor1f },
   /** fromStart from the south end of the LDK west wall (z=0). North edge near z=3.64. */
   ldkWin: { from: 2.8, w: 0.72, h: 1.1, sill: 1.5 },
 } as const;
@@ -1491,12 +1494,15 @@ export const SCL_1F = {
  * Interior partitions. Passages omit doors; swing doors listed in SWING_DOORS.
  */
 export const WALLS_1F_INTERIOR: WallSegment[] = [
-  // ── 洋室 south (to LDK) width 1.82 + door ──
+  /**
+   * NW room south wall. Room is one volume: x 1.82–4.55, z 4.55–6.37.
+   * No internal closet. The old x=3.64 partition (and its overhead lintel) is gone.
+   */
   {
     id: "1f-int-yoshitsu-s",
-    ...wallEW(IR.yoshitsuW, IR.yoshitsuE, IR.mid),
+    ...wallEW(IR.yoshitsuW, IR.clE, IR.stairS),
     floor: "1f",
-    label: "洋室南 1.82",
+    label: "洋室南",
     openings: [
       {
         id: "1f-door-yoshitsu",
@@ -1509,35 +1515,7 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
     ],
   },
 
-  // ── 洋室 east wall: north → south 2.73 m (to mid) ──
-  // Open channel to CL: large passage so 洋室↔CL connects; LDK pocket 0.91² south of mid
-  {
-    id: "1f-int-yoshitsu-e",
-    ...wallNS(IR.yoshitsuE, IR.mid, IR.north),
-    floor: "1f",
-    label: "洋室東 2.73",
-    openings: [
-      {
-        // Open to CL (full clear height) — passage not a door
-        id: "1f-pass-yoshitsu-cl",
-        fromStart: 0.1,
-        width: M273 - 0.2,
-        height: INT_DOOR_H,
-        sill: INT_SILL,
-        type: "passage",
-      },
-    ],
-  },
-
-  // ── CL south wall width 0.91 ──
-  {
-    id: "1f-int-cl-s",
-    ...wallEW(IR.yoshitsuE, IR.clE, IR.mid),
-    floor: "1f",
-    label: "CL南 0.91",
-  },
-
-  // ── CL east | 階段 west ──
+  // ── Room east | 階段 west. Was CL east; closet is not a separate room. ──
   {
     id: "1f-int-cl-e",
     ...wallNS(IR.clE, IR.mid, IR.north),
@@ -1804,7 +1782,7 @@ export const SWING_DOORS: SwingDoorDef[] = [
     id: "swing-yoshitsu",
     openingId: "1f-door-yoshitsu",
     wallX: 0,
-    wallZ: IR.mid,
+    wallZ: IR.stairS,
     alongMin: IR.yoshitsuE - INT_DOOR_W - 0.15,
     alongMax: IR.yoshitsuE - 0.15,
     axis: "ew",
