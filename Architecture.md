@@ -34,8 +34,8 @@ App
 | Materials | `src/lib/houseMaterials.ts` |
 | Shared input | `src/lib/input.ts` |
 | Viewer HUD store | `src/store/useViewerStore.ts` |
-| Hero Path B assets | `public/props/<id>/*.glb` via `npm run bake:senmen-basin` (`docs/cinematic-path-b.md`) |
-| Wet fixture stack | Senmen: `docs/senmen-vanity.md`. UB tub: plug + fill/drain + click faucet. `docs/ub-tub.md` |
+| Hero Path B assets | `public/props/<id>/*.glb` + `public/models/hero/*.glb` via `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:kitchen` (`docs/cinematic-path-b.md`) |
+| Wet fixture stack | Senmen: `docs/senmen-vanity.md` (1F Piara GLB; 2F hinoki basin). UB tub: plug + fill/drain + click faucet. `docs/ub-tub.md` |
 
 ### Coordinate systems
 
@@ -63,7 +63,7 @@ App
 
 ### Classic (current runtime) approach
 
-`SenmenDisplay` uses `MeshStandardMaterial` with high metalness + `envMapIntensity`.  
+`SenmenPiara` (1F) uses `MeshStandardMaterial` with high metalness + `envMapIntensity` on three door-parented panes.  
 Three.js samples the scene environment (city HDR) → **looks reflective but outdoor**. Safe (no second render).
 
 ### Desired approach: planar reflection FBO
@@ -254,14 +254,15 @@ useFrame(priority=1)  // after Player / FirstPersonCamera
 | Path | Notes |
 |------|--------|
 | `src/components/Scene.tsx` | plan-mirror, Environment, fog |
-| `src/components/house/SenmenDisplay.tsx` | Vanity + mirror frame/glass |
+| `src/components/house/SenmenDisplay.tsx` | Basket + washer + `SenmenPiara` |
 | `src/lib/coords.ts` | planToWorldX |
 | `src/lib/mirrorMath.ts` | Pure reflection math |
 | `src/lib/glOffscreen.ts` | Safe FBO sandwich |
 | `scripts/verify-mirror-*.mjs` | Automated checks |
 | `src/lib/vesselBasin.ts` | Solid porcelain vessel (Path B) |
 | `src/lib/senmenPlumbing.ts` | Waste path: tailpiece → P-trap → wall |
-| `src/components/house/SenmenVanity.tsx` | Vessel + water + waste + hollow cabinet doors |
+| `src/components/house/SenmenPiara.tsx` | 1F 75 cm Path B vanity + 3-pane CubeCamera glass |
+| `src/components/house/SenmenVanity.tsx` | 2F vessel + water + waste + hollow cabinet doors |
 
 ---
 

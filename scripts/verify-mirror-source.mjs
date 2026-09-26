@@ -37,16 +37,16 @@ function main() {
   console.log("  ✓ glOffscreen hardened viewport restore");
 
   const senmen = read("src/components/house/SenmenDisplay.tsx");
-  assert.match(senmen, /SenmenMirrorGlass/);
+  assert.match(senmen, /SenmenPiara/);
   assert.doesNotMatch(senmen, /useFBO|withOffscreenRender/);
-  console.log("  ✓ SenmenDisplay uses SenmenMirrorGlass (no planar FBO helper)");
+  console.log("  ✓ SenmenDisplay uses SenmenPiara (no planar FBO helper)");
 
-  const glass = read("src/components/house/SenmenMirrorGlass.tsx");
+  const glass = read("src/components/house/SenmenPiara.tsx");
   assert.match(glass, /CubeCamera/);
   assert.match(glass, /createInteriorCubeEnv/);
   assert.match(glass, /primitive object=\{cubeCam\}/);
   assert.match(glass, /do not overwrite with world/);
-  console.log("  ✓ SenmenMirrorGlass CubeCamera parented in plan space");
+  console.log("  ✓ SenmenPiara CubeCamera parented in plan space");
 
   const layout = read("src/lib/senmenMirror.ts");
   assert.match(layout, /senmenProbePlanFrom/);

@@ -1,55 +1,65 @@
-# 1F 洗面 vanity — physical wet stack
+# 1F 洗面 vanity — Piara-inspired Path B
 
-Reference bowl: `docs/S__112345090.jpg` · **No trademarks** · Plan walls **locked**.  
+Reference photos: `docs/refs/images/washing-1.jpg` (assembled), `washing-2.jpg` (ミラーキャビネット MAR3-753TXJU), `washing-3.jpg` (化粧台本体 AR3H-755SY / VP1H).  
+Catalog: https://www.lixil.co.jp/lineup/powderroom/piara/  
+**No trademarks on the mesh.** Plan walls **locked**.  
 Ethos: [`DESIGN.md`](../DESIGN.md) §1 · Path B bake: [`cinematic-path-b.md`](./cinematic-path-b.md)
 
 ---
 
-## Why the last version looked wrong
+## 1F (this hang-point)
 
-| Symptom | Cause |
-|---------|--------|
-| 側面「透明」、看見櫃頂檜木 | Vessel 是單層薄殼 + 排水孔直通；櫃子又鋪了 **整片木頂**（與盆同大），從側面看成玻璃罩蓋在木板上 |
-| 櫃子像實心積木 | 門只是貼在實心 box 上，裡面沒有空腔、沒有管 |
-
-陶瓷是 **不透明實體**。櫃子存在的理由是 **遮住排水管**，不是再墊一張桌子。
-
----
-
-## Physical stack (architecture)
+75 cm white 引出化粧台 + 3-panel full-storage mirror cabinet, inspired by AR3H-755SY + MAR3-753TXJU.
 
 ```
-[ chrome mixer, click to toggle ]
-        │ stream only while on
+[ 3 mirror leaves, CubeCamera glass, slim LED ]
+        │ click to swing; storage + trays inside
         ▼
-[ opaque porcelain vessel ]  外殼 + 內襯 + 底面；排水是貫孔接到管子
-        │ grate
+[ ceramic backsplash + wall mixer ]
+        │ click faucet → stream
         ▼
-[ tailpiece → P-trap → arm ]  進北牆 (+Z)
-        │
-[ hollow hinoki cabinet ]     側／背／底／前上軌；無整片櫃頂
-        │
-[ dual hinged doors ]         點擊開關（同房屋門 interactable）
+[ ひろびろ bowl + left drain-board slats ]
+        ▼
+[ left two drawers / right door + inner cup ]
 ```
 
 | Layer | Ship rule |
 |-------|-----------|
-| Porcelain | Not transparent. Drain does not show the cabinet lid. |
-| Water | Click the mixer: on → stream + pool; off → dry. Handle damps. No solver. |
-| Waste | Readable P-trap when a door is open. |
-| Cabinet | Hollow. Same W×D as the vessel. |
-| Doors | Damped swing **out** toward the room (−Z), not into the carcass. `userData.interactable = "door"`. |
+| Body | W **0.75** × D **0.50** × bowl **0.80** / overall **1.90**. White VP1H-like laminate. |
+| Bowl | Boolean ceramic cavity (Path B). Drain-board slats on the left. |
+| Storage | Drawers pull **−Z** (into the room). Right door hinge east, swing **−Y**. |
+| Mirror | Three leaves **0.158** deep, **0.95** tall. L/C hinge west (**+Y**), R hinge east (**−Y**). |
+| Glass | Same CubeCamera contract as before: probe in plan space under `plan-mirror`; indoor cube fallback; no planar FBO. |
+| Brands | No LIXIL / ピアラ / logos. |
+
+Runtime: `SenmenPiara.tsx` + `public/models/hero/senmen-piara.glb`.  
+West rattan basket and east washer stay in `SenmenDisplay.tsx`.
+
+---
+
+## 2F wash (unchanged)
+
+`Wash2FDisplay` still reuses `PROP_1F_SENMEN.vanity` + `SenmenVanity.tsx` (Path B porcelain vessel on a hollow pale-hinoki cabinet, click doors, P-trap). Do **not** change `vanity.w/d/h/vessel` when editing the 1F Piara block.
 
 ---
 
 ## Agent commands
 
 ```bash
-npm run bake:senmen-basin
-npm run test:basin
+npm run bake:senmen-piara
+npm run test:senmen-piara
+npm run test:mirror
 npx tsc --noEmit
 # /japanese-house-3d/?pose=senmen
-# /japanese-house-3d/?pose=senmen-cab&cabOpen=1   # doors open → P-trap
+# /japanese-house-3d/?pose=senmen-cab&cabOpen=1
+# /japanese-house-3d/?pose=senmen&mirrorOpen=1
+```
+
+2F basin (separate asset):
+
+```bash
+npm run bake:senmen-basin
+npm run test:basin
 ```
 
 Do not change `SENMEN_1F` / UB. Do not add CSG or physics libraries.

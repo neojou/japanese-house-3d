@@ -117,7 +117,7 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 - Texture (grit / grain) over flat swatches; raking light should read
 - Yaki-sugi only on listed hang-points (`YAKI_SUGI_WALL_IDS`); expand only with owner OK + DESIGN.md update
 - Hero displays: **`tokonoma-card`** only — cinematic / detail-first / noble elegant; never invent ad-hoc stacks or ship “組合木板／白長方體” as hero
-- Wet curvature (basin / Type-M tub): Path B glTF — `npm run bake:senmen-basin` + `npm run bake:ub-bath`
+- Wet curvature (basin / Type-M tub / Piara vanity / Amage toilet): Path B glTF — `npm run bake:senmen-basin` + `npm run bake:senmen-piara` + `npm run bake:ub-bath` + `npm run bake:amage-toilet`
 
 ---
 

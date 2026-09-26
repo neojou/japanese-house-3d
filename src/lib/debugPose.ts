@@ -3,8 +3,10 @@ import {
   INTERIOR_FLOOR_Y,
   MONO_2F,
   PROP_1F_LDK_KITCHEN,
+  PROP_1F_TOILET,
   PROP_1F_UB_TUB,
   PROP_2F_SINK,
+  PROP_2F_TOILET,
   PROP_2F_TOILET_CURTAIN,
   SENMEN_1F,
   TOILET_2F,
@@ -30,17 +32,17 @@ export function poseFromQuery(): DebugPose | null {
   if (id === "senmen") {
     return {
       x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
-      z: SENMEN_1F.z0 + 0.78,
+      z: SENMEN_1F.z0 + 0.62,
       yaw: Math.PI,
-      pitch: -0.38,
+      pitch: -0.16,
     };
   }
   if (id === "senmen-cab") {
     return {
       x: (SENMEN_1F.x0 + SENMEN_1F.x1) / 2,
-      z: SENMEN_1F.z0 + 0.22,
+      z: SENMEN_1F.z0 + 0.72,
       yaw: Math.PI,
-      pitch: -0.28,
+      pitch: -0.42,
     };
   }
   if (id === "tub") {
@@ -52,7 +54,27 @@ export function poseFromQuery(): DebugPose | null {
       pitch: -0.55,
     };
   }
+  if (id === "toilet" || id === "toilet1f") {
+    const p = PROP_1F_TOILET;
+    return {
+      x: p.x + 0.58,
+      z: p.z - 0.28,
+      y: INTERIOR_FLOOR_Y,
+      yaw: Math.PI / 2 + 0.38,
+      pitch: -0.18,
+    };
+  }
   if (id === "toilet2f") {
+    const p = PROP_2F_TOILET;
+    return {
+      x: p.x + 0.58,
+      z: p.z - 0.28,
+      y: FLOOR_LEVELS["2f"],
+      yaw: Math.PI / 2 + 0.38,
+      pitch: -0.18,
+    };
+  }
+  if (id === "toilet2f-curtain") {
     return {
       x: PROP_2F_TOILET_CURTAIN.x,
       z: TOILET_2F.z0 - 0.38,

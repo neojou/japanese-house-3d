@@ -1,7 +1,8 @@
 /**
- * Close-coupled sit-toilet layout (JP 組み合わせ).
- * Local space: floor at y=0 in the mesh (world floor is p.y), tank −X, sit +X.
+ * Close-coupled sit-toilet layout (Amage シャワートイレ inspired envelope).
+ * Local space: floor at y=0, tank −X, sit +X.
  * Envelope is real: tank back at −depth/2, bowl front at +depth/2.
+ * Visual mesh is Path B `amage-toilet.glb` (AmageToilet.tsx).
  */
 
 export type SitToiletGeom = {

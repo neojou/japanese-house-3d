@@ -260,7 +260,8 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-scl-trench` — SCL 東牆蜜金 trench（`tokonoma-card`）
 - [x] `hero-1f-scl-getabako` — SCL 北牆象牙白鞋罐（車腳／圓角頂／雙扇框心門／尖頭細跟並攏；落地 tokonoma-card）
 - [x] `hero-1f-toilet` — 1F トイレ坐便細化（位置朝向鎖定；精品圓潤瓷 + 木背板 + 微掀蓋）
-- [x] `hero-2f-toilet` — 2F トイレ西半坐便朝東（同一樓；tokonoma-card 瓷；組み合わせ 720×380、座面 420、水箱頂 780）
+- [x] `hero-2f-toilet` — 2F トイレ西半坐便朝東（同一樓；tokonoma-card 瓷）
+- [x] `hero-1f-toilet` / `hero-2f-toilet` Amage シャワートイレ *inspired* Path B — 手洗付裙式一体（416×764、座面 400、手洗い緣 800）；點擊掀蓋／便座。`public/models/hero/amage-toilet.glb`。`npm run bake:amage-toilet` / `test:toilet`
 - [x] `hero-2f-toilet-curtain` — 2F トイレ南牆東側 0.7 粉紅短簾（同一樓吉娃娃／博美）
 - [x] `hero-2f-wash` — 2F 南半東牆洗手台（Path B senmen 瓷盆＋檜木櫃，朝西；南側無門）
 - [x] `hero-2f-mono` — 2F 物入 x 2.73–3.23 開東檜木格架（南／北／西有牆）
@@ -275,6 +276,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-senmen` basin **Path B** — `public/props/senmen-basin/basin.glb` (lofted inner bowl, no inner extrude); `npm run bake:senmen-basin` / `test:basin`
 - [x] `hero-1f-senmen` hinoki cabinet — flush W×D with vessel; no white deck / chrome legs
 - [x] `hero-1f-senmen` wet stack — opaque porcelain, faucet stream, P-trap to wall, click doors
+- [x] `hero-1f-senmen` Piara-inspired Path B — 75 cm 引出化粧台 AR3H-755SY *inspired* ＋ 3面鏡全収納 MAR3-753TXJU *inspired*（無商標）。`public/models/hero/senmen-piara.glb`；點擊抽屜／櫃門／三扇鏡；CubeCamera 鏡面與原先相同。2F 洗手台仍用檜木 `SenmenVanity`。`npm run bake:senmen-piara` / `test:senmen-piara`
 - [x] Blender pipeline — R3F default; archived full-house GLB (`?houseGltf=1`); hero `genkan-door.glb` overlay
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
@@ -441,3 +443,5 @@ Every task also satisfies:
 | 2026-09-23 | 西立面 outlook_W：西北洋室西雙片拉門 1.70×2.10；LDK 西牆北端窗 0.72×1.10。移除 LDK 西落地大窗 |
 | 2026-09-23 | 1F LDK 東南物入 x 5.915–6.37、z 0–1.365（西開）；東拉門北移至 z 1.37–2.73 |
 | 2026-09-23 | 1F 西北洋室合成一間 x 1.82–4.55、z 4.55–6.37；移除 x=3.64 隔牆／門樑與內部 CL |
+| 2026-09-26 | 1F 洗面化妝台 → Piara-inspired 75 cm Path B `senmen-piara.glb`（引出本體＋3面鏡全収納 CubeCamera；2F 仍檜木盆） |
+| 2026-09-26 | 1F/2F 坐便 → Amage シャワートイレ *inspired* Path B `amage-toilet.glb`（手洗付裙式、可掀蓋；信封 760×416） |

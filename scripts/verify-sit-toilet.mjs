@@ -125,14 +125,14 @@ async function main() {
   );
   console.log("  ✓ 2F トイレ z 5.46–6.37 like 1F; 物入 open east; no south door");
 
-  assert.match(src, /sitToiletLayout/);
-  assert.match(src, /bowlScaleX/);
+  assert.match(src, /AmageToilet/);
+  assert.doesNotMatch(src, /makeBowlLathe/);
   assert.doesNotMatch(src, /depth \* 0\.28/);
   assert.doesNotMatch(
     readFileSync(path.join(root, "src/data/dimensions.ts"), "utf8"),
     /0\.272/,
   );
-  console.log("  ✓ ToiletDisplay uses envelope layout (no packed ~550 mm hack)");
+  console.log("  ✓ ToiletDisplay loads Path B Amage GLB (envelope origin unchanged)");
 }
 
 main().catch((err) => {

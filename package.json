@@ -12,7 +12,7 @@
     "bake:senmen-basin": "node --experimental-strip-types scripts/bake-senmen-basin.mjs",
     "test:basin": "node --experimental-strip-types scripts/verify-senmen-basin.mjs",
     "test:tub": "node --experimental-strip-types scripts/verify-tub-wet.mjs",
-    "test:toilet": "node --experimental-strip-types scripts/verify-sit-toilet.mjs",
+    "test:toilet": "node --experimental-strip-types scripts/verify-sit-toilet.mjs && node --experimental-strip-types scripts/verify-amage-toilet.mjs",
     "bake:house": "node --experimental-strip-types scripts/bake-house.mjs",
     "test:house": "node --experimental-strip-types scripts/verify-house-glb.mjs",
     "bake:genkan-door": "node --experimental-strip-types scripts/bake-genkan-door.mjs",
@@ -20,7 +20,11 @@
     "bake:ub-bath": "node --experimental-strip-types scripts/bake-ub-bath.mjs",
     "test:ub-bath": "node --experimental-strip-types scripts/verify-ub-bath.mjs",
     "bake:kitchen": "node --experimental-strip-types scripts/bake-kitchen.mjs",
-    "test:kitchen": "node --experimental-strip-types scripts/verify-kitchen.mjs"
+    "test:kitchen": "node --experimental-strip-types scripts/verify-kitchen.mjs",
+    "bake:senmen-piara": "node --experimental-strip-types scripts/bake-senmen-piara.mjs",
+    "test:senmen-piara": "node --experimental-strip-types scripts/verify-senmen-piara.mjs",
+    "bake:amage-toilet": "node --experimental-strip-types scripts/bake-amage-toilet.mjs",
+    "test:amage-toilet": "node --experimental-strip-types scripts/verify-amage-toilet.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

@@ -941,36 +941,36 @@ export const TOILET_1F = {
 } as const;
 
 /**
- * Shared sit-toilet envelope — typical JP close-coupled 組み合わせ (not tankless).
- * Mainstream tank fixtures: length 680–770 mm, width 360–400 mm, sit ~420 mm
- * (bowl rim ~380 + seat), tank top 760–820 mm. Declared depth/width **are**
- * the visual tank-back → bowl-front box (`src/lib/sitToilet.ts`).
+ * Shared sit-toilet envelope — Amage シャワートイレ *inspired* (手洗付 catalog
+ * ~416 × 764 × 1005 mm to the faucet). Declared depth/width **are** the visual
+ * tank-back → bowl-front box (`src/lib/sitToilet.ts`). Path B GLB.
  */
 export const SIT_TOILET = {
-  /** Tank-back → bowl-front (m). Mid of 680–770 mm. */
-  depth: 0.72,
-  /** Across the seat (m). */
-  width: 0.38,
+  /** Tank-back → bowl-front (m). Catalog 764 mm. */
+  depth: 0.76,
+  /** Across the seat (m). Catalog 416 mm. */
+  width: 0.416,
   /** Finished wall face → tank back (supply + board). */
   wallGap: 0.03,
   tank: {
-    w: 0.38,
-    d: 0.175,
-    h: 0.36,
-    /** Top of tank above finished floor */
-    topY: 0.78,
+    w: 0.40,
+    d: 0.20,
+    h: 0.40,
+    /** Ceramic 手洗い rim above finished floor (faucet to ~1.00). */
+    topY: 0.80,
   },
   bowl: {
-    /** Sit surface including seat (ceramic rim ~0.38). */
-    seatH: 0.42,
-    /** Circular lathe radius; mesh is X-scaled to `length` (oval plan). */
+    /** Sit surface including washlet seat (ceramic rim ~0.36). */
+    seatH: 0.40,
     rimR: 0.185,
-    /** Oval bowl along the sit axis (rear deck tucks under the tank). */
-    length: 0.5,
+    length: 0.52,
   },
-  lidOpenRad: 0.22, // ~12.5°
-  porcelain: "#f5f0e8",
-  porcelainInner: "#c8c2ba",
+  /** Lid swings toward the tank (+Z local in Three, ~110°). */
+  lidOpenRad: (110 * Math.PI) / 180,
+  seatOpenRad: (95 * Math.PI) / 180,
+  gltf: "/models/hero/amage-toilet.glb",
+  porcelain: "#f4f4f2",
+  porcelainInner: "#c5c8ca",
   button: "#4a4642",
 } as const;
 
@@ -1349,7 +1349,9 @@ const SENMEN_DOOR_FROM = SENMEN_1F.doorFrom;
 
 /**
  * 1F 洗面 north-wall vignette — tokonoma-card (DESIGN.md §2.7).
- * Facing north: west basket + laundry, center vanity + vertical mirror, east washer.
+ * Facing north: west basket + laundry, center Piara-inspired 75 cm vanity
+ * + 3-panel mirror cabinet, east washer.
+ * `vanity` / `mirror` numbers stay for 2F `Wash2FDisplay` (hinoki + Path B basin).
  */
 export const PROP_1F_SENMEN = {
   id: "hero-1f-senmen",
@@ -1428,6 +1430,27 @@ export const PROP_1F_SENMEN = {
       floorR: 0.072,
       gltf: "props/senmen-basin/basin.glb",
     },
+  },
+  /**
+   * 1F only — Piara-inspired 75 cm 引出化粧台 + 3面鏡全収納 (Path B GLB).
+   * Inspired by AR3H-755SY / MAR3-753TXJU. No trademarks on the mesh.
+   * Origin = SW floor corner; back flush to `wallFaceZ`. Center X = `vanity.x`.
+   */
+  piara: {
+    gltf: "/models/hero/senmen-piara.glb",
+    w: 0.75,
+    d: 0.50,
+    bowlH: 0.80,
+    totalH: 1.90,
+    mirrorD: 0.158,
+    mirrorH: 0.95,
+    /** Drawers slide toward the room (−Z). */
+    drawerTravel: 0.34,
+    /** CabDoor_R / MirrorDoor_R hinge east → −Y. L/C hinge west → +Y. */
+    doorOpen: (82 * Math.PI) / 180,
+    mirrorOpen: (88 * Math.PI) / 180,
+    /** Runtime stream under the spout (GLB local metres). */
+    stream: { x: 0.4025, y: 0.778, z: 0.2945, h: 0.235 },
   },
   /**
    * East front-load washer — tokonoma-card appliance (detail-first).

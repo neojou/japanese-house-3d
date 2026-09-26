@@ -2,16 +2,13 @@
 import { useLayoutEffect, useMemo } from "react";
 import * as THREE from "three";
 import { PROP_1F_SENMEN } from "@/data/dimensions";
-import { senmenProbePlanFrom } from "@/lib/senmenMirror";
-import { SENMEN_1F } from "@/data/dimensions";
 import { ensureFaçadeTextures } from "@/lib/houseMaterials";
-import { SenmenMirrorGlass } from "./SenmenMirrorGlass";
-import { SenmenVanity } from "./SenmenVanity";
+import { SenmenPiara } from "./SenmenPiara";
 
 /**
  * 1F 洗面 north wall — tokonoma-card vignette (DESIGN.md §2.7):
- * west laundry basket, center ceramic vessel on hinoki cabinet + vertical mirror,
- * east closed front-load washer.
+ * west laundry basket, center Piara-inspired 75 cm vanity + 3-panel
+ * CubeCamera mirror cabinet, east closed front-load washer.
  *
  * Mirror: indoor cube fallback, then 3 CubeCamera shots from inside the
  * senmen (sees UB through shower). No planar FBO. Plan dims unchanged.
@@ -21,7 +18,7 @@ export function SenmenDisplay() {
   const v = p.vanity;
   const w = p.washer;
   const b = p.basket;
-  const m = p.mirror;
+  const pi = p.piara;
 
   useLayoutEffect(() => {
     ensureFaçadeTextures();
@@ -134,15 +131,6 @@ export function SenmenDisplay() {
     ],
     [],
   );
-  const matFrame = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: "#3a3632",
-        roughness: 0.5,
-        metalness: 0.35,
-      }),
-    [],
-  );
   const matRattan = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -181,7 +169,6 @@ export function SenmenDisplay() {
         matDrum,
         matGasket,
         matDrawer,
-        matFrame,
         matRattan,
         ...matCloth,
         ...matDrumCloth,
@@ -198,7 +185,6 @@ export function SenmenDisplay() {
     matDrum,
     matGasket,
     matDrawer,
-    matFrame,
     matRattan,
     matCloth,
     matDrumCloth,
@@ -207,19 +193,12 @@ export function SenmenDisplay() {
   const y0 = p.y;
   const faceZ = p.wallFaceZ;
   // Equipment south of north wall (into room −Z)
-  const vanityZ = faceZ - p.standoff - v.d / 2;
   const washerZ = faceZ - p.standoff - w.d / 2;
   const basketZ = faceZ - p.standoff - b.d / 2 - 0.02;
-
-  const vanityTopY = y0 + v.h + v.cabinet.sitGap + v.vessel.h;
-  const mirrorBottomY = vanityTopY + m.gapAboveVanity;
-  const mirrorY = mirrorBottomY + m.h / 2;
-  const mirrorZ = faceZ - p.standoff - 0.02;
-
-  const lightPos: [number, number, number] = [
-    v.x,
-    mirrorBottomY + m.h + 0.08,
-    vanityZ - 0.15,
+  const piaraOrigin: [number, number, number] = [
+    v.x - pi.w / 2,
+    y0,
+    faceZ - pi.d,
   ];
 
   return (
@@ -276,25 +255,7 @@ export function SenmenDisplay() {
         </mesh>
       </group>
 
-      <SenmenVanity position={[v.x, y0, vanityZ]} />
-
-      {/* Frame + glass. Probe sits in senmen (south of vanity) so the cube
-          env includes UB through the shower — plan dims unchanged. */}
-      <mesh position={[v.x, mirrorY, mirrorZ]} material={matFrame} castShadow>
-        <boxGeometry
-          args={[m.w + m.frame * 2, m.h + m.frame * 2, m.t + 0.01]}
-        />
-      </mesh>
-      <SenmenMirrorGlass
-        position={[v.x, mirrorY, mirrorZ - 0.008]}
-        probePosition={(() => {
-          const pr = senmenProbePlanFrom(v.x, y0, SENMEN_1F.z0, SENMEN_1F.z1);
-          return [pr.x, pr.y, pr.z];
-        })()}
-        width={m.w}
-        height={m.h}
-        thickness={m.t}
-      />
+      <SenmenPiara position={piaraOrigin} />
 
       {/* ── East: closed front-load washer (tokonoma-card) ──
           Ivory enamel body; large high-gloss glass; no wood; no door handle.
@@ -495,16 +456,6 @@ export function SenmenDisplay() {
           );
         })()}
       </group>
-
-      {/* Mirror-top weak warm light */}
-      <pointLight
-        position={lightPos}
-        intensity={p.light.intensity}
-        distance={p.light.distance}
-        decay={2}
-        color={p.light.color}
-        castShadow={false}
-      />
     </group>
   );
 }

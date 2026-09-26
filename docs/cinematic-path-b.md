@@ -32,8 +32,31 @@ Blender is **optional**. This machine often has none. The Node baker is still Pa
 4. npm run test:basin
 5. npx tsc --noEmit
 6. If a visual check is needed: npm run dev → /japanese-house-3d/?pose=senmen
+   (`?cabOpen=1` / `?mirrorOpen=1` open the 1F Piara leaves)
    (`?pose=` is an agent gate, not a user camera mode)
 7. Update TASKS.md changelog + DESIGN hang-point status
+```
+
+1F Piara vanity (same idea; Blender required):
+
+```text
+1. Edit PROP_1F_SENMEN.piara in dimensions.ts (leave vanity.* for 2F)
+2. Keep tools/dcc/build_senmen_piara.py numbers in sync
+3. npm run bake:senmen-piara
+4. npm run test:senmen-piara && npm run test:mirror
+5. npx tsc --noEmit
+6. Visual gate: /japanese-house-3d/?pose=senmen
+```
+
+1F/2F Amage toilet (same idea; Blender required):
+
+```text
+1. Edit SIT_TOILET in dimensions.ts (1F/2F share the envelope)
+2. Keep tools/dcc/build_amage_toilet.py numbers in sync
+3. npm run bake:amage-toilet
+4. npm run test:toilet
+5. npx tsc --noEmit
+6. Visual gate: /japanese-house-3d/?pose=toilet  and  ?pose=toilet2f&lidOpen=1
 ```
 
 UB Type-M liner (same idea):
@@ -67,6 +90,10 @@ Do **not**:
 | `npm run bake:ub-bath` | Type-M UB liner + Minamo apron + chrome → `public/models/hero/ub-bath.glb` |
 | `npm run bake:kitchen` | Noct-inspired wall-I kitchen (Blender boolean sink) → `public/models/hero/kitchen-noct.glb` |
 | `npm run test:kitchen` | GLB node names + fin wall + no west-wall fridge stack |
+| `npm run bake:senmen-piara` | Piara-inspired 75 cm vanity + 3-panel mirror (Blender boolean bowl) → `public/models/hero/senmen-piara.glb` |
+| `npm run test:senmen-piara` | GLB names + 1F loader + CubeCamera + 2F hinoki reuse |
+| `npm run bake:amage-toilet` | Amage-inspired skirted sit toilet + 手洗い (Blender boolean bowl) → `public/models/hero/amage-toilet.glb` |
+| `npm run test:toilet` | Envelope 760×416 + GLB names + 1F/2F loader + clickable lid |
 | `npm run test:basin` | Profile + mesh + glTF + loader contracts |
 | `npm run test:ub-bath` | UB GLB names + window 1.20 + push drain + overlay |
 | `npm run test:tub` | Fill / drain / wet-floor contracts |
@@ -85,7 +112,15 @@ Bake is **not** a `dev` dependency of the walkthrough: the glTF is committed so 
 | `scripts/lib/writeGlb.mjs` | glTF2 writer (no new deps) |
 | `tools/dcc/senmen_basin.py` | Optional Blender boolean + subdiv |
 | `public/props/senmen-basin/basin.glb` | Runtime asset |
-| `src/components/house/SenmenVanity.tsx` | Deck / chrome / faucet + `useGLTF` |
+| `src/components/house/SenmenVanity.tsx` | 2F deck / chrome / faucet + `useGLTF` |
+| `tools/dcc/build_senmen_piara.py` | 1F 75 cm 引出 + 3面鏡 Blender baker |
+| `scripts/bake-senmen-piara.mjs` | Orchestrator (Blender required) |
+| `public/models/hero/senmen-piara.glb` | Runtime 1F vanity |
+| `src/components/house/SenmenPiara.tsx` | Drawers / doors / CubeCamera glass + `useGLTF` |
+| `tools/dcc/build_amage_toilet.py` | Skirted sit toilet + 手洗い Blender baker |
+| `scripts/bake-amage-toilet.mjs` | Orchestrator (Blender required) |
+| `public/models/hero/amage-toilet.glb` | Runtime 1F/2F toilet |
+| `src/components/house/AmageToilet.tsx` | Lid / seat click + `useGLTF` |
 | `src/lib/ubBathHero.ts` | UB Type-M layout + Node DCC |
 | `scripts/bake-ub-bath.mjs` | Orchestrator (Blender preferred) |
 | `tools/dcc/build_ub_bath.py` | Optional Blender boolean tub + packed maps |
