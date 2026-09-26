@@ -138,7 +138,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 **Interior:** **70%** oat plaster (walls + ceilings), **25%** warm-gray (wet/CL/utility), **5%** charcoal (frames, 分模線, genkan 端景); micro grit normals; ceiling shadow-gaps; local light-wood accents.  
 
-**Lighting:** raking sun, genkan fills, weak Environment, ACES.  
+**Lighting:** raking sun (key), genkan fills, local HDR IBL (`public/env/house-ibl.hdr`, intensity 0.35, not a sky background), ACES. Bloom stays off (`?bloom=1` only).  
 
 **Code:** `houseMaterials.ts`, `surfaceTextures.ts`, `InteriorFinishes.tsx`; see **`DESIGN.md`**.
 

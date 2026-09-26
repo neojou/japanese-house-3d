@@ -68,15 +68,38 @@ Vite 預設場景：**R3F 結構 + 英雄 GLB overlay**。可用 query 或旗標
 
 ---
 
-## 3. 材質與光影（R3F 本輪重點）
+## 3. 光影分層（不要跟英雄 GLB 混成一句）
 
-對齊 `DESIGN.md`，在現有燈光與材質上加強，不要另起風格：
+對齊 `DESIGN.md`。日光仍是主光；ACES 保留。
 
-- 外牆暖象牙 stucco；玄關 yaki-sugi  
-- 室內約 70% 燕麥灰泥、25% 濕區暖灰、5% 炭色門框  
-- 斜向日光、玄關補光、ACES  
-- 大門／玄關牆：提升 roughness／normal／色溫，避免塑膠感  
-- 英雄 GLB：**優先只帶網格**，進場景後套現有 `houseMaterials`；若必須用 glTF 材質，關掉 glTF 燈光，讓場景燈主導  
+### A. 幾何
+
+- 牆、樓板、天花、樓梯、大多數門：維持並加強現有 R3F。
+- Blender 只做英雄 overlay（清單見 §0）。**不再設 2–3 件上限**；也不要把整棟 `house.glb` 當預設。
+- 舊 `.blend` / bpy / glb 只歸檔不刪。
+
+### B. PBR（R3F 與英雄 GLB 同一套物理）
+
+- 灰泥、燒杉、木材：`MeshStandard`，metallic 接近 0，靠 roughness + normal 去掉塑膠感。
+- 電介質不要填 metallic 0.3–0.6。真金屬（鉻、把手、門框鋼）用 0.75 以上。
+- 建築面優先進場套 `houseMaterials`。
+- 陶瓷、鉻、LED、clearcoat（廚房、洗面、馬桶、浴缸）保留 glTF metallic-roughness：嵌入貼圖、不含燈光。進場關掉 glTF lights，讓日光／玄關補光／ACES 主導。
+- 色空間：baseColor／emissive = sRGB；roughness／metalness／normal／AO = linear。
+
+### C. HDR 環境光（場景級，不是 GLB 內建）
+
+- `drei` `<Environment>` + `public/env/house-ibl.hdr`（腳本 `scripts/build-house-ibl.mjs`）。不要用 preset CDN。
+- `background={false}`。天空仍是 `LIGHTING.background`，不要換成碼頭或夕陽。
+- `environmentIntensity` 從 **0.35** 起（現況曾是 0.28）。上限約 0.6。日光仍是主光。
+- 調完後象牙外牆、燕麥灰泥、yaki-sugi 色溫仍對齊 `DESIGN.md`。
+
+### D. Bloom（後期，預設關）
+
+- 不要為 Bloom 換 WebGPU，不要加 `@react-three/postprocessing`，不要升 three。
+- 白天第一人稱預設關閉。`LIGHTING.bloom.enabled` 為 false；`?bloom=1` 才掛上 pass。
+- **關閉時不可註冊 `useFrame` priority > 0。** R3F 只要 `internal.priority > 0` 就不再呼叫 `gl.render`，畫面會停在初始黑緩衝。
+- 開的時候只用 three 內建 WebGL `EffectComposer` + `UnrealBloomPass`：高 threshold、低 strength，只讓燈具／障子 emissive 滲光。由該 priority callback 負責 `composer.render()`。
+- 禁止整面牆發霧。若和 ACES 或洗面 CubeCamera 打架，保 ACES、關 Bloom。
 
 ---
 
@@ -86,6 +109,14 @@ Vite 預設場景：**R3F 結構 + 英雄 GLB overlay**。可用 query 或旗標
 - 物件名稱穩定，例如 `Hero_GenkanDoor`、`Hero_GenkanFrame`  
 - 門扇若做成英雄道具：鉸鏈軸正確，開合仍走現有 store／點擊邏輯  
 - 不要為了道具移動牆或改門洞尺寸  
+- 匯出 `export_lights=False`。材質遵守 §3.B
+
+### 驗收（`npm run dev`）
+
+- 玄關大門與門套近看不塑膠，至少不差於純 R3F，目標優於整棟 bevel GLB。
+- 金屬小零件有環境反射；灰泥仍是霧面電介質。
+- 1F→2F→PH 可走、門可點、尺寸不變。
+- KMP／Filament／走路邏輯不動。  
 
 ---
 
@@ -94,7 +125,7 @@ Vite 預設場景：**R3F 結構 + 英雄 GLB overlay**。可用 query 或旗標
 1. 盤點並歸檔既有 blend／bpy／整棟 glb（保留可開）。  
 2. 預設顯示改回（或維持）R3F 牆／樓板／門；整棟 `HouseGltf` 不得當預設。  
 3. 加強大門與玄關附近 R3F 材質與光影。  
-4. 至多 2–3 件英雄 GLB overlay（優先玄關門）。做得出 bpy 或手寫匯出流程就做；環境沒有 Blender CLI 則保留腳本與檔名約定，不要假裝已有高模。  
+4. 英雄 GLB 是 overlay（清單見 §0），不是整棟換皮。新件要有尺寸與 DESIGN 依據。  
 5. 確認第一人稱仍可 1F→2F→PH、門可點、HUD 公尺不變。  
 6. **不要**接 Filament、不要修 KMP 走路、不要上 Unreal／Twinmotion、不要引入 Next.js。  
 

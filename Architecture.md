@@ -18,7 +18,7 @@ App
          └─ R3F Canvas
              └─ SceneContent
                  ├─ background + fog
-                 ├─ Lights (+ drei Environment preset="city")
+                 ├─ Lights (+ drei Environment, local house-ibl.hdr, background off)
                  ├─ PerspectiveCamera (default)
                  ├─ FirstPersonCamera (spawn, pointer-lock / touch look, yaw)
                  ├─ Player (WASD / virtual D-pad walk)
@@ -58,7 +58,7 @@ App
 | Goal | Meaning |
 |------|---------|
 | Interior reflection | See 洗面 / openings (e.g. UB) with view-dependent parallax |
-| Not outdoor HDR | Must not be driven only by `Environment preset="city"` |
+| Not outdoor HDR | Glass must not be only a foreign-site IBL. Scene IBL is `public/env/house-ibl.hdr` (background stays `LIGHTING.background`). |
 | Not break the app | Secondary pass must never leave the **main** framebuffer unusable |
 
 ### Classic (current runtime) approach

@@ -59,8 +59,8 @@ export function SenmenDisplay() {
     () =>
       new THREE.MeshStandardMaterial({
         color: w.doorChrome,
-        roughness: 0.28,
-        metalness: 0.55,
+        roughness: 0.22,
+        metalness: 0.85,
         envMapIntensity: 0.55,
       }),
     [w.doorChrome],
@@ -73,7 +73,7 @@ export function SenmenDisplay() {
         transparent: true,
         opacity: w.glassOpacity,
         roughness: 0.06,
-        metalness: 0.35,
+        metalness: 0.04,
         envMapIntensity: 0.85,
         depthWrite: false,
         side: THREE.DoubleSide,
@@ -84,8 +84,8 @@ export function SenmenDisplay() {
     () =>
       new THREE.MeshStandardMaterial({
         color: w.drum,
-        roughness: 0.48,
-        metalness: 0.4,
+        roughness: 0.32,
+        metalness: 0.78,
         envMapIntensity: 0.45,
         side: THREE.DoubleSide,
       }),

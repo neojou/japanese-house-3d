@@ -255,7 +255,7 @@ export function buildUbBathMeshes(): {
     { name: "UbFloor", color: [0.88, 0.82, 0.72] as [number, number, number], roughness: 0.86, metalness: 0.02 },
     { name: "UbChrome", color: [0.72, 0.74, 0.76] as [number, number, number], roughness: 0.14, metalness: 0.94 },
     { name: "UbCeiling", color: [0.93, 0.92, 0.9] as [number, number, number], roughness: 0.78, metalness: 0 },
-    { name: "UbGrab", color: [0.55, 0.55, 0.56] as [number, number, number], roughness: 0.42, metalness: 0.35 },
+    { name: "UbGrab", color: [0.55, 0.55, 0.56] as [number, number, number], roughness: 0.32, metalness: 0.82 },
     { name: "UbWindow", color: [0.96, 0.95, 0.93] as [number, number, number], roughness: 0.45, metalness: 0.05 },
   ];
 

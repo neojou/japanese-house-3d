@@ -97,7 +97,13 @@ function enhanceMaterials(root: THREE.Object3D) {
       src.roughness = Math.min(src.roughness, 0.32);
       return;
     }
-    src.envMapIntensity = src.metalness > 0.3 ? 0.8 : 0.28;
+    if (/grab/i.test(name) || (src.metalness > 0.3 && src.metalness < 0.75)) {
+      src.metalness = 0.82;
+      src.roughness = Math.min(src.roughness, 0.32);
+      src.envMapIntensity = 0.85;
+      return;
+    }
+    src.envMapIntensity = 0.28;
   });
 }
 

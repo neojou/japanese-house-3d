@@ -52,8 +52,8 @@ function ToiletCurtain({
     () =>
       new THREE.MeshStandardMaterial({
         color: c.rod.color,
-        roughness: 0.4,
-        metalness: 0.55,
+        roughness: 0.32,
+        metalness: 0.82,
       }),
     [c.rod.color],
   );

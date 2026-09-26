@@ -90,7 +90,7 @@ export function buildGenkanDoorMeshes(): {
   const h = GENKAN_DOOR_HERO;
   const materials = [
     { name: "GiestaWoodExt", color: [0.18, 0.11, 0.07] as [number, number, number], roughness: 0.78, metalness: 0.02 },
-    { name: "GiestaFrame", color: [0.07, 0.06, 0.055] as [number, number, number], roughness: 0.42, metalness: 0.55 },
+    { name: "GiestaFrame", color: [0.07, 0.06, 0.055] as [number, number, number], roughness: 0.36, metalness: 0.78 },
     { name: "GiestaGlass", color: [0.86, 0.88, 0.9] as [number, number, number], roughness: 0.2, metalness: 0, opacity: 0.55 },
     { name: "GiestaHandle", color: [0.12, 0.12, 0.12] as [number, number, number], roughness: 0.35, metalness: 0.7 },
   ];

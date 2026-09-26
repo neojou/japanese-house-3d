@@ -118,6 +118,7 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 - Yaki-sugi only on listed hang-points (`YAKI_SUGI_WALL_IDS`); expand only with owner OK + DESIGN.md update
 - Hero displays: **`tokonoma-card`** only — cinematic / detail-first / noble elegant; never invent ad-hoc stacks or ship “組合木板／白長方體” as hero
 - Wet curvature (basin / Type-M tub / Piara vanity / Amage toilet): Path B glTF — `npm run bake:senmen-basin` + `npm run bake:senmen-piara` + `npm run bake:ub-bath` + `npm run bake:amage-toilet`
+- Light is layered (`blender.md` §3): R3F shell, dielectric PBR, local HDR IBL (`public/env/house-ibl.hdr`, intensity ~0.35), bloom **off** unless `?bloom=1`. A disabled bloom pass must not register `useFrame` priority > 0 (R3F then skips `gl.render` and the canvas stays black). Do not put IBL or bloom inside hero GLBs.
 
 ---
 

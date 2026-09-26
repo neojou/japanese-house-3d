@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, PerspectiveCamera } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { EmissiveBloom } from "@/components/EmissiveBloom";
 import { Compass, House } from "@/components/house";
 import { Player } from "@/components/Player";
 import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
@@ -67,8 +68,12 @@ function Lights() {
           color={genkan.rakeWest.color}
         />
       </group>
-      {/* Low-intensity env for micro-specular on char ridges (no new deps) */}
-      <Environment preset="city" environmentIntensity={0.28} />
+      {/* Local IBL only — background stays LIGHTING.background (not a site preset). */}
+      <Environment
+        files={`${import.meta.env.BASE_URL}${LIGHTING.env.file}`}
+        background={false}
+        environmentIntensity={LIGHTING.env.intensity}
+      />
     </>
   );
 }
@@ -84,6 +89,7 @@ function SceneContent() {
         args={[LIGHTING.background, LIGHTING.fogNear, LIGHTING.fogFar]}
       />
       <Lights />
+      <EmissiveBloom />
 
       <PerspectiveCamera
         makeDefault

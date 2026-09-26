@@ -255,7 +255,7 @@ Future art / lamp / ceramic: same style name + this table row + owner OK.
 |-------|---------|------|
 | **L0** | Flat colours only | Early T-301 style (superseded for façade) |
 | **L1** (current target) | Stucco albedo + normal + roughness; yaki-sugi maps on pocket walls | `src/lib/surfaceTextures.ts`, `src/lib/houseMaterials.ts`, `Walls.tsx` |
-| **L2** (optional later) | Heavier env / post / real PBR packs | Only if `TASKS.md` opens it; keep static-export friendly |
+| **L2** | Scene IBL + optional emissive bloom | Local HDR in `public/env/` (not a CDN preset). Bloom default **off** (`?bloom=1`). No new post package. |
 
 **Finishes on walls:**
 
@@ -274,13 +274,14 @@ Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in 
 
 ## 4. Lighting philosophy
 
-- **Raking directional sun** so grit and grain read (lower ambient than prototype fills).
+- **Raking directional sun** so grit and grain read (lower ambient than prototype fills). Sun stays the key; IBL does not replace it.
 - Soft **interior point fills** so FP walk indoors stays legible under roofs.
 - **Genkan recess fill + west rake** — without these, yaki-sugi in 内縮 reads as pure black.
-- Low **Environment** intensity (drei) for micro-specular on board ridges.
+- **IBL:** local `public/env/house-ibl.hdr` via drei `<Environment background={false}>`. Intensity starts at **0.35** (cap about 0.6). Not a dock / sunset preset. Background colour stays `LIGHTING.background`.
+- **PBR:** stucco / yaki / wood are dielectrics (`metalness` near 0). Do not park dielectrics in metalness 0.3–0.6. Real metal is 0.75+.
 - Warm-ish background / fog—avoid blue hospital atmosphere.
-- ACES tone mapping; mild exposure lift for ivory midtones.
-- Prefer **no heavy post stack** unless tasked. **Cinematic stillness** comes from form, glaze spec, and one weak key — not bloom / SSR. (Planar FBO mirrors remain forbidden; they blacked the canvas.)
+- ACES tone mapping; mild exposure lift for ivory midtones. If bloom fights ACES, keep ACES.
+- **Bloom default off.** Optional `?bloom=1`: three.js WebGL `EffectComposer` only, high threshold, low strength, emissive lamps / shoji only. The pass must not mount a positive-priority `useFrame` while disabled — R3F then skips the main `gl.render` and the canvas stays black. No full-wall haze. No `@react-three/postprocessing`. Planar FBO mirrors remain forbidden.
 
 ### 4.1 Why yaki looked “flat black” (and fix)
 
@@ -289,7 +290,7 @@ Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in 
 | Albedo too dark × `material.color` multiply | Lift map luminance; tint near white (`#c8c0b4`) |
 | Recess in shadow | Dedicated genkan fill / rake lights |
 | Weak normals / large tiles | Stronger normalScale; smaller `yakiTileM`; 1024 maps |
-| No env reflection | Soft `Environment` for ridge sheen |
+| No env reflection | Soft local IBL for ridge sheen (`house-ibl.hdr`, intensity ~0.35) |
 
 **Later optional:** hand-authored seamless yaki photos in `public/textures/` (still no new deps)—only if procedural remains insufficient.
 
@@ -314,7 +315,7 @@ When changing look, verify in first-person:
 - Full-building wood cladding or loud patterns.  
 - Cold pure white + blue ambient “gallery” look.  
 - Random accent colours (bright blue UI meshes on architecture).  
-- Heavy bloom / aggressive post that washes material.  
+- Heavy bloom / aggressive post that washes material. (A locked-off emissive bloom is not this.)  
 - Replacing dimension truth with visual hacks (fake scale, wrong wall ids).  
 - Expanding yaki-sugi without updating this file’s hang-point table + owner OK.
 
@@ -367,6 +368,7 @@ When changing look, verify in first-person:
 | 2026-09-23 | 1F NW room is one volume x 1.82–4.55, z 4.55–6.37; x=3.64 closet wall and lintel removed |
 | 2026-09-26 | 1F senmen → Piara-inspired 75 cm Path B `senmen-piara.glb` (引出＋3面鏡 CubeCamera). 2F wash stays hinoki `SenmenVanity` |
 | 2026-09-26 | 1F/2F toilet → Amage shower-toilet inspired Path B `amage-toilet.glb` (skirted, 手洗い, click lid) |
+| 2026-09-26 | Light layers: local `house-ibl.hdr` IBL (0.35, background off); dielectrics out of metalness 0.3–0.6; bloom default off |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |
 | 2026-08-04 | Senmen washer refine: tokonoma-card porthole stack + drum + drawer + honey wood plinth/side rail |
 | 2026-08-04 | Senmen washer: remove wood + door handle; large high-gloss glass; subtle controls; drum laundry |

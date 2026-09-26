@@ -22,8 +22,8 @@ export function Wash2FDisplay() {
     () =>
       new THREE.MeshStandardMaterial({
         color: "#3a3632",
-        roughness: 0.5,
-        metalness: 0.35,
+        roughness: 0.55,
+        metalness: 0.06,
       }),
     [],
   );

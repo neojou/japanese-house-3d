@@ -77,8 +77,8 @@ export function CoatDisplay() {
     () =>
       new THREE.MeshStandardMaterial({
         color: p.hanger.metal,
-        roughness: 0.55,
-        metalness: 0.65,
+        roughness: 0.38,
+        metalness: 0.82,
       }),
     [p.hanger.metal],
   );

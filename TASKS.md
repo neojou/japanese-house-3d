@@ -278,6 +278,7 @@ Phases map to milestones; **do not skip ahead** without owner request.
 - [x] `hero-1f-senmen` wet stack — opaque porcelain, faucet stream, P-trap to wall, click doors
 - [x] `hero-1f-senmen` Piara-inspired Path B — 75 cm 引出化粧台 AR3H-755SY *inspired* ＋ 3面鏡全収納 MAR3-753TXJU *inspired*（無商標）。`public/models/hero/senmen-piara.glb`；點擊抽屜／櫃門／三扇鏡；CubeCamera 鏡面與原先相同。2F 洗手台仍用檜木 `SenmenVanity`。`npm run bake:senmen-piara` / `test:senmen-piara`
 - [x] Blender pipeline — R3F default; archived full-house GLB (`?houseGltf=1`); hero `genkan-door.glb` overlay
+- [x] Light layers — local `house-ibl.hdr` IBL (intensity 0.35, background off); dielectric metalness out of 0.3–0.6; bloom default off (`?bloom=1`). `blender.md` §3
 - [ ] Other plan furniture placeholders (beds, table, etc.) as owner prioritises
 
 **Grok Build prompt**
@@ -445,3 +446,5 @@ Every task also satisfies:
 | 2026-09-23 | 1F 西北洋室合成一間 x 1.82–4.55、z 4.55–6.37；移除 x=3.64 隔牆／門樑與內部 CL |
 | 2026-09-26 | 1F 洗面化妝台 → Piara-inspired 75 cm Path B `senmen-piara.glb`（引出本體＋3面鏡全収納 CubeCamera；2F 仍檜木盆） |
 | 2026-09-26 | 1F/2F 坐便 → Amage シャワートイレ *inspired* Path B `amage-toilet.glb`（手洗付裙式、可掀蓋；信封 760×416） |
+| 2026-09-26 | 光影分層：本地 HDR IBL 取代 city preset；電介質 metallic 離開 0.3–0.6；Bloom 預設關（`?bloom=1`） |
+| 2026-09-26 | 黑畫面：Bloom 關閉時仍 `useFrame` priority 1，R3F 因此不 `gl.render`。關閉時不掛該 callback |

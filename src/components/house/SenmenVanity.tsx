@@ -379,8 +379,8 @@ export function SenmenVanity({ position }: SenmenVanityProps) {
     () =>
       new THREE.MeshStandardMaterial({
         color: "#1c1c1c",
-        roughness: 0.4,
-        metalness: 0.4,
+        roughness: 0.35,
+        metalness: 0.78,
       }),
     [],
   );
@@ -388,8 +388,8 @@ export function SenmenVanity({ position }: SenmenVanityProps) {
     () =>
       new THREE.MeshStandardMaterial({
         color: "#c4b49a",
-        roughness: 0.32,
-        metalness: 0.55,
+        roughness: 0.28,
+        metalness: 0.82,
         envMapIntensity: 0.5,
       }),
     [],

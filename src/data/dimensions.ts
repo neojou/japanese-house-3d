@@ -1324,7 +1324,7 @@ export const PROP_1F_SCL_GETABAKO = {
   },
   handle: {
     color: "#9a7d4a",
-    metalness: 0.6,
+    metalness: 0.82,
   },
 } as const;
 
@@ -3746,10 +3746,26 @@ export const MATERIAL_PRESETS = {
 } as const;
 
 /**
- * Scene lighting (L1) — lower ambient so stucco/yaki normals read in raking sun.
- * No heavy post-processing.
+ * Scene lighting (L1) — raking sun is the key.
+ * IBL is a local HDR (`public/env/house-ibl.hdr`), not a CDN preset.
+ * Bloom stays off unless `?bloom=1`.
  */
 export const LIGHTING = {
+  /**
+   * Scene IBL only. Does not replace `background`.
+   * Start at 0.35; do not push past ~0.6 or stucco goes wet.
+   */
+  env: {
+    file: "env/house-ibl.hdr",
+    intensity: 0.35,
+  },
+  /** Emissive-only bloom. Default off so ACES and the senmen CubeCamera stay in charge. */
+  bloom: {
+    enabled: false,
+    strength: 0.12,
+    radius: 0.22,
+    threshold: 0.92,
+  },
   /** Slightly warm sky so ivory walls don’t go hospital-cold */
   background: "#c5d0dc",
   fogNear: 50,
