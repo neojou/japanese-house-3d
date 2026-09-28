@@ -34,7 +34,7 @@ App
 | Materials | `src/lib/houseMaterials.ts` |
 | Shared input | `src/lib/input.ts` |
 | Viewer HUD store | `src/store/useViewerStore.ts` |
-| Hero Path B assets | `public/props/<id>/*.glb` + `public/models/hero/*.glb` via `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:kitchen` (`docs/cinematic-path-b.md`) |
+| Hero Path B assets | `public/props/<id>/*.glb` + `public/models/hero/*.glb` via `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:kitchen` / `bake:standard-label-doors` (`docs/cinematic-path-b.md`) |
 | Wet fixture stack | Senmen: `docs/senmen-vanity.md` (1F Piara GLB; 2F hinoki basin). UB tub: plug + fill/drain + click faucet. `docs/ub-tub.md` |
 
 ### Coordinate systems

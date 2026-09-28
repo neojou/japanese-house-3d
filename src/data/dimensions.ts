@@ -88,6 +88,11 @@ export type SwingDoorDef = {
   /** Story base for sill Y (default 1f). */
   floor?: FloorId;
   label?: string;
+  /**
+   * Standard Label leaf (Path B GLB). Absent = the plain R3F slab
+   * (exterior grid door, PH balcony).
+   */
+  leaf?: "ld" | "pa" | "dc" | "ta" | "ph";
 };
 
 /**
@@ -120,10 +125,41 @@ export type SlideDoorDef = {
   slideStyle?: "pocket" | "overlap";
   floor?: FloorId;
   label?: string;
-  /** Frosted glass look */
+  /** Frosted glass look. Ignored when `leaf` is set. */
   glassColor?: string;
   glassOpacity?: number;
   frameColor?: string;
+  /** Standard Label veneer leaf instead of the glass bypass panels. */
+  leaf?: "ld" | "pa" | "dc" | "ta" | "ph";
+  /**
+   * Which face a veneer leaf rides. +1 = +Z on an EW wall, +X on an NS wall.
+   * The leaf stays on that face so a 片引き can pass in front of the solid wall.
+   */
+  face?: 1 | -1;
+};
+
+/**
+ * Handleless bifold (折れ戸). Two equal panels, hinge at one jamb.
+ * Outer pin stays in the wall plane (`foldPin`). `openSign` picks the
+ * room the fold enters — see `foldTravelDir`.
+ */
+export type FoldDoorDef = {
+  id: string;
+  openingId: string;
+  wallX: number;
+  wallZ: number;
+  alongMin: number;
+  alongMax: number;
+  axis: "ew" | "ns";
+  sill: number;
+  height: number;
+  /** All current closets hinge at alongMin. */
+  hingeAt: "min" | "max";
+  openSign: 1 | -1;
+  /** Stop short of 90° so the tracked pin does not land on the hinge. */
+  openAngleDeg: number;
+  floor?: FloorId;
+  label?: string;
 };
 
 export type WallSegment = {
@@ -925,7 +961,8 @@ const INT_SILL = INTERIOR_FLOOR_Y;
 
 /**
  * 1F トイレ — NS 0.91 × EW 1.82, north strip.
- * West half: sit toilet facing east; south wall solid + east passage with curtains (no door).
+ * West half: sit toilet facing east. South wall east passage is a TA 片開き;
+ * café curtains stay across the upper third.
  */
 export const TOILET_1F = {
   x0: IR.genkanW, // 6.37
@@ -1330,7 +1367,7 @@ export const PROP_1F_SCL_GETABAKO = {
 
 /**
  * 1F 洗面 — EW 2.73 west-abutting toilet; NS 1.82 north strip.
- * West wall south 0.91 bay + door (hinge S, handle N, open into room +X).
+ * West wall south 0.91 bay: DC 片引き (leaf slides north on the room face).
  */
 export const SENMEN_1F = {
   x0: TOILET_1F.x1, // 8.19
@@ -1612,7 +1649,7 @@ export const WALLS_1F_INTERIOR: WallSegment[] = [
 
   // ── SCL: EW 1.21 × NS 1.72; 四邊牆、室內無中隔 ──
   // 南=外牆; 東=1f-int-scl-ub-w; 北西段(7.89–8.19); 北東段與洗面南共用
-  // 西靠玄関：中段通道 0.9、無門
+  // 西靠玄関：中段通道 0.9、PH 折れ戸（牆洞仍是 passage）
   {
     id: "1f-int-scl-n-west",
     // 洗面以西：x genkanE → トイレ東/洗面西 (8.19)
@@ -1802,22 +1839,6 @@ export const SWING_DOORS: SwingDoorDef[] = [
     label: "1F洗面東門",
   },
   {
-    id: "swing-yoshitsu",
-    openingId: "1f-door-yoshitsu",
-    wallX: 0,
-    wallZ: IR.stairS,
-    alongMin: IR.yoshitsuE - INT_DOOR_W - 0.15,
-    alongMax: IR.yoshitsuE - 0.15,
-    axis: "ew",
-    sill: INT_SILL,
-    height: INT_DOOR_H,
-    // Plan arc into 洋室 (north of wall): hinge east end, open into +Z
-    hingeAt: "max",
-    openSign: 1,
-    openAngleDeg: 90,
-    label: "洋室",
-  },
-  {
     id: "swing-ldk-genkan",
     openingId: "1f-door-ldk-genkan",
     wallX: IR.genkanW,
@@ -1829,29 +1850,14 @@ export const SWING_DOORS: SwingDoorDef[] = [
     sill: INT_SILL,
     height: INT_DOOR_H,
     /**
-     * Entering LDK (facing west): hinge north (max), open into LDK.
+     * Hinge north, handle south. Opens west into the LDK, 85°.
+     * The north hinge stays south of the under-stair closet door at z=5.46.
      */
     hingeAt: "max",
-    openSign: -1,
-    openAngleDeg: 90,
-    label: "LDK|玄関 門0.91",
-  },
-  {
-    id: "swing-senmen",
-    openingId: "1f-door-senmen",
-    wallX: TOILET_1F.x1, // 8.19 senmen west
-    wallZ: 0,
-    // South 0.91 bay on wall z 4.55–6.37
-    alongMin: IR.stairS + SENMEN_DOOR_FROM,
-    alongMax: IR.stairS + SENMEN_DOOR_FROM + INT_DOOR_W,
-    axis: "ns",
-    sill: INT_SILL,
-    height: INT_DOOR_H,
-    // Hinge south (min), handle north; open into 洗面 (+X)
-    hingeAt: "min",
     openSign: 1,
-    openAngleDeg: 90,
-    label: "洗面",
+    openAngleDeg: 85,
+    label: "LDK|玄関 門0.91",
+    leaf: "ld",
   },
   // UB shower: see SLIDE_DOORS (no swing — does not arc into UB/洗面)
   // ── 2F NE west door (z 3.64–4.55, 0.91 m) ──
@@ -1865,11 +1871,13 @@ export const SWING_DOORS: SwingDoorDef[] = [
     axis: "ns",
     sill: 0,
     height: 1.95,
+    /** Hinge south, handle north. 85° east into the room. */
     hingeAt: "min",
-    openSign: -1,
-    openAngleDeg: 90,
+    openSign: 1,
+    openAngleDeg: 85,
     floor: "2f",
     label: "2F東北室",
+    leaf: "pa",
   },
   // ── 2F south-wing doors @ clN=3.64, adjacent, swing south 85° into rooms ──
   {
@@ -1888,6 +1896,7 @@ export const SWING_DOORS: SwingDoorDef[] = [
     openAngleDeg: 85,
     floor: "2f",
     label: "2F西洋室",
+    leaf: "pa",
   },
   {
     id: "swing-2f-sc",
@@ -1905,8 +1914,46 @@ export const SWING_DOORS: SwingDoorDef[] = [
     openAngleDeg: 85,
     floor: "2f",
     label: "2F中央洋室",
+    leaf: "pa",
   },
-  // 2F トイレ: no south door — curtains on z=5.46 like 1F
+  // 1F / 2F トイレ: TA 片開き in the existing east passage. Curtains stay.
+  // Hinge west, leaf swings north into the room (clear of the west-half bowl).
+  {
+    id: "swing-ta-1f",
+    openingId: "1f-pass-toilet-s",
+    wallX: 0,
+    wallZ: TOILET_1F.z0,
+    alongMin: TOILET_1F.x0 + TOILET_1F.solidW,
+    alongMax: TOILET_1F.x0 + TOILET_1F.solidW + TOILET_1F.passW,
+    axis: "ew",
+    sill: INT_SILL,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    openSign: -1,
+    openAngleDeg: 90,
+    floor: "1f",
+    label: "1Fトイレ TA",
+    leaf: "ta",
+  },
+  {
+    id: "swing-ta-2f",
+    openingId: "2f-pass-toilet-s",
+    wallX: 0,
+    // TOILET_2F is declared later in this module. Numbers match that envelope;
+    // verify-standard-label-doors checks them against TOILET_2F.
+    wallZ: 5.46,
+    alongMin: 2.73 + 1.12,
+    alongMax: 2.73 + 1.82,
+    axis: "ew",
+    sill: 0,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    openSign: -1,
+    openAngleDeg: 90,
+    floor: "2f",
+    label: "2Fトイレ TA",
+    leaf: "ta",
+  },
   // Balcony access door deferred (south wall is fixed G2 glass for now)
   // ── PH stair hall → roof balcony ──
   {
@@ -2033,6 +2080,44 @@ export const SLIDE_DOORS: SlideDoorDef[] = [
     glassColor: "#f2ebe0",
     glassOpacity: 0.42,
     frameColor: "#2c2824",
+  },
+  {
+    id: "slide-1f-yoshitsu-pa",
+    openingId: "1f-door-yoshitsu",
+    style: "tokonoma-card",
+    wallX: 0,
+    wallZ: IR.stairS,
+    alongMin: IR.yoshitsuE - INT_DOOR_W - 0.15,
+    alongMax: IR.yoshitsuE - 0.15,
+    axis: "ew",
+    sill: INT_SILL,
+    height: INT_DOOR_H,
+    /** Slide west along the room face (north of z=4.55). */
+    openToward: "min",
+    panels: 1,
+    floor: "1f",
+    label: "1F洋室 PA引き戸",
+    leaf: "pa",
+    face: 1,
+  },
+  {
+    id: "slide-1f-senmen-dc",
+    openingId: "1f-door-senmen",
+    style: "tokonoma-card",
+    wallX: TOILET_1F.x1,
+    wallZ: 0,
+    alongMin: IR.stairS + SENMEN_DOOR_FROM,
+    alongMax: IR.stairS + SENMEN_DOOR_FROM + INT_DOOR_W,
+    axis: "ns",
+    sill: INT_SILL,
+    height: INT_DOOR_H,
+    /** Slide north on the 洗面 face. The solid wall is north of the bay. */
+    openToward: "max",
+    panels: 1,
+    floor: "1f",
+    label: "1F洗面 DC片引き",
+    leaf: "dc",
+    face: 1,
   },
 ];
 
@@ -2591,8 +2676,15 @@ export const Z2 = {
   /** 1F stair well south (fixed) — deck / void */
   wellS: IR.stairS, // 4.55
   sRoomDepth: 3.64,
-  /** South-wing CL between the two 洋室 (full room NS) */
+  /**
+   * Floor strip x 2.73–3.64 runs the full south-room NS.
+   * The two closets occupy only z 0–clNorth. z clNorth–clN is the SW entry.
+   */
   clDepth: 3.64,
+  /** South CL (洋室6帖) z 0–this. North CL (洋室6.5南西) z this–clNorth. */
+  clSplit: 1.365,
+  /** North edge of the SW closet. Corridor door is still at clN. */
+  clNorth: 2.73,
   corrDepth: 0.91,
   /** North wing west of well: トイレ 0.91 + 物入／洗手 0.91 */
   nWingDepth: 1.82,
@@ -2642,9 +2734,10 @@ export const FLOORS_2F: FloorSlab[] = [
     id: "2f-s-cl",
     floor: "2f",
     y: Y2,
+    /** Closets z 0–2.73 plus the SW entry z 2.73–3.64. One slab so the entry stays walkable. */
     rect: { x: 2.73, z: Z2.south, width: 0.91, depth: Z2.clDepth },
     thickness: T2,
-    label: "2F-CL(南翼)",
+    label: "2F南翼CL＋西南入口",
     color: "#c8c2b8",
   },
   {
@@ -2815,7 +2908,7 @@ export const FLOORS_2F: FloorSlab[] = [
 /**
  * 2F トイレ — same envelope as 1F: EW 1.82 × NS 0.91, north strip.
  * z 5.46–6.37 (owner typed 5.46–5.37; 5.37 is 6.37). West-half sit toilet
- * facing east; south wall east 0.7 passage + café curtains (no door).
+ * facing east. South wall east 0.7 passage is a TA 片開き; café curtains stay.
  */
 export const TOILET_2F = {
   x0: 2.73,
@@ -2828,7 +2921,7 @@ export const TOILET_2F = {
   solidW: 1.82 - 0.7,
 } as const;
 
-/** 2F 物入 west of the wash bay. East face open. */
+/** 2F 物入 west of the wash bay. East face takes a PH 折れ戸. */
 export const MONO_2F = {
   x0: 2.73,
   x1: 3.23,
@@ -2837,6 +2930,138 @@ export const MONO_2F = {
   width: 0.5,
   depth: 0.91,
 } as const;
+
+/**
+ * PH 折れ戸 on closets that already exist.
+ * 1F 洗面物入 is not a plan volume — no leaf there.
+ * 1F 階段下物入 is x 5.46–6.37, z 5.46–6.37, PH on the south face.
+ * Shallow closets fold into the room; deep ones fold into the closet.
+ * Hinge is alongMin. openSign is the plan-space yaw sign (see foldTravelDir).
+ */
+export const FOLD_DOORS: FoldDoorDef[] = [
+  {
+    id: "fold-1f-scl",
+    openingId: "1f-pass-scl-w",
+    wallX: IR.genkanE,
+    wallZ: 0,
+    alongMin: IR.recess + SCL_1F.passFrom,
+    alongMax: IR.recess + SCL_1F.passFrom + SCL_1F.passW,
+    axis: "ns",
+    sill: INT_SILL,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    /** Into the SCL (+X). Interior depth clears a 0.45 m panel. */
+    openSign: 1,
+    openAngleDeg: 78,
+    floor: "1f",
+    label: "1F SCL PH",
+  },
+  {
+    id: "fold-1f-ldk-mono",
+    openingId: "1f-fold-ldk-mono",
+    wallX: SX.xLdkE - 0.455,
+    wallZ: 0,
+    alongMin: halfT,
+    alongMax: 1.365 - halfT,
+    axis: "ns",
+    sill: INT_SILL,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    /** Closet is only ~0.38 m deep — fold out into the LDK (−X). */
+    openSign: -1,
+    openAngleDeg: 78,
+    floor: "1f",
+    label: "1F LDK物入 PH",
+  },
+  {
+    id: "fold-2f-mono",
+    openingId: "2f-fold-mono",
+    wallX: MONO_2F.x1,
+    wallZ: 0,
+    alongMin: MONO_2F.z0 + halfT,
+    alongMax: MONO_2F.z1 - halfT,
+    axis: "ns",
+    sill: 0,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    /** Into the 物入 (−X). 68° keeps the stack off the west wall. */
+    openSign: -1,
+    openAngleDeg: 68,
+    floor: "2f",
+    label: "2F物入 PH",
+  },
+  {
+    id: "fold-2f-cl-s",
+    openingId: "2f-fold-cl-s",
+    wallX: 3.64,
+    wallZ: 0,
+    /** East face of the south CL (z 0–1.365). No east wall — the PH is the door. */
+    alongMin: halfT,
+    alongMax: Z2.clSplit - halfT,
+    axis: "ns",
+    sill: 0,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    /** Into the closet (−X), toward 洋室6帖 only when closed. */
+    openSign: -1,
+    openAngleDeg: 78,
+    floor: "2f",
+    label: "2F南CL PH（東，洋室6帖）",
+  },
+  {
+    id: "fold-2f-cl-n",
+    openingId: "2f-fold-cl-n",
+    wallX: 2.73,
+    wallZ: 0,
+    /** West face of the north CL (z 1.365–2.73). */
+    alongMin: Z2.clSplit + halfT,
+    alongMax: Z2.clNorth - halfT,
+    axis: "ns",
+    sill: 0,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    /** Into the closet (+X). The SW entry north of z=2.73 stays clear. */
+    openSign: 1,
+    openAngleDeg: 78,
+    floor: "2f",
+    label: "2F北CL PH（西，洋室6.5南西）",
+  },
+  {
+    id: "fold-2f-ne-cl",
+    openingId: "2f-fold-ne-cl",
+    wallX: IR.genkanW + IR.module,
+    wallZ: 0,
+    alongMin: Z2.corrN + halfT,
+    alongMax: Z2.north - halfT,
+    axis: "ns",
+    sill: 0,
+    height: INT_DOOR_H,
+    /** Hinge north. Panels run south when shut and stack on the north, into the room. */
+    hingeAt: "max",
+    openSign: -1,
+    openAngleDeg: 78,
+    floor: "2f",
+    label: "2F東北CL PH",
+  },
+  {
+    id: "fold-1f-stair-mono",
+    openingId: "1f-fold-stair-mono",
+    wallX: 0,
+    wallZ: IR.north - M91,
+    /** South face of the under-stair closet. Side walls are the stair screen and the toilet. */
+    alongMin: IR.stairE + halfT,
+    alongMax: IR.genkanW - halfT,
+    axis: "ew",
+    sill: INT_SILL,
+    height: INT_DOOR_H,
+    hingeAt: "min",
+    /** Into the closet (+Z). Panels are short enough for the 0.91 m depth. */
+    openSign: -1,
+    openAngleDeg: 78,
+    floor: "1f",
+    label: "1F階段下物入 PH",
+  },
+];
 
 /** 2F 洗手 — east of 物入, open south to the corridor (no door). */
 export const WASH_2F = {
@@ -2901,8 +3126,8 @@ export const PROP_2F_TOILET_CURTAIN = {
 
 /**
  * 2F wash — east wall of the open south bay, facing west.
- * Vessel = 1F senmen Path B glTF (same W×D cabinet). South of the bay is
- * open to the corridor (no door).
+ * Wall counter SMA-300NT (600) inspired. South of the bay is open (no door).
+ * GLB local: front edge at z=0, wall at z=`counter.d`, floor y=0.
  */
 export const PROP_2F_SINK = {
   id: "hero-2f-wash",
@@ -2912,31 +3137,28 @@ export const PROP_2F_SINK = {
   y: FLOOR_LEVELS["2f"],
   wallX: WASH_2F.x1,
   wallFaceX: WASH_2F.x1 - BUILDING.wallThickness / 2,
-  standoff: 0.03,
-  /** Cabinet W×D matches `PROP_1F_SENMEN.vanity` (SenmenVanity reuse). */
-  vanity: {
-    w: 0.56, // NS
-    d: 0.38, // EW, toward −X
-    h: 0.72,
+  standoff: 0.02,
+  gltf: "/models/hero/dokodemo-wash.glb",
+  /** 600 mm counter. Depth toward the room (−X after the +π/2 mount). */
+  counter: {
+    w: 0.6,
+    d: 0.35,
+    t: 0.03,
+    topY: 0.78,
   },
-  mirror: {
-    w: 0.42,
-    h: 0.72,
-    t: 0.018,
-    frame: 0.026,
-    gapAboveVanity: 0.1,
-  },
+  /** Spout tip in GLB metres. Stream hangs down into the vessel. */
+  stream: { x: 0.005, y: 0.915, z: 0.18, h: 0.12 },
   light: {
     intensity: 0.24,
     distance: 1.5,
     color: "#fff2e4",
   },
-  /** Cabinet AABB center X (standoff + half depth off the east interior). */
+  /** Counter centre X — camera pose looks at this. */
   x:
     WASH_2F.x1 -
     BUILDING.wallThickness / 2 -
-    0.03 -
-    0.38 / 2,
+    0.02 -
+    0.35 / 2,
   z: (WASH_2F.z0 + WASH_2F.z1) / 2,
 } as const;
 
@@ -3003,6 +3225,24 @@ export const FLOORS_1F_NORTH_SPLIT: FloorSlab[] = [
     },
     thickness: INTERIOR_SLAB_THICKNESS,
     label: "1F梯南走廊A",
+    color: "#cfc8bc",
+  },
+  /**
+   * Under-stair 物入. Winders rise through this bay; the slab is the closet floor.
+   * Stair hits stay above maxStepUp, so walking the treads is unchanged.
+   */
+  {
+    id: "1f-stair-mono",
+    floor: "1f",
+    y: INTERIOR_FLOOR_Y,
+    rect: {
+      x: IR.stairE,
+      z: IR.north - M91,
+      width: IR.genkanW - IR.stairE,
+      depth: M91,
+    },
+    thickness: INTERIOR_SLAB_THICKNESS,
+    label: "1F階段下物入",
     color: "#cfc8bc",
   },
   // East of genkanW: 1f-hall-north-east
@@ -3272,9 +3512,9 @@ const X2_CL0 = 2.73;
 const X2_CL1 = 3.64;
 const X2_SE = IR.genkanW; // 6.37
 
-/** CL stack: south → clN; equal halves. */
-const Z2_CL_SPLIT = Z2.south + Z2.clDepth / 2; // 1.365
-const Z2_CL_N = Z2.clN; // 2.73 — south-room north / corridor south / NE·G2 south
+/** South CL north / north CL south. Not half of the 3.64 room. */
+const Z2_CL_SPLIT = Z2.clSplit; // 1.365
+const Z2_CL_N = Z2.clN; // 3.64 — south-room north / corridor south / NE·G2 south
 const Z2_CORR_N = Z2.corrN; // 3.64 — corridor north
 const Z2_NW_JOG_N = Z2.nwJogN; // ≈ 5.005
 const Z2_WELL_S = Z2.wellS; // 4.55 — 1F stair well
@@ -3303,10 +3543,6 @@ const DOOR_2F_NE_FROM = 0;
  */
 const DOOR_2F_SW_FROM = 0; // x 2.73–3.64
 const DOOR_2F_SC_FROM = X2_CL1 - X2_CL0; // 0.91 → x 3.64–4.55
-
-const CL_PASS_W = 0.7;
-const CL_PASS_H = INT2_DOOR_H;
-const CL_PASS_S_FROM = (Z2_CL_SPLIT - Z2.south - CL_PASS_W) / 2;
 
 /** 2F NE room shed: north = 2F wall top, south higher by pitch × 3.64. */
 export function neRoomRoofY(z: number): number {
@@ -3478,39 +3714,37 @@ export const WALLS_2F: WallSegment[] = [
   },
 
   // ═══════════════════════════════════════════════════════════
-  // CL stack — 南 only east; 北 only west
+  // South-wing closets, x 2.73–3.64.
+  // South CL z 0–1.365: door on the east (洋室6帖). Walls W / S / N.
+  // North CL z 1.365–2.73: door on the west (洋室6.5南西). Walls E / S / N.
+  // z 2.73–3.64 is the SW entry (north door), open to the west.
   // ═══════════════════════════════════════════════════════════
 
   {
     id: "2f-int-sw-cl",
-    /** South CL only — north CL is open to the SW room (door at x 2.73–3.64). */
     ...wallNS(X2_CL0, Z2.south, Z2_CL_SPLIT),
     floor: "2f",
-    label: "2F西洋室|CL南",
+    label: "2F南CL西",
   },
   {
     id: "2f-int-cl-sc",
-    ...wallNS(X2_CL1, Z2.south, Z2_CL_N),
+    /** East wall of the north CL, continued to the corridor so the entry stays out of 洋室6帖. */
+    ...wallNS(X2_CL1, Z2_CL_SPLIT, Z2_CL_N),
     floor: "2f",
-    label: "2F-CL|中央洋室",
-    openings: [
-      {
-        id: "2f-pass-scl-east",
-        fromStart: CL_PASS_S_FROM,
-        width: CL_PASS_W,
-        height: CL_PASS_H,
-        sill: INT2_SILL,
-        type: "passage",
-      },
-    ],
+    label: "2F北CL東＋西南入口東",
   },
   {
     id: "2f-int-cl-split",
     ...wallEW(X2_CL0, X2_CL1, Z2_CL_SPLIT),
     floor: "2f",
-    label: "2F-CL中隔",
+    label: "2F南CL北／北CL南",
   },
-  // CL north face = SW room door (x 2.73–3.64) on 2f-int-sroom-n
+  {
+    id: "2f-int-cl-n-n",
+    ...wallEW(X2_CL0, X2_CL1, Z2.clNorth),
+    floor: "2f",
+    label: "2F北CL北",
+  },
 
   // ═══════════════════════════════════════════════════════════
   // West north-wing: 物入南 @ corrN; トイレ南 @ z=5.46 (east 0.7 門簾)

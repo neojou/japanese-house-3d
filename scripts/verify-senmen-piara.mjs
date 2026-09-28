@@ -47,11 +47,11 @@ function main() {
   assert.match(dims, /bowlH: 0\.80/);
   assert.match(dims, /totalH: 1\.90/);
   assert.match(dims, /mirrorD: 0\.158/);
-  // 2F wash still uses the hinoki vessel cabinet numbers.
+  // Hinoki vessel cabinet numbers stay for SenmenVanity / the basin asset.
   assert.match(dims, /w: 0\.56/);
   assert.match(dims, /d: 0\.38/);
   assert.match(dims, /h: 0\.72/);
-  console.log("  ✓ piara block; vanity 0.56×0.38×0.72 kept for 2F");
+  console.log("  ✓ piara block; hinoki vanity 0.56×0.38×0.72 still declared");
 
   const ui = readFileSync(
     path.join(root, "src/components/house/SenmenDisplay.tsx"),
@@ -75,9 +75,10 @@ function main() {
     path.join(root, "src/components/house/Wash2FDisplay.tsx"),
     "utf8",
   );
-  assert.match(wash, /SenmenVanity/);
+  assert.match(wash, /DokodemoWash/);
   assert.doesNotMatch(wash, /SenmenPiara/);
-  console.log("  ✓ 1F Piara loader + CubeCamera; 2F still hinoki SenmenVanity");
+  assert.doesNotMatch(wash, /SenmenVanity/);
+  console.log("  ✓ 1F Piara loader + CubeCamera; 2F wall counter, not the hinoki vanity");
 }
 
 main();

@@ -1,6 +1,6 @@
 # blender.md — 現行策略：Vite／R3F 主體 + 英雄道具 GLB
 
-最後更新：2026-09-26（R3F 預設；英雄 overlay：玄關大門 + UB Type-M + kitchen + Piara + Amage toilet）
+最後更新：2026-09-28（R3F 預設；英雄 overlay：玄關大門 + UB Type-M + kitchen + Piara + Amage toilet + 2F 洗手 + Standard Label 室內門）
 
 本文件是 [japanese-house-3d](https://github.com/neojou/japanese-house-3d) 的視覺升級規範。  
 **Grok Build 必須遵守本檔「現行策略」，不要再整棟用 GLB 換掉 R3F 牆與門。**
@@ -29,7 +29,9 @@
 3. 1F LDK Noct 壁付 I 型 — **done** `public/models/hero/kitchen-noct.glb`  
 4. 1F 洗面 Piara-inspired 75 cm 化粧台＋3面鏡 — **done** `public/models/hero/senmen-piara.glb`  
 5. 1F/2F Amage シャワートイレ inspired 坐便 — **done** `public/models/hero/amage-toilet.glb`  
-6. tokonoma-card 其他近看物件（2F senmen basin 仍在 `public/props/`）
+6. 2F 壁掛洗手櫃（どこでも手洗 inspired）— **done** `public/models/hero/dokodemo-wash.glb`  
+7. 室內門 Standard Label inspired（LD／PA／DC／TA／PH）— **done** `public/models/hero/standard-label-doors.glb`  
+8. tokonoma-card 其他近看物件（senmen basin 仍在 `public/props/`）
 
 結構網格繼續用 R3F；GLB 當 overlay，對齊同一套公尺座標與既有 X 鏡像。
 

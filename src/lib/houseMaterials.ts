@@ -100,6 +100,7 @@ export const INTERIOR_SECONDARY_WALL_IDS = new Set<string>([
   "1f-int-scl-w",
   "1f-int-cl-e",
   "2f-int-cl-split",
+  "2f-int-cl-n-n",
   "2f-int-sw-cl",
   "2f-int-cl-sc",
   "2f-int-toilet-s",

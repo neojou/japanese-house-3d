@@ -103,6 +103,7 @@ const INTERIOR_SECONDARY_WALL_IDS = new Set([
   "1f-int-scl-w",
   "1f-int-cl-e",
   "2f-int-cl-split",
+  "2f-int-cl-n-n",
   "2f-int-sw-cl",
   "2f-int-cl-sc",
   "2f-int-toilet-s",
@@ -959,13 +960,20 @@ function addSlideDoor(
       : (def.alongMin + def.alongMax) / 2;
   const closedB =
     n === 2 ? def.alongMax - leafW / 2 + overlap * 0.25 : closedA;
-  const glass: BakeMat = {
-    name: "slideGlass",
-    color: hexRgb(def.glassColor ?? "#f2ebe0"),
-    roughness: 0.72,
-    metalness: 0.05,
-    opacity: def.glassOpacity ?? 0.42,
-  };
+  const glass: BakeMat = def.leaf
+    ? {
+        name: "doorWood",
+        color: hexRgb("#d2c3b0"),
+        roughness: 0.48,
+        metalness: 0.02,
+      }
+    : {
+        name: "slideGlass",
+        color: hexRgb(def.glassColor ?? "#f2ebe0"),
+        roughness: 0.72,
+        metalness: 0.05,
+        opacity: def.glassOpacity ?? 0.42,
+      };
   const t = 0.028;
   const travelA = leafW * 0.88;
   const travelB = leafW * 0.88 + leafW * 0.72;

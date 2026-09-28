@@ -24,7 +24,11 @@
     "bake:senmen-piara": "node --experimental-strip-types scripts/bake-senmen-piara.mjs",
     "test:senmen-piara": "node --experimental-strip-types scripts/verify-senmen-piara.mjs",
     "bake:amage-toilet": "node --experimental-strip-types scripts/bake-amage-toilet.mjs",
-    "test:amage-toilet": "node --experimental-strip-types scripts/verify-amage-toilet.mjs"
+    "test:amage-toilet": "node --experimental-strip-types scripts/verify-amage-toilet.mjs",
+    "bake:dokodemo-wash": "node --experimental-strip-types scripts/bake-dokodemo-wash.mjs",
+    "test:dokodemo-wash": "node --experimental-strip-types scripts/verify-dokodemo-wash.mjs",
+    "bake:standard-label-doors": "node --experimental-strip-types scripts/bake-standard-label-doors.mjs",
+    "test:standard-label-doors": "node --experimental-strip-types scripts/verify-standard-label-doors.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

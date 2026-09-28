@@ -6,23 +6,29 @@ import {
   BUILDING,
   COLORS,
   FLOOR_LEVELS,
+  FOLD_DOORS,
   INTERIOR_FLOOR_Y,
   MATERIAL_PRESETS,
   SLIDE_DOORS,
   SWING_DOORS,
   WALLS,
+  type FoldDoorDef,
   type Opening,
   type SlideDoorDef,
   type SwingDoorDef,
   type WallSegment,
 } from "@/data/dimensions";
 import { INTERIOR } from "@/lib/houseMaterials";
+import { bifoldBRel, doorBaseYaw } from "@/lib/standardLabelDoor";
 import { useViewerStore } from "@/store/useViewerStore";
+import { StandardLabelLeaf } from "./StandardLabelLeaf";
 
 const LEAF_T = 0.04;
 const FRAME_T = 0.05;
 const SLIDE_LEAF_T = 0.028;
 const SLIDE_FRAME = 0.028;
+/** Greige oak casing for Standard Label leaves. Dielectric, not the charcoal slider. */
+const OAK_FRAME = "#d2c3b0";
 
 /**
  * Clickable interior swing door — quarter-circle open (default 90°).
@@ -58,6 +64,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
    * (that left NS doors closed along world X, off the opening).
    */
   const baseYaw = def.axis === "ns" ? -Math.PI / 2 : 0;
+  const frameColor = def.leaf ? OAK_FRAME : INTERIOR.accent;
+  const frameRough = def.leaf ? 0.48 : MATERIAL_PRESETS.doorFrame.roughness;
+  const frameMetal = def.leaf ? 0.02 : MATERIAL_PRESETS.doorFrame.metalness;
 
   const onClick = useCallback(
     (e: ThreeEvent<MouseEvent>) => {
@@ -97,9 +106,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
             <meshStandardMaterial
-              color={INTERIOR.accent}
-              roughness={MATERIAL_PRESETS.doorFrame.roughness}
-              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
           <mesh
@@ -109,9 +118,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[FRAME_T, def.height, BUILDING.wallThickness]} />
             <meshStandardMaterial
-              color={INTERIOR.accent}
-              roughness={MATERIAL_PRESETS.doorFrame.roughness}
-              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
           <mesh
@@ -127,9 +136,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               args={[leafW + 0.02, FRAME_T, BUILDING.wallThickness]}
             />
             <meshStandardMaterial
-              color={INTERIOR.accent}
-              roughness={MATERIAL_PRESETS.doorFrame.roughness}
-              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
         </>
@@ -142,9 +151,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
             <meshStandardMaterial
-              color={INTERIOR.accent}
-              roughness={MATERIAL_PRESETS.doorFrame.roughness}
-              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
           <mesh
@@ -154,9 +163,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
           >
             <boxGeometry args={[BUILDING.wallThickness, def.height, FRAME_T]} />
             <meshStandardMaterial
-              color={INTERIOR.accent}
-              roughness={MATERIAL_PRESETS.doorFrame.roughness}
-              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
           <mesh
@@ -172,9 +181,9 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               args={[BUILDING.wallThickness, FRAME_T, leafW + 0.02]}
             />
             <meshStandardMaterial
-              color={INTERIOR.accent}
-              roughness={MATERIAL_PRESETS.doorFrame.roughness}
-              metalness={MATERIAL_PRESETS.doorFrame.metalness}
+              color={frameColor}
+              roughness={frameRough}
+              metalness={frameMetal}
             />
           </mesh>
         </>
@@ -186,21 +195,32 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
         rotation={[0, baseYaw, 0]}
         userData={{ interactable: "door" }}
       >
-        <mesh
-          position={[(leafDir * leafW) / 2, leafH / 2, 0]}
-          castShadow
-          receiveShadow
-          userData={{ interactable: "door" }}
-          {...ptr}
-        >
-          <boxGeometry args={[leafW, leafH, LEAF_T]} />
-          <meshStandardMaterial
-            color={COLORS.genkanDoor}
-            roughness={MATERIAL_PRESETS.doorWood.roughness}
-            metalness={MATERIAL_PRESETS.doorWood.metalness}
+        {def.leaf ? (
+          <StandardLabelLeaf
+            kind={def.leaf}
+            leafW={leafW}
+            leafH={leafH}
+            handleSign={leafDir}
+            anchor="hinge"
+            onClick={onClick}
           />
-        </mesh>
-        {def.id === "swing-1f-senmen-east" &&
+        ) : (
+          <mesh
+            position={[(leafDir * leafW) / 2, leafH / 2, 0]}
+            castShadow
+            receiveShadow
+            userData={{ interactable: "door" }}
+            {...ptr}
+          >
+            <boxGeometry args={[leafW, leafH, LEAF_T]} />
+            <meshStandardMaterial
+              color={COLORS.genkanDoor}
+              roughness={MATERIAL_PRESETS.doorWood.roughness}
+              metalness={MATERIAL_PRESETS.doorWood.metalness}
+            />
+          </mesh>
+        )}
+        {!def.leaf && def.id === "swing-1f-senmen-east" &&
           [0.22, 0.44, 0.66].map((t) => (
             <mesh
               key={`g-v-${t}`}
@@ -212,7 +232,7 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               <meshStandardMaterial color="#3a3632" roughness={0.55} />
             </mesh>
           ))}
-        {def.id === "swing-1f-senmen-east" &&
+        {!def.leaf && def.id === "swing-1f-senmen-east" &&
           [0.28, 0.5, 0.72].map((t) => (
             <mesh
               key={`g-h-${t}`}
@@ -228,19 +248,21 @@ function SwingDoor({ def }: { def: SwingDoorDef }) {
               <meshStandardMaterial color="#3a3632" roughness={0.55} />
             </mesh>
           ))}
-        {/* Handle near free edge */}
-        <mesh
-          position={[leafDir * leafW * 0.85, leafH * 0.45, LEAF_T / 2 + 0.015]}
-          userData={{ interactable: "door" }}
-          {...ptr}
-        >
-          <boxGeometry args={[0.02, 0.12, 0.03]} />
-          <meshStandardMaterial
-            color="#b8b8b8"
-            metalness={MATERIAL_PRESETS.handle.metalness}
-            roughness={MATERIAL_PRESETS.handle.roughness}
-          />
-        </mesh>
+        {/* Bar handle only on the plain slab. Standard Label leaves carry a lever. */}
+        {!def.leaf && (
+          <mesh
+            position={[leafDir * leafW * 0.85, leafH * 0.45, LEAF_T / 2 + 0.015]}
+            userData={{ interactable: "door" }}
+            {...ptr}
+          >
+            <boxGeometry args={[0.02, 0.12, 0.03]} />
+            <meshStandardMaterial
+              color="#b8b8b8"
+              metalness={MATERIAL_PRESETS.handle.metalness}
+              roughness={MATERIAL_PRESETS.handle.roughness}
+            />
+          </mesh>
+        )}
       </group>
     </group>
   );
@@ -431,19 +453,26 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
   const pocketDeltaA = dir * leafW * 0.88;
   const pocketDeltaB = dir * (leafW * 0.88 + leafW * 0.72);
 
-  const frameColor = def.frameColor ?? INTERIOR.accent;
+  const veneer = !!def.leaf;
+  const frameColor = veneer ? OAK_FRAME : (def.frameColor ?? INTERIOR.accent);
+  const frameRough = veneer ? 0.48 : 0.55;
+  const frameMetal = veneer ? 0.02 : 0.25;
   const glassColor = def.glassColor ?? "#f2ebe0";
   const glassOpacity = def.glassOpacity ?? 0.42;
 
   /** Interior rail is closer to the room; east leaf is farther when closed. */
   const railIn = def.axis === "ew" ? 0.012 : 0.012;
   const railOut = def.axis === "ew" ? -0.018 : -0.018;
+  /** Veneer 片引き rides the room face so the leaf can pass in front of the wall. */
+  const faceOff = veneer
+    ? (def.face ?? 1) * (BUILDING.wallThickness / 2 + 0.02)
+    : null;
   /**
    * When the east leaf is stacked west, it must sit on the interior rail.
    * Otherwise the west leaf (interior) eats the click → openA+closeB,
    * both leaves travel east together.
    */
-  const railOffA = overlapStyle && openB ? railOut : railIn;
+  const railOffA = faceOff ?? (overlapStyle && openB ? railOut : railIn);
   const railOffB = overlapStyle && openB ? railIn : railOut;
 
   const onClickPocket = useCallback(
@@ -531,7 +560,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
     return (
       <mesh key={key} position={pos} userData={{ interactable: "door" }} {...ptr}>
         <boxGeometry args={size} />
-        <meshStandardMaterial color={frameColor} roughness={0.55} metalness={0.25} />
+        <meshStandardMaterial color={frameColor} roughness={frameRough} metalness={frameMetal} />
       </mesh>
     );
   };
@@ -546,6 +575,28 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
       def.axis === "ew"
         ? [along0, sillY + 0.02, def.wallZ + zOff]
         : [def.wallX + zOff, sillY + 0.02, along0];
+    if (def.leaf && n === 1) {
+      const yaw = def.axis === "ns" ? -Math.PI / 2 : 0;
+      const handleSign: 1 | -1 = def.openToward === "max" ? -1 : 1;
+      return (
+        <group
+          key={key}
+          ref={groupRef}
+          position={pos}
+          userData={{ interactable: "door" }}
+        >
+          <StandardLabelLeaf
+            kind={def.leaf}
+            leafW={leafW}
+            leafH={leafH}
+            handleSign={handleSign}
+            anchor="center"
+            yaw={yaw}
+            onClick={onClickLeaf("A")}
+          />
+        </group>
+      );
+    }
     const which = key === "B" ? "B" : "A";
     const covered =
       overlapStyle && ((which === "A" && openB) || (which === "B" && openA));
@@ -681,7 +732,7 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
               : [0.06, 0.03, openingW + 0.06]
           }
         />
-        <meshStandardMaterial color={frameColor} roughness={0.5} metalness={0.28} />
+        <meshStandardMaterial color={frameColor} roughness={frameRough} metalness={frameMetal} />
       </mesh>
       {/* Floor track + low threshold */}
       <mesh
@@ -733,10 +784,141 @@ function SlideDoor({ def }: { def: SlideDoorDef }) {
   );
 }
 
+/**
+ * Handleless bifold. Panel A swings about the jamb; panel B folds back
+ * so the outer edge stays on the wall line (bifoldBRel = −2α).
+ */
+function FoldDoor({ def }: { def: FoldDoorDef }) {
+  const open = useViewerStore((s) => !!s.doorOpen[def.id]);
+  const toggleDoor = useViewerStore((s) => s.toggleDoor);
+  const panelA = useRef<THREE.Group>(null);
+  const panelB = useRef<THREE.Group>(null);
+  const alpha = useRef(0);
+  const openRad = def.openSign * THREE.MathUtils.degToRad(def.openAngleDeg);
+  const baseYaw = doorBaseYaw(def.axis, def.hingeAt);
+  const openingW = Math.abs(def.alongMax - def.alongMin);
+  const panelW = openingW / 2;
+  const leafW = panelW - 0.003;
+  const leafH = def.height - 0.045;
+  const baseY = FLOOR_LEVELS[def.floor ?? "1f"];
+  const sillY = baseY + def.sill;
+  const hingeAlong = def.hingeAt === "min" ? def.alongMin : def.alongMax;
+  const hingePos: [number, number, number] =
+    def.axis === "ew"
+      ? [hingeAlong, sillY, def.wallZ]
+      : [def.wallX, sillY, hingeAlong];
+
+  const onClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+      toggleDoor(def.id);
+    },
+    [def.id, toggleDoor],
+  );
+
+  useFrame((_, dt) => {
+    alpha.current = THREE.MathUtils.damp(alpha.current, open ? openRad : 0, 8, dt);
+    const a = alpha.current;
+    if (panelA.current) panelA.current.rotation.y = baseYaw + a;
+    if (panelB.current) panelB.current.rotation.y = bifoldBRel(a);
+  });
+
+  const ptr = {
+    onClick,
+    onPointerOver: () => {
+      document.body.style.cursor = "pointer";
+    },
+    onPointerOut: () => {
+      document.body.style.cursor = "auto";
+    },
+  };
+
+  const midAlong = (def.alongMin + def.alongMax) / 2;
+  const midY = sillY + def.height / 2;
+  const post = (along: number, key: string) => {
+    const pos: [number, number, number] =
+      def.axis === "ew"
+        ? [along, midY, def.wallZ]
+        : [def.wallX, midY, along];
+    const size: [number, number, number] =
+      def.axis === "ew"
+        ? [0.035, def.height, BUILDING.wallThickness]
+        : [BUILDING.wallThickness, def.height, 0.035];
+    return (
+      <mesh key={key} position={pos} userData={{ interactable: "door" }} {...ptr}>
+        <boxGeometry args={size} />
+        <meshStandardMaterial color={OAK_FRAME} roughness={0.48} metalness={0.02} />
+      </mesh>
+    );
+  };
+
+  return (
+    <group name={def.id} userData={{ interactable: "door" }}>
+      {post(def.alongMin, "post-min")}
+      {post(def.alongMax, "post-max")}
+      <mesh
+        position={
+          def.axis === "ew"
+            ? [midAlong, sillY + def.height - 0.015, def.wallZ]
+            : [def.wallX, sillY + def.height - 0.015, midAlong]
+        }
+        userData={{ interactable: "door" }}
+        {...ptr}
+      >
+        <boxGeometry
+          args={
+            def.axis === "ew"
+              ? [openingW, 0.03, 0.05]
+              : [0.05, 0.03, openingW]
+          }
+        />
+        <meshStandardMaterial color={OAK_FRAME} roughness={0.48} metalness={0.02} />
+      </mesh>
+      <mesh
+        position={
+          def.axis === "ew"
+            ? [midAlong, sillY + def.height - 0.006, def.wallZ]
+            : [def.wallX, sillY + def.height - 0.006, midAlong]
+        }
+      >
+        <boxGeometry
+          args={
+            def.axis === "ew"
+              ? [openingW, 0.008, 0.016]
+              : [0.016, 0.008, openingW]
+          }
+        />
+        <meshStandardMaterial color="#c5c6c8" roughness={0.32} metalness={0.86} />
+      </mesh>
+      <group ref={panelA} position={hingePos} rotation={[0, baseYaw, 0]}>
+        <StandardLabelLeaf
+          kind="ph"
+          leafW={leafW}
+          leafH={leafH}
+          handleSign={1}
+          anchor="hinge"
+          onClick={onClick}
+        />
+        <group ref={panelB} position={[panelW, 0, 0]}>
+          <StandardLabelLeaf
+            kind="ph"
+            leafW={leafW}
+            leafH={leafH}
+            handleSign={1}
+            anchor="hinge"
+            onClick={onClick}
+          />
+        </group>
+      </group>
+    </group>
+  );
+}
+
 const SKIP_OPENING_IDS = new Set([
   "1f-door-genkan-main", // GenkanEntry
   ...SWING_DOORS.map((d) => d.openingId),
   ...SLIDE_DOORS.map((d) => d.openingId),
+  ...FOLD_DOORS.map((d) => d.openingId),
 ]);
 
 export function Doors() {
@@ -756,6 +938,9 @@ export function Doors() {
       ))}
       {SLIDE_DOORS.map((def) => (
         <SlideDoor key={def.id} def={def} />
+      ))}
+      {FOLD_DOORS.map((def) => (
+        <FoldDoor key={def.id} def={def} />
       ))}
       {windows.map(({ wall, opening }) => (
         <WindowPanel

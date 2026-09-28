@@ -30,6 +30,8 @@ npm install
 npm run bake:genkan-door    # optional hero overlay (Blender if on PATH)
 npm run bake:senmen-piara  # 1F 75 cm vanity + 3-panel mirror
 npm run bake:amage-toilet  # 1F/2F sit toilet + hinged lid
+npm run bake:dokodemo-wash # 2F wall handwash counter
+npm run bake:standard-label-doors # interior LD/PA/DC/TA/PH leaves
 npm run dev
 ```
 

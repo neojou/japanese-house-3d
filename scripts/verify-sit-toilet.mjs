@@ -105,9 +105,10 @@ async function main() {
     path.join(root, "src/data/dimensions.ts"),
     "utf8",
   );
-  assert.doesNotMatch(dimSrc, /swing-2f-toilet/);
-  assert.doesNotMatch(dimSrc, /2f-door-toilet/);
+  assert.match(dimSrc, /swing-ta-1f/);
+  assert.match(dimSrc, /swing-ta-2f/);
   assert.match(dimSrc, /2f-pass-toilet-s/);
+  assert.doesNotMatch(dimSrc, /2f-door-toilet/);
   assert.match(dimSrc, /2f-int-mono-s/);
   const washSrc = readFileSync(
     path.join(root, "src/components/house/Wash2FDisplay.tsx"),
@@ -117,13 +118,13 @@ async function main() {
     path.join(root, "src/components/house/Mono2FDisplay.tsx"),
     "utf8",
   );
-  assert.match(washSrc, /SenmenVanity/);
+  assert.match(washSrc, /DokodemoWash/);
   assert.match(monoSrc, /PROP_2F_MONO/);
   assert.match(
     readFileSync(path.join(root, "src/components/house/Props.tsx"), "utf8"),
     /Wash2FDisplay/,
   );
-  console.log("  ✓ 2F トイレ z 5.46–6.37 like 1F; 物入 open east; no south door");
+  console.log("  ✓ 2F トイレ z 5.46–6.37 like 1F; TA swing in the east passage");
 
   assert.match(src, /AmageToilet/);
   assert.doesNotMatch(src, /makeBowlLathe/);

@@ -110,6 +110,21 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 南面玄關：**深色豎紋木皮 + 細長採光 + 金屬框**，英雄 GLB `public/models/hero/genkan-door.glb`。  
 鉸鏈**西**、長柄**東**；開啟向駐車（西南）**85°**（避免掃進 LDK 東拉門）。內側另有採光條與執手。不貼 LIXIL／ジエスタ商標。燒杉不再做門扇。
 
+### 2.6c 室內門（Standard Label inspired）
+
+房間門與物入門是同一套グレージュオーク木皮，英雄 GLB `public/models/hero/standard-label-doors.glb`。不貼 Panasonic 商標。木是電介質（金屬度約 0.02）加垂直木紋與法線，讓場景 HDR 側光能讀到紋理；執手是鉻；採光是磨砂壓克力（transmission）。點擊仍走既有門 store。規格：`docs/standard-label-doors.md`。
+
+| 型 | 開法 | 用在 |
+|----|------|------|
+| LD | 片開き | 1F LDK |
+| PA | 引き戸 | 1F 西北洋室 |
+| PA | 片開き | 2F 三間洋室 |
+| DC | 片引き | 1F 洗面 |
+| TA | 片開き | 1F／2F トイレ（原 0.7 通道；門簾留在上方） |
+| PH | 折れ戸、無執手 | SCL、LDK 物入、2F 物入、南／北 CL、東北 CL 東面 |
+
+外牆玻璃拉門、UB 淋浴拉門、玄關大門、洗面東側格柵門、PH 陽台門不改成這套。1F 洗面物入沒有獨立空間，不加門。樓梯下物入在 x 5.46–6.37、z 5.46–6.37，南側是 PH 折門。淺物入的折門折向房間，避免門扇插進背牆。
+
 ### 2.6b 凹口燒杉（外牆口袋，不含門扇）
 
 | Rule | Detail |
@@ -204,12 +219,13 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 
 - **Placement / orientation locked** by plan unless owner says otherwise  
 - **Readable porcelain form** — Lathe bowl, rounded tank, seat ring, lid, base skirt; **never** two bare boxes  
-- **Continuous curvature** (basin / tub / toilet bowl): **Path B** — `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:ub-bath` / `bake:amage-toilet` write `public/props/…` or `public/models/hero/*.glb`; runtime `useGLTF`. Do not reconstruct the cavity from stacked `ExtrudeGeometry`. Process: `docs/cinematic-path-b.md`  
+- **Continuous curvature** (basin / tub / toilet bowl): **Path B** — `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:dokodemo-wash` / `bake:ub-bath` / `bake:amage-toilet` write `public/props/…` or `public/models/hero/*.glb`; runtime `useGLTF`. Do not reconstruct the cavity from stacked `ExtrudeGeometry`. Process: `docs/cinematic-path-b.md`  
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET` / `PROP_2F_TOILET`  
 - **1F/2F sit toilet:** Amage シャワートイレ *inspired* (no trademarks). Path B `public/models/hero/amage-toilet.glb`. Skirted one-piece + tank-top 手洗い + washlet lid. Envelope **760 × 416 mm**, sit **400 mm**, 手洗い rim **800 mm** (faucet ~1000 mm). **Click lid / seat** to lift. Shared `SIT_TOILET`. `AmageToilet.tsx` + `docs/amage-toilet.md`. `npm run bake:amage-toilet` / `test:toilet`  
-- **1F senmen vanity:** Piara-inspired **75 cm** 引出化粧台 (left drawers + right door, ひろびろ ceramic bowl, wall mixer) + **3-panel full-storage mirror cabinet** (slim LED). Path B `public/models/hero/senmen-piara.glb`. **Click** drawers / cab door / three mirror leaves; **click faucet** for stream; CubeCamera glass (same contract as before). No LIXIL / ピアラ marks. `SenmenPiara.tsx` + `docs/senmen-vanity.md`. **2F wash** keeps the hinoki cabinet + Path B basin (`SenmenVanity.tsx`).  
+- **2F wash:** wall counter inspired by SMA-300NT (600) + tall single-lever. Path B `public/models/hero/dokodemo-wash.glb`. Wood deck (dielectric), ceramic vessel, chrome mixer / trap (metalness 1) so the scene HDR reads on the metal. Click the mixer for a stream. No brand marks. `DokodemoWash.tsx`.
+- **1F senmen vanity:** Piara-inspired **75 cm** 引出化粧台 (left drawers + right door, ひろびろ ceramic bowl, wall mixer) + **3-panel full-storage mirror cabinet** (slim LED). Path B `public/models/hero/senmen-piara.glb`. **Click** drawers / cab door / three mirror leaves; **click faucet** for stream; CubeCamera glass (same contract as before). No LIXIL / ピアラ marks. `SenmenPiara.tsx` + `docs/senmen-vanity.md`. The hinoki `SenmenVanity` basin stays in the repo for that Path B asset; 2F wash no longer mounts it.  
 - **1F UB unit bath:** LIXIL リデア Mタイプ / BDUS-1616LBM-A+H **inspired** (no trademarks). Path B hero `public/models/hero/ub-bath.glb`. Visual lock: `docs/refs/images/bath_tank.jpg` + inner fill `bath_tank-1.png` / `bath_tank-2.png`. Apron tub against **east** wall (NS **W1200**, depth ~700 mm, inner lip **40 mm**); **click chrome mixer**; **NW-deck chrome button** opens/closes the **bottom plug**. East **TW FIX 特注 W1200×H1200** window above the tub. `TubDisplay.tsx` + `docs/ub-tub.md`  
 - **UB room finishes:** cream tile liner (N/E/W) + charcoal textured shower wall (S, right of the east window); beige **anti-slip grid** floor; white window reveal; chrome column shower + inner I-bar grab. Exterior stucco kept (liner sits inside the shell). Dropped hex-cyan / smoke-marble / goose-yellow diatom / wool mat.
 
@@ -233,7 +249,7 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-1f-toilet` | 1F トイレ西半 — Amage シャワートイレ inspired Path B（面東、可掀蓋） | `tokonoma-card` (潔具) | **Done** |
 | `hero-2f-toilet` | 2F トイレ西半 — 同一 GLB，坐便朝東 | `tokonoma-card` (潔具) | **Done** |
 | `hero-2f-toilet-curtain` | 2F トイレ南牆東側 0.7 — 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
-| `hero-2f-wash` | 2F 南半東牆 — 洗手台朝西（Path B senmen 瓷盆＋檜木櫃） | `tokonoma-card` (潔具) | **Done** |
+| `hero-2f-wash` | 2F 南半東牆 — どこでも手洗 inspired 600 mm 壁掛櫃＋碗盆＋高腳龍頭（Path B GLB，朝西） | `tokonoma-card` (潔具) | **Done** |
 | `hero-2f-mono` | 2F 物入 x 2.73–3.23 — 開東檜木格架 | `tokonoma-card` (收納) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
 | `hero-1f-ub-tub` | 1F UB 東牆 — Type-M 大內盆＋西北角甲板鉻鈕開底部塞 | `tokonoma-card` (潔具 / Path B GLB) | **Done** |
@@ -369,6 +385,7 @@ When changing look, verify in first-person:
 | 2026-09-26 | 1F senmen → Piara-inspired 75 cm Path B `senmen-piara.glb` (引出＋3面鏡 CubeCamera). 2F wash stays hinoki `SenmenVanity` |
 | 2026-09-26 | 1F/2F toilet → Amage shower-toilet inspired Path B `amage-toilet.glb` (skirted, 手洗い, click lid) |
 | 2026-09-26 | Light layers: local `house-ibl.hdr` IBL (0.35, background off); dielectrics out of metalness 0.3–0.6; bloom default off |
+| 2026-09-26 | 2F wash → wall counter Path B `dokodemo-wash.glb` (600 mm wood deck, vessel, tall mixer, exposed trap) |
 | 2026-08-02 | 1F senmen N wall: basket+laundry, vanity+vertical mirror, front-load washer |
 | 2026-08-04 | Senmen washer refine: tokonoma-card porthole stack + drum + drawer + honey wood plinth/side rail |
 | 2026-08-04 | Senmen washer: remove wood + door handle; large high-gloss glass; subtle controls; drum laundry |
@@ -388,6 +405,9 @@ When changing look, verify in first-person:
 | 2026-08-18 | House GLB: DESIGN 70/25/5 PBR colors in `house.glb`; Vite `HouseGltf` default |
 | 2026-09-07 | R3F default again; yaki/stucco matte + genkan rake; hero genkan-door GLB overlay |
 | 2026-09-13 | Genkan door: Giesta 2 fire-door inspired GLB; west hinge, east handle, swing SW; no yaki leaf |
+| 2026-09-28 | Interior doors → Standard Label inspired Path B `standard-label-doors.glb` (LD/PA/DC/TA/PH, greige oak). Toilet passages gain a TA swing; closet faces gain PH bifolds |
+| 2026-09-28 | 2F south-wing closets: south z 0–1.365 door on the east (6-jo room); north z 1.365–2.73 door on the west (6.5-jo SW). z 2.73–3.64 stays the SW entry |
+| 2026-09-28 | Under-stair closet x 5.46–6.37, z 5.46–6.37, PH on the south. LDK door: north hinge, 85° west. 2F NE door: south hinge, 85° east. NE closet bifold stacks on the north |
 
 ---
 
@@ -405,6 +425,8 @@ When changing look, verify in first-person:
 | `src/lib/houseBake.ts` | House GLB boxes from `dimensions.ts` |
 | `public/models/archive/house-full-box-bevel.glb` | Archived full-house bake (`?houseGltf=1`) |
 | `public/models/hero/genkan-door.glb` | 玄關大門 overlay |
+| `public/models/hero/standard-label-doors.glb` | Interior LD / PA / DC / TA / PH leaves |
+| `docs/standard-label-doors.md` | Interior door assignment and bifold direction |
 | `src/components/Scene.tsx` | Canvas tone mapping / lights |
 | `docs/cinematic-path-b.md` | AI-unattended Path B bake / test loop |
 | `docs/senmen-vanity.md` | 1F Piara Path B + 2F hinoki basin spec |

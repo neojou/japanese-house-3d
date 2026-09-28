@@ -11,8 +11,9 @@ import {
 } from "@/lib/houseMaterials";
 
 /**
- * 2F 物入 — west alcove, open east (tokonoma-card).
- * N/S/W are plan walls; this is the hinoki carcass + shelves + a few boxes.
+ * 2F 物入 — west alcove (tokonoma-card).
+ * N/S/W are plan walls. The east face is a PH bifold (`fold-2f-mono`).
+ * This component is the hinoki carcass + shelves + a few boxes.
  */
 export function Mono2FDisplay() {
   const p = PROP_2F_MONO;

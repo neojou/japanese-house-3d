@@ -92,6 +92,10 @@ Do **not**:
 | `npm run test:kitchen` | GLB node names + fin wall + no west-wall fridge stack |
 | `npm run bake:senmen-piara` | Piara-inspired 75 cm vanity + 3-panel mirror (Blender boolean bowl) → `public/models/hero/senmen-piara.glb` |
 | `npm run test:senmen-piara` | GLB names + 1F loader + CubeCamera + 2F hinoki reuse |
+| `npm run bake:dokodemo-wash` | 2F wall handwash (Blender boolean vessel) → `public/models/hero/dokodemo-wash.glb` |
+| `npm run test:dokodemo-wash` | GLB names + 2F loader + faucet click + no priority-1 frame |
+| `npm run bake:standard-label-doors` | Interior LD/PA/DC/TA/PH leaves → `public/models/hero/standard-label-doors.glb` |
+| `npm run test:standard-label-doors` | GLB names + assignment + bifold pin stays on the track |
 | `npm run bake:amage-toilet` | Amage-inspired skirted sit toilet + 手洗い (Blender boolean bowl) → `public/models/hero/amage-toilet.glb` |
 | `npm run test:toilet` | Envelope 760×416 + GLB names + 1F/2F loader + clickable lid |
 | `npm run test:basin` | Profile + mesh + glTF + loader contracts |
@@ -120,6 +124,13 @@ Bake is **not** a `dev` dependency of the walkthrough: the glTF is committed so 
 | `tools/dcc/build_amage_toilet.py` | Skirted sit toilet + 手洗い Blender baker |
 | `scripts/bake-amage-toilet.mjs` | Orchestrator (Blender required) |
 | `public/models/hero/amage-toilet.glb` | Runtime 1F/2F toilet |
+| `tools/dcc/build_dokodemo_wash.py` | 2F 600 mm wall counter + vessel |
+| `public/models/hero/dokodemo-wash.glb` | Runtime 2F wash |
+| `src/components/house/DokodemoWash.tsx` | Faucet click + `useGLTF` |
+| `tools/dcc/build_standard_label_doors.py` | Greige-oak interior leaves (boolean light slots) |
+| `public/models/hero/standard-label-doors.glb` | Runtime LD / PA / DC / TA / PH |
+| `src/components/house/StandardLabelLeaf.tsx` | Shared leaf + `useGLTF` |
+| `docs/standard-label-doors.md` | Which room gets which leaf |
 | `src/components/house/AmageToilet.tsx` | Lid / seat click + `useGLTF` |
 | `src/lib/ubBathHero.ts` | UB Type-M layout + Node DCC |
 | `scripts/bake-ub-bath.mjs` | Orchestrator (Blender preferred) |
