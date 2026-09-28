@@ -28,7 +28,8 @@
     "bake:dokodemo-wash": "node --experimental-strip-types scripts/bake-dokodemo-wash.mjs",
     "test:dokodemo-wash": "node --experimental-strip-types scripts/verify-dokodemo-wash.mjs",
     "bake:standard-label-doors": "node --experimental-strip-types scripts/bake-standard-label-doors.mjs",
-    "test:standard-label-doors": "node --experimental-strip-types scripts/verify-standard-label-doors.mjs"
+    "test:standard-label-doors": "node --experimental-strip-types scripts/verify-standard-label-doors.mjs",
+    "test:ph-balcony": "node --experimental-strip-types scripts/verify-ph-balcony.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

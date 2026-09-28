@@ -408,6 +408,7 @@ When changing look, verify in first-person:
 | 2026-09-28 | Interior doors → Standard Label inspired Path B `standard-label-doors.glb` (LD/PA/DC/TA/PH, greige oak). Toilet passages gain a TA swing; closet faces gain PH bifolds |
 | 2026-09-28 | 2F south-wing closets: south z 0–1.365 door on the east (6-jo room); north z 1.365–2.73 door on the west (6.5-jo SW). z 2.73–3.64 stays the SW entry |
 | 2026-09-28 | Under-stair closet x 5.46–6.37, z 5.46–6.37, PH on the south. LDK door: north hinge, 85° west. 2F NE door: south hinge, 85° east. NE closet bifold stacks on the north |
+| 2026-09-28 | PH balcony north leg is x 2.73–4.55, z 3.64–6.37. No PH floor on x 0–2.73, z 3.64–6.37. Sloped roofs removed from the deck. x 1.82–2.73, z 3.64–6.37 is a flat 1F roof at 2F level |
 
 ---
 

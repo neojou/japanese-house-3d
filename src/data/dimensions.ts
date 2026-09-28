@@ -2238,7 +2238,7 @@ export const FLOOR_STAIR_MID_LANDING: FloorSlab = {
 // Stairs 2F → PH — same L: straight 0.91 + 90° winders 0.91
 // Hall shell 1.82 × 2.73; door corr z 3.64–4.55
 // Rise 2.7 m: 6×0.225 straight + 6×0.225 winders → Y=5.4
-// Balcony: x 0–6.37, z 0–3.64
+// Balcony: x 0–6.37, z 0–3.64, plus north leg x 2.73–4.55, z 3.64–6.37
 // ─────────────────────────────────────────────────────────────
 
 const PH_BAND = M91;
@@ -2437,13 +2437,16 @@ export const PH_BALCONY = {
   y: FLOOR_LEVELS.ph,
   width: 6.37,
   depth: 3.64,
-  /** L-north: west of hall, z 3.64–6.37, walkable */
+  /**
+   * L-north leg, west of the stair hall. x 0–2.73 has no PH floor:
+   * x 1.82–2.73 is the 1F northwest-room roof at 2F level.
+   */
   nw: {
-    x0: 0,
-    x1: IR.clE, // 4.55
-    z0: IR.mid,
-    z1: IR.north,
-    width: IR.clE,
+    x0: 2.73,
+    x1: IR.clE, // 4.55 — west face of the stair hall
+    z0: IR.mid, // 3.64
+    z1: IR.north, // 6.37
+    width: IR.clE - 2.73,
     depth: IR.north - IR.mid,
   },
 } as const;
@@ -2584,10 +2587,25 @@ export const WALLS_PH: WallSegment[] = [
   },
   {
     id: "ph-balc-w",
-    ...wallNS(PH_BALCONY.x0 + halfT, PH_BALCONY.z0, IR.north),
+    ...wallNS(PH_BALCONY.x0 + halfT, PH_BALCONY.z0, PH_BALCONY.z1),
     floor: "ph",
     height: PH_PARAPET_H,
     label: "PH陽台西欄杆",
+  },
+  {
+    id: "ph-balc-notch",
+    /** North edge of the south deck where the floor stops (x 0–2.73). */
+    ...wallEW(PH_BALCONY.x0, PH_BALCONY.nw.x0, PH_BALCONY.z1),
+    floor: "ph",
+    height: PH_PARAPET_H,
+    label: "PH陽台折角欄杆",
+  },
+  {
+    id: "ph-balc-nw-w",
+    ...wallNS(PH_BALCONY.nw.x0 + halfT, PH_BALCONY.nw.z0, PH_BALCONY.nw.z1),
+    floor: "ph",
+    height: PH_PARAPET_H,
+    label: "PH陽台北塊西欄杆",
   },
   {
     id: "ph-balc-e",

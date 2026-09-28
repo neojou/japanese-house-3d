@@ -2,17 +2,22 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import {
   BUILDING,
+  FLOOR_LEVELS,
   IR,
   STORY,
   SX,
   SZ,
+  X2,
   Z2,
   neRoomRoofY,
 } from "@/data/dimensions";
 
 /**
- * Shed roofs: south high, north low (2026-09-13 elevations).
- * PH hall uses the drawn 0.668 m drop; 2F uses the same pitch over each mass.
+ * Shed roofs: south high, north low.
+ * The PH balcony (x 0–6.37, z 0–3.64 and x 2.73–4.55, z 3.64–6.37) is open
+ * deck. Those bays do not get a second sloping roof — the deck is the lid
+ * of the floor below. The PH stair hall and the 2F northeast room keep sheds.
+ * x 1.82–2.73, z 3.64–6.37 is the 1F northwest-room roof, flat at 2F level.
  */
 function Shed({
   x0,
@@ -57,28 +62,27 @@ function Shed({
 }
 
 export function Roofs() {
-  const y2 = STORY.floor2f + (STORY.floorPh - STORY.floor2f - BUILDING.slabThickness);
   const yPhHigh = STORY.peak;
+  const roofT = 0.08;
+  const nwRoofTop = FLOOR_LEVELS["2f"];
   return (
     <group name="roofs">
-      {/* 2F south wing */}
-      <Shed x0={0} x1={6.37} zS={Z2.south} zN={Z2.clN} ySouth={y2 + 0.55} />
-      {/* 2F corridor x 2.73–6.37, z 3.64–4.55 */}
-      <Shed
-        x0={2.73}
-        x1={6.37}
-        zS={Z2.clN}
-        zN={Z2.corrN}
-        ySouth={y2 + 0.5}
-      />
-      {/* 2F トイレ／洗手／物入 */}
-      <Shed
-        x0={2.73}
-        x1={4.55}
-        zS={Z2.corrN}
-        zN={Z2.north}
-        ySouth={y2 + 0.45}
-      />
+      {/* 1F northwest room roof, seen at 2F. Not a PH floor. */}
+      <mesh
+        name="roof-1f-nw"
+        position={[
+          (SZ.yoshitsuW + X2.w1) / 2,
+          nwRoofTop - roofT / 2,
+          (Z2.clN + Z2.north) / 2,
+        ]}
+        receiveShadow
+        castShadow
+      >
+        <boxGeometry
+          args={[X2.w1 - SZ.yoshitsuW, roofT, Z2.north - Z2.clN]}
+        />
+        <meshStandardMaterial color="#6a6560" roughness={0.92} metalness={0.02} />
+      </mesh>
       {/* 2F NE + CL — south high, north = 2F wall top */}
       <Shed
         x0={6.37}
@@ -87,7 +91,7 @@ export function Roofs() {
         zN={Z2.north}
         ySouth={neRoomRoofY(Z2.clN)}
       />
-      {/* PH hall: south high 9.577, north low */}
+      {/* PH hall: south high 9.577, north low. Stops at the hall, not the deck. */}
       <Shed
         x0={IR.clE}
         x1={SX.xLdkE}
