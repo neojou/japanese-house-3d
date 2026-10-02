@@ -1,6 +1,6 @@
 /**
  * Procedural surface maps (no external assets).
- * Exterior: stucco grit + yaki-sugi.
+ * Exterior fallback: taupe grit if the Bell Art files fail. Yaki-sugi stays here.
  * Interior: oat plaster, warm-gray secondary, light wood accents.
  */
 import * as THREE from "three";
@@ -128,17 +128,20 @@ export function createStuccoNormalMap(size = 512): THREE.CanvasTexture {
   return canvasToTexture(canvas);
 }
 
-/** Subtle albedo variation for warm ivory stucco (not flat hospital white). */
+/**
+ * Fallback only. The live shell loads the Bell Art トラバーチン AC-2166 maps.
+ * This keeps the same taupe if those files fail to load.
+ */
 export function createStuccoAlbedoMap(size = 512): THREE.CanvasTexture {
   const canvas = makeCanvas(size);
   const ctx = canvas.getContext("2d")!;
   const img = ctx.createImageData(size, size);
   const cache = new Map<string, number>();
   const rand = mulberry32(7);
-  // Base ivory RGB
-  const br = 245,
-    bg = 240,
-    bb = 230;
+  // AC-2166 median
+  const br = 142,
+    bg = 115,
+    bb = 99;
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -146,10 +149,12 @@ export function createStuccoAlbedoMap(size = 512): THREE.CanvasTexture {
       const v = y / size;
       const n = fbm(u * 12, v * 12, 4, cache, rand);
       const g = fbm(u * 48, v * 48, 2, cache, rand);
-      const t = (n - 0.5) * 14 + (g - 0.5) * 6;
+      const band = Math.sin((v * 7.5 + Math.sin(u * 5.5) * 0.35) * Math.PI * 2);
+      const crack = Math.abs(band) > 0.86 ? -22 : 0;
+      const t = (n - 0.5) * 16 + (g - 0.5) * 8 + crack;
       const i = (y * size + x) * 4;
       img.data[i] = Math.min(255, Math.max(0, br + t));
-      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.92));
+      img.data[i + 1] = Math.min(255, Math.max(0, bg + t * 0.9));
       img.data[i + 2] = Math.min(255, Math.max(0, bb + t * 0.75));
       img.data[i + 3] = 255;
     }

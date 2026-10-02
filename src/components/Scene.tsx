@@ -204,7 +204,7 @@ export function Scene({ onReady }: SceneProps = {}) {
           antialias: true,
           alpha: false,
           toneMapping: THREE.ACESFilmicToneMapping,
-          /** Slightly brighter midtones for ivory stucco under raking sun */
+          /** Stays 1.12. The shell is Bell Art taupe; do not lift this to chase the old ivory. */
           toneMappingExposure: 1.12,
         }}
         className="h-full w-full touch-none"

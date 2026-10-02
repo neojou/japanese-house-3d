@@ -3932,13 +3932,14 @@ export const CAMERA = {
 } as const;
 
 /**
- * L1 palette — exterior ivory/yaki + interior 70/25/5 (see DESIGN.md, INTERIOR in houseMaterials).
+ * L1 palette — exterior Bell Art AC-2166 + interior 70/25/5
+ * (see DESIGN.md, FAÇADE in houseMaterials).
  */
 export const COLORS = {
   /** Interior main ~70%: milk / oat */
   wall: "#f7f2e8",
-  /** Exterior warm ivory */
-  wallExterior: "#f3eee4",
+  /** Exterior Bell Art トラバーチン AC-2166 */
+  wallExterior: "#8e7363",
   /** Interior secondary ~25% warm gray */
   wallSecondary: "#c9c3b8",
   /** Interior accent ~5% charcoal */
@@ -3949,8 +3950,8 @@ export const COLORS = {
   floor: "#c9b59a",
   /** Outdoor slab / balcony concrete (warm grey) */
   floorOutdoor: "#b5b0a6",
-  /** Balcony soffit underside (warm ivory-grey) */
-  balconySoffit: "#e8e4dc",
+  /** Balcony soffit underside — same coating as the shell */
+  balconySoffit: "#8e7363",
   /** Stair deck / mid landings (slightly darker wood) */
   floorStair: "#b59a78",
   slabEdge: "#9a948a",

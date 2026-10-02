@@ -29,7 +29,9 @@
     "test:dokodemo-wash": "node --experimental-strip-types scripts/verify-dokodemo-wash.mjs",
     "bake:standard-label-doors": "node --experimental-strip-types scripts/bake-standard-label-doors.mjs",
     "test:standard-label-doors": "node --experimental-strip-types scripts/verify-standard-label-doors.mjs",
-    "test:ph-balcony": "node --experimental-strip-types scripts/verify-ph-balcony.mjs"
+    "test:ph-balcony": "node --experimental-strip-types scripts/verify-ph-balcony.mjs",
+    "bake:bellart": "node scripts/bake-bellart.mjs",
+    "test:bellart": "node scripts/verify-bellart-travertine.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

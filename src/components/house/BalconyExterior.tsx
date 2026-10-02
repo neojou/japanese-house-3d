@@ -1,11 +1,12 @@
 
 import { useMemo } from "react";
 import { BALCONY_2F, BUILDING, COLORS } from "@/data/dimensions";
+import { createStuccoMaterial } from "@/lib/houseMaterials";
 
 /**
  * 2F NE balcony exterior finish + genkan-related lights.
- * - Slab edges (warm grey) under/around dual balcony bays
- * - West soffit plate (warm ivory) — rain canopy over genkan
+ * - Slab edges and soffits in the same Bell Art coating as the shell
+ * - West soffit plate — rain canopy over genkan
  * - 3 recessed downlights under west bay
  * - Matte-black European wall sconce east of main door
  *
@@ -21,21 +22,17 @@ export function BalconyExterior() {
   const edgeH = 0.08;
   const edgeT = 0.04;
 
-  const soffitMat = useMemo(
+  const coat = useMemo(
     () => ({
-      color: COLORS.balconySoffit,
-      roughness: 0.9,
-      metalness: 0,
+      soffitW: createStuccoMaterial(w.width, w.depth),
+      soffitE: createStuccoMaterial(e.width, e.depth),
+      westSouth: createStuccoMaterial(w.width, edgeH),
+      eastSouth: createStuccoMaterial(e.width, edgeH),
+      westEdge: createStuccoMaterial(w.depth, edgeH),
+      eastEdge: createStuccoMaterial(e.depth, edgeH),
+      step: createStuccoMaterial(Math.max(e.z0 - w.z0, 0.05), edgeH),
     }),
-    [],
-  );
-  const edgeMat = useMemo(
-    () => ({
-      color: "#9a958c",
-      roughness: 0.88,
-      metalness: 0.02,
-    }),
-    [],
+    [w, e, edgeH],
   );
 
   const westCx = (w.x0 + w.x1) / 2;
@@ -53,7 +50,7 @@ export function BalconyExterior() {
         receiveShadow
       >
         <boxGeometry args={[w.width - 0.02, 0.012, w.depth - 0.02]} />
-        <meshStandardMaterial {...soffitMat} />
+        <primitive object={coat.soffitW} attach="material" />
       </mesh>
 
       {/* East bay soffit (shallower) */}
@@ -62,27 +59,27 @@ export function BalconyExterior() {
         receiveShadow
       >
         <boxGeometry args={[e.width - 0.02, 0.012, e.depth - 0.02]} />
-        <meshStandardMaterial {...soffitMat} />
+        <primitive object={coat.soffitE} attach="material" />
       </mesh>
 
       {/* Thin fascia edges — south faces */}
       <mesh position={[westCx, yBot + edgeH / 2, w.z0 - edgeT / 2]} castShadow>
         <boxGeometry args={[w.width, edgeH, edgeT]} />
-        <meshStandardMaterial {...edgeMat} />
+        <primitive object={coat.westSouth} attach="material" />
       </mesh>
       <mesh position={[eastCx, yBot + edgeH / 2, e.z0 - edgeT / 2]} castShadow>
         <boxGeometry args={[e.width, edgeH, edgeT]} />
-        <meshStandardMaterial {...edgeMat} />
+        <primitive object={coat.eastSouth} attach="material" />
       </mesh>
       {/* West free west edge (over parking / genkan west) */}
       <mesh position={[w.x0 - edgeT / 2, yBot + edgeH / 2, westCz]} castShadow>
         <boxGeometry args={[edgeT, edgeH, w.depth]} />
-        <meshStandardMaterial {...edgeMat} />
+        <primitive object={coat.westEdge} attach="material" />
       </mesh>
       {/* East free east edge */}
       <mesh position={[e.x1 + edgeT / 2, yBot + edgeH / 2, eastCz]} castShadow>
         <boxGeometry args={[edgeT, edgeH, e.depth]} />
-        <meshStandardMaterial {...edgeMat} />
+        <primitive object={coat.eastEdge} attach="material" />
       </mesh>
       {/* Step fascia where west projects past east (z e.z0 → w.z0 band at x join) */}
       <mesh
@@ -94,7 +91,7 @@ export function BalconyExterior() {
         castShadow
       >
         <boxGeometry args={[edgeT * 1.2, edgeH, e.z0 - w.z0]} />
-        <meshStandardMaterial {...edgeMat} />
+        <primitive object={coat.step} attach="material" />
       </mesh>
 
       {/* ── 3 recessed downlights under west soffit (genkan bay) ── */}

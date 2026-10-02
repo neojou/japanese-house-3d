@@ -115,6 +115,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | PH layout | **廊 0.91** + **ph-stair-deck** (z 4.55–6.37) + L-stair; continuous Y=5.4 walk |
 | PH stair | Same L as 1F→2F; exit onto deck → corr → balcony |
 | PH balcony | 南 x **0–6.37** z **0–3.64**；L 北塊 x **2.73–4.55** z **3.64–6.37**。x **0–2.73**、z **3.64–6.37** 三樓無地板。x **1.82–2.73**、z **3.64–6.37** 是一樓西北室屋頂（二樓高度，平頂）。陽台範圍不再加斜屋頂。欄杆 **1.1 m**。梯間與東北室斜頂保留 |
+| Exterior paint | SK Kaken **Bell Art**，樣式 **トラバーチン**，色號 **AC-2166**（`#8e7363`）。外牆、女兒牆、陽台底板與封檐同塗。燒杉掛點、屋頂、室內燕麥、玻璃、門維持原樣。規格 `docs/bellart-travertine.md` |
 
 ### Height sampling (`src/lib/height.ts`)
 
@@ -139,7 +140,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | **M4** | 2F shell + NE room | `done` | Floors/walls, stair well 1.82, NE G2 4.55, balcony slab |
 | **M5** | 2F complete shell | `in_progress` | South wing + トイレ done; balcony access deferred |
 | **M6** | PH / roof | `done` | 2F→PH stair, hall, roof balcony + parapet 1.4 |
-| **M7** | Materials + light | `done` | L1 façade: ivory stucco maps + genkan yaki-sugi; fills (T-301→L1) |
+| **M7** | Materials + light | `done` | L1 façade: Bell Art トラバーチン AC-2166 + genkan yaki-sugi; fills (T-301→L1) |
 | **M8** | Furniture | `in_progress` | Hero-prop conventions + SCL trench; rest of sparse set todo |
 | **M9** | Ship static site | `todo` | GitHub Pages (or static host), polish |
 
@@ -454,3 +455,4 @@ Every task also satisfies:
 | 2026-09-28 | 2F 南翼 CL：南櫃 z 0–1.365 東門給洋室6帖；北櫃 z 1.365–2.73 西門給洋室6.5南西。z 2.73–3.64 仍是西南室入口 |
 | 2026-09-28 | 1F 樓梯下物入 x 5.46–6.37、z 5.46–6.37，南側 PH。LDK 門北軸向西 85°。2F 東北室門南軸向東 85°。東北 CL 折門收到北側 |
 | 2026-09-28 | PH 陽台：北塊改 x 2.73–4.55。x 0–2.73、z 3.64–6.37 無三樓地板。陽台範圍的斜屋頂移除。x 1.82–2.73、z 3.64–6.37 為一樓西北室平屋頂 |
+| 2026-10-02 | 外牆塗料 SK Kaken Bell Art トラバーチン AC-2166（`#8e7363`）。檐板與封檐同塗。室內燕麥、屋頂、燒杉掛點、玻璃、門不變。`bake:bellart` / `test:bellart` |

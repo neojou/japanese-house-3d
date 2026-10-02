@@ -16,7 +16,7 @@
 | **P0 導覽核心** | 第一人稱行走；W/S 前後；A/D 轉向；指標鎖／觸控看；座標 HUD | 相同控制語意；公尺制；可進玄關、上樓、進主要房間 |
 | **P0 幾何** | 1F/2F/PH 牆地板樓梯井、開口與 `dimensions.ts` 對齊 | 同 plan 座標與高度取樣規則（`height.ts` 語意） |
 | **P0 互動** | 點門開合、raycast 優先於 lock | 同等門行為（可不先做所有門） |
-| **P1 光照材質** | 日光、室內 fill、象牙 stucco、yaki-sugi 掛點 | 可讀的暖白建築感；掛點清單可分期 |
+| **P1 光照材質** | 日光、室內 fill、外牆ベルアート AC-2166、yaki-sugi 掛點 | 外牆暖褐砂面；室內仍燕麥；掛點清單可分期 |
 | **P1 HUD / 手機** | 座標、D-pad、desktop 說明 | Desktop 必做；手機／Wasm 觸控分期 |
 | **P2 道具** | tokonoma-card 英雄物（SCL、洗面、浴、廚等） | 分批移植；品質條仍遵 `DESIGN.md` §2.7 |
 | **P2 部署** | 靜態 `dist/` → GitHub Pages | Wasm 靜態產物或 Desktop 發佈二選一／並行 |
@@ -194,7 +194,7 @@ japanese-house-3d/
 | Task | 內容 | DoD |
 |------|------|-----|
 | K6.1 | 日光 + 室內 fill 對等（可簡化數量） | 室內可辨識 |
-| K6.2 | 象牙 stucco／重點 yaki 掛點 | 對 `DESIGN.md` 抽樣 |
+| K6.2 | 外牆ベルアート トラバーチン AC-2166／重點 yaki 掛點 | 對 `DESIGN.md` 抽樣 |
 | K6.3 | Wasm 材質降級策略寫死 | 文件 + 可跑 |
 
 ---

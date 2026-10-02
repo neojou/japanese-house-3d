@@ -1,0 +1,16 @@
+{
+  "product": "SK Kaken Bell Art",
+  "productUrl": "https://www.sk-kaken.co.jp/product/exterior-finish-materials/bellart/",
+  "pattern": "トラバーチン",
+  "color": "AC-2166",
+  "srgbHex": "#8e7363",
+  "albedoMeanHex": "#8e7363",
+  "width": 1064,
+  "height": 1511,
+  "tileUM": 0.5,
+  "tileVM": 0.7101,
+  "metalness": 0,
+  "roughnessCenter": 0.93,
+  "source": "docs/refs/images/outlook-paint-1.jpg",
+  "appearance": "docs/refs/images/outlook-paint-2.jpg"
+}

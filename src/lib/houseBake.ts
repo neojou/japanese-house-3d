@@ -359,7 +359,7 @@ function wallMat(id: string): BakeMat {
   if (isExteriorShellId(id)) {
     return {
       name: "stucco",
-      color: hexRgb("#f3eee4"),
+      color: hexRgb(COLORS.wallExterior),
       roughness: MATERIAL_PRESETS.wallExterior.roughness,
       metalness: 0,
     };

@@ -36,7 +36,7 @@ Phase 1 plan geometry is locked. From L1 onward we optimise **sensory quality**.
 
 | Share | Role | Application |
 |------:|------|-------------|
-| **~70%** | Main | Warm ivory **stucco** shell |
+| **~70%** | Main | Bell Art **トラバーチン** shell, color **AC-2166** (`#8e7363`) |
 | **~25%** | Secondary | **Yaki-sugi** in recesses / portal |
 | **~5%** | Accent | Dark handles, thin metal edges |
 
@@ -50,13 +50,18 @@ Phase 1 plan geometry is locked. From L1 onward we optimise **sensory quality**.
 
 Floors stay warm wood tones. Code: `INTERIOR` + finish sets in `houseMaterials.ts`.
 
-### 2.3 暖白，不是醫院白
+### 2.3 外牆塗料與室內暖白
 
-Japanese minimal white is the base—but pure cold white reads clinical.
+The exterior shell is **SK Kaken Bell Art**, pattern **トラバーチン**, color **AC-2166**. The swatch is `docs/refs/images/outlook-paint-1.jpg`; the building read is `docs/refs/images/outlook-paint-2.jpg`. Measured sRGB of that swatch is **`#8e7363`**: warm taupe sand, matte, fine mottling, broken horizontal fissures.
 
-- Prefer **warm white**: ivory, milky white, slight yellow or grey in the white.
-- Avoid pure `#FFFFFF` large fields and icy blue-greys on the main shell.
-- Current direction: façade ivory ≈ `#f3eee4` / `#f7f2e8` (see code `FAÇADE` / `COLORS.wallExterior`).
+- The baked albedo already is AC-2166. `FAÇADE.stuccoTint` stays `#ffffff`. Multiplying a taupe tint on top of that map would darken the wall a second time.
+- Metalness **0**. Roughness map centered near **0.93** (艶消し). `envMapIntensity` **0.10**. `normalScale` **0.85**.
+- One tile is **0.50 m × 0.7101 m** (1064×1511 px), so the pixels stay square on the wall.
+- Soffits and fascia use the same coating (`createStuccoMaterial`).
+- Interior walls and ceilings stay oat **`#f7f2e8`**. Roofs stay **`#6a6560`** / **`#5c5854`**. Yaki-sugi hang-points, glass, and doors stay as they are.
+- Spec: [`docs/bellart-travertine.md`](./docs/bellart-travertine.md). Maps: `public/textures/bellart-travertine/`.
+
+Interior plaster stays warm oat, milky, with a little yellow-grey. Large interior fields stay off pure `#FFFFFF`.
 
 ### 2.4 紋理 (Texture) 重於色票
 
@@ -64,13 +69,13 @@ Colour sets mood; **micro-relief sells “real building.”**
 
 | Surface | Intent |
 |---------|--------|
-| **Exterior stucco** | Elastic / sand-float paint: fine grit, soft undulation. Under **raking sun**, tiny shadows → stone-like warmth. |
+| **Exterior Bell Art** | トラバーチン: fine sand and broken horizontal fissures. Matte. Raking sun reads the pits. A trowel coating, with the swatch's own stratification. |
 | **Yaki-sugi (燒杉)** | Fire-charred cedar: dark charcoal, vertical grain, board seams, matte variation—not flat black paint. |
 | **Interior oat plaster** | 珪藻土／乳漆感：柔和 micro grit；斜射暖光出陰影 |
 | **Interior warm gray** | 微水泥／大地灰：稍深、稍粗，層次不搶主牆 |
 | **Interior light wood** | 樑、端景板、窗台內緣 — 呼應室外木，非整面燒杉 |
 
-Implementation may use **procedural maps** (preferred for zero asset pipeline) or later hand-authored seamless maps; quality bar is the *look*, not the asset source.
+The live shell uses the photo tile in `public/textures/bellart-travertine/`. Procedural maps in `surfaceTextures.ts` run only if those files fail to load, and they use the same taupe. Yaki and interior plaster stay procedural.
 
 ### 2.4b 室內牆面規則
 
@@ -102,7 +107,7 @@ Wood is for **warmth in shadow volumes**, not cladding the whole house.
 | 1 | **玄関駐車凹口** 左壁 | **Done** — `1f-jog-ldk-east` |
 | 1b | **玄関大门立面**（凹口背面） | **Done** — Giesta 2 防火戸 inspired hero GLB（西鉸東把，無商標） |
 | 1c | **凹口頂 / 右頰**（portal soffit + east cheek） | **Done** — cladding in `GenkanEntry` (no plan wall change) |
-| 2 | 陽台內側、屋簷／天花下緣 | Partial: NE balcony dual slab + genkan soffit lights (no yaki on balc yet) |
+| 2 | 陽台內側、屋簷／天花下緣 | Soffit and fascia share the Bell Art coating. Yaki stays off the balcony |
 | 3 | 其他凹入（門廊、局部 jog） | Only with explicit owner list |
 
 ### 2.6 玄関大门（Giesta 2 防火戸 inspired）
@@ -270,14 +275,14 @@ Future art / lamp / ceramic: same style name + this table row + owner OK.
 | Layer | Meaning | Code |
 |-------|---------|------|
 | **L0** | Flat colours only | Early T-301 style (superseded for façade) |
-| **L1** (current target) | Stucco albedo + normal + roughness; yaki-sugi maps on pocket walls | `src/lib/surfaceTextures.ts`, `src/lib/houseMaterials.ts`, `Walls.tsx` |
+| **L1** (current) | Bell Art albedo + normal + roughness on the shell; yaki-sugi maps on pocket walls | `public/textures/bellart-travertine/`, `src/lib/houseMaterials.ts`, `Walls.tsx`. Fallback: `src/lib/surfaceTextures.ts` |
 | **L2** | Scene IBL + optional emissive bloom | Local HDR in `public/env/` (not a CDN preset). Bloom default **off** (`?bloom=1`). No new post package. |
 
 **Finishes on walls:**
 
 | Finish | Use |
 |--------|-----|
-| `stucco` | Exterior shell |
+| `stucco` | Exterior shell — Bell Art トラバーチン AC-2166 |
 | `yakiSugi` | `YAKI_SUGI_WALL_IDS` |
 | `interiorMain` | Default indoor walls + ceilings (~70%) |
 | `interiorSecondary` | `INTERIOR_SECONDARY_WALL_IDS` (~25%) |
@@ -296,7 +301,7 @@ Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in 
 - **IBL:** local `public/env/house-ibl.hdr` via drei `<Environment background={false}>`. Intensity starts at **0.35** (cap about 0.6). Not a dock / sunset preset. Background colour stays `LIGHTING.background`.
 - **PBR:** stucco / yaki / wood are dielectrics (`metalness` near 0). Do not park dielectrics in metalness 0.3–0.6. Real metal is 0.75+.
 - Warm-ish background / fog—avoid blue hospital atmosphere.
-- ACES tone mapping; mild exposure lift for ivory midtones. If bloom fights ACES, keep ACES.
+- ACES tone mapping. Exposure stays **1.12**. The taupe shell is the finish; do not raise exposure to chase the old ivory midtone. If bloom fights ACES, keep ACES.
 - **Bloom default off.** Optional `?bloom=1`: three.js WebGL `EffectComposer` only, high threshold, low strength, emissive lamps / shoji only. The pass must not mount a positive-priority `useFrame` while disabled — R3F then skips the main `gl.render` and the canvas stays black. No full-wall haze. No `@react-three/postprocessing`. Planar FBO mirrors remain forbidden.
 
 ### 4.1 Why yaki looked “flat black” (and fix)
@@ -316,10 +321,10 @@ Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in 
 
 When changing look, verify in first-person:
 
-1. **Outside:** shell reads warm ivory, not grey mud or pure white plastic.  
-2. **Slanted light:** stucco shows fine grain; not a perfectly flat shader.  
+1. **Outside:** shell reads warm taupe sand (AC-2166): matte, fine mottling, broken horizontal fissures.  
+2. **Slanted light:** the coating shows sand and fissures; the shader is not a flat fill.  
 3. **Genkan recess:** yaki-sugi is clearly different material—dark, vertical, matte.  
-4. **Colour balance:** large white, small wood pockets, tiny dark metal/wood accents.  
+4. **Colour balance:** large taupe shell, small yaki pockets, tiny dark metal accents. Indoors the large field stays oat.  
 5. **Indoors:** calm, readable; not blown-out white or cave-black without fills.  
 6. **Performance:** no major new deps; maps shared; static export still viable.  
 7. **Hero close-up:** the object is what it claims to be (a basin is a basin, not a white brick).
@@ -409,6 +414,7 @@ When changing look, verify in first-person:
 | 2026-09-28 | 2F south-wing closets: south z 0–1.365 door on the east (6-jo room); north z 1.365–2.73 door on the west (6.5-jo SW). z 2.73–3.64 stays the SW entry |
 | 2026-09-28 | Under-stair closet x 5.46–6.37, z 5.46–6.37, PH on the south. LDK door: north hinge, 85° west. 2F NE door: south hinge, 85° east. NE closet bifold stacks on the north |
 | 2026-09-28 | PH balcony north leg is x 2.73–4.55, z 3.64–6.37. No PH floor on x 0–2.73, z 3.64–6.37. Sloped roofs removed from the deck. x 1.82–2.73, z 3.64–6.37 is a flat 1F roof at 2F level |
+| 2026-10-02 | Exterior shell → SK Kaken Bell Art トラバーチン AC-2166 (`#8e7363`). Soffit and fascia share it. Interior oat, roofs, yaki hang-points, glass, and doors stay |
 
 ---
 
@@ -417,7 +423,10 @@ When changing look, verify in first-person:
 | File | Role |
 |------|------|
 | `src/lib/houseMaterials.ts` | Finish types, `FAÇADE`, `YAKI_SUGI_WALL_IDS` |
-| `src/lib/surfaceTextures.ts` | Procedural stucco / yaki-sugi maps |
+| `src/lib/surfaceTextures.ts` | Procedural yaki-sugi, interior plaster, and the Bell Art fallback |
+| `public/textures/bellart-travertine/` | Exterior albedo / normal / roughness (AC-2166) |
+| `tools/dcc/build_bellart_travertine.py` | Tile baker (`npm run bake:bellart`) |
+| `docs/bellart-travertine.md` | Exterior coating spec |
 | `src/components/house/Walls.tsx` | Applies finishes to wall meshes |
 | `src/data/dimensions.ts` | `COLORS`, `LIGHTING`, geometry, `SIT_TOILET` |
 | `src/lib/sitToilet.ts` | Sit-toilet envelope packing (tank back → bowl front) |

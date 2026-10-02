@@ -93,7 +93,7 @@ Vite 預設場景：**R3F 結構 + 英雄 GLB overlay**。可用 query 或旗標
 - `drei` `<Environment>` + `public/env/house-ibl.hdr`（腳本 `scripts/build-house-ibl.mjs`）。不要用 preset CDN。
 - `background={false}`。天空仍是 `LIGHTING.background`，不要換成碼頭或夕陽。
 - `environmentIntensity` 從 **0.35** 起（現況曾是 0.28）。上限約 0.6。日光仍是主光。
-- 調完後象牙外牆、燕麥灰泥、yaki-sugi 色溫仍對齊 `DESIGN.md`。
+- 調完後外牆ベルアート AC-2166、燕麥灰泥、yaki-sugi 色溫仍對齊 `DESIGN.md`。
 
 ### D. Bloom（後期，預設關）
 

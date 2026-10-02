@@ -37,7 +37,7 @@ Coding rules and conventions for AI agents working in this repo.
 2. Obey **cancelled** items there (notably: **no top-down camera / mode switch**).
 3. If geometry is ambiguous, **plan first** and wait for owner confirmation when the task says so.
 4. Prefer `@TASKS.md` + task id in Grok prompts so status stays aligned.
-5. When changing **materials, colours, lighting, façade finishes, or wood hang-points**, read **`DESIGN.md`** first and keep 70/25/5, warm ivory, texture-over-swatch, and subtractive wood pockets.
+5. When changing **materials, colours, lighting, façade finishes, or wood hang-points**, read **`DESIGN.md`** first and keep 70/25/5, exterior Bell Art AC-2166, interior oat, texture-over-swatch, and subtractive wood pockets.
 6. When the owner asks for a close-up display object **in Tokonoma Card style**, follow **`DESIGN.md` §2.7** (`tokonoma-card` / 床の間卡): **noble elegant + detail-first** — readable form, quiet luxury, no crude lumber-box heroes. References: `CoatDisplay.tsx`, `GetabakoDisplay.tsx`, `ToiletDisplay.tsx`.
 7. **Cinematic Path B** (owner lock): if the hero needs a continuous cavity / glaze arc (basin, bowl), **do not** stack extrudes and **do not** wait for a human to model. Bake `public/props/<id>/*.glb` per `docs/cinematic-path-b.md`, test, load with `useGLTF`. Human optional only at `?pose=<id>`.
 
@@ -71,8 +71,8 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 | Units | Meters everywhere |
 | Dimensions | Centralize in `src/data/dimensions.ts`; change data before hardcoding mesh sizes |
 | Coordinates | Plan: +X east, +Z north, +Y up; origin SW. Display may X-mirror the house (`src/lib/coords.ts`) |
-| Geometry | Simple `Box` walls/floors; L1 façade via `houseMaterials` (stucco maps + yaki-sugi ids) |
-| Look & feel | Follow **`DESIGN.md`** (cinematic / 力求完美, subtractive warm white, 70/25/5, yaki-sugi only via approved hang-points) |
+| Geometry | Simple `Box` walls/floors; L1 façade via `houseMaterials` (Bell Art maps + yaki-sugi ids) |
+| Look & feel | Follow **`DESIGN.md`** (cinematic / 力求完美, Bell Art exterior, interior oat, 70/25/5, yaki-sugi only via approved hang-points) |
 | Hero props | **`tokonoma-card`** (床の間卡): 高貴典雅 + 細節優先; wood endscape + standoff + weak key + crafted form; DESIGN §2.7. **Never** ship 組合木板 / 白長方體 |
 | Hero curvature | **Path B**: scripted DCC → `public/props/` glTF. No stacked-extrude bowls. `docs/cinematic-path-b.md` |
 | Components | Small, single-responsibility under `src/components/house/` |
@@ -117,7 +117,7 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 
 **Visual / material locks:** see **`DESIGN.md`**. Highlights:
 
-- Façade ~**70%** warm ivory stucco, ~**25%** wood/yaki pockets, ~**5%** dark accent
+- Façade ~**70%** Bell Art トラバーチン **AC-2166** (`#8e7363`), ~**25%** wood/yaki pockets, ~**5%** dark accent. Interior stays oat. Soffit and fascia use the same coating. Spec: `docs/bellart-travertine.md`. `npm run bake:bellart` / `npm run test:bellart`
 - Texture (grit / grain) over flat swatches; raking light should read
 - Yaki-sugi only on listed hang-points (`YAKI_SUGI_WALL_IDS`); expand only with owner OK + DESIGN.md update
 - Hero displays: **`tokonoma-card`** only — cinematic / detail-first / noble elegant; never invent ad-hoc stacks or ship “組合木板／白長方體” as hero

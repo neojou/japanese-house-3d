@@ -136,7 +136,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 ## Materials & light (L1)
 
-**Façade:** warm ivory **stucco**; **yaki-sugi** genkan portal + flush door (DESIGN).  
+**Façade:** SK Kaken Bell Art **トラバーチン** **AC-2166** (`#8e7363`); soffit and fascia share it; **yaki-sugi** stays on the genkan portal (DESIGN).  
 
 **Interior:** **70%** oat plaster (walls + ceilings), **25%** warm-gray (wet/CL/utility), **5%** charcoal (frames, 分模線, genkan 端景); micro grit normals; ceiling shadow-gaps; local light-wood accents.  
 

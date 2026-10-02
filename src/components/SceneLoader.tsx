@@ -4,7 +4,7 @@ import { preloadFaçadeTextures } from "@/lib/houseMaterials";
 
 /**
  * Client-only loader (Vite SPA — no SSR):
- * 1) Show progress while building procedural textures
+ * 1) Show progress while the Bell Art maps and the other textures load
  * 2) Mount Canvas only after textures ready
  * 3) Hide overlay when first frame reports ready
  */

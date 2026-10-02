@@ -48,16 +48,28 @@ export type WallFinish =
   /** @deprecated alias of interiorMain */
   | "interior";
 
-/** Exterior + shared accent tokens */
+/**
+ * Exterior shell is SK Kaken Bell Art, pattern トラバーチン, color AC-2166.
+ * `stucco` is the flat fallback. The baked albedo already is that color,
+ * so the material multiply (`stuccoTint`) stays white.
+ * Tile size keeps the swatch pixels square on the wall (see meta.json).
+ */
 export const FAÇADE = {
-  stucco: "#f3eee4",
-  stuccoTint: "#f7f2e8",
+  stucco: "#8e7363",
+  stuccoTint: "#ffffff",
   yakiSugi: "#b9b0a4",
   /** @deprecated use INTERIOR.main */
   interior: "#f7f2e8",
   accentDark: "#2c2824",
-  stuccoTileM: 1.6,
+  stuccoTileU: 0.5,
+  stuccoTileV: 0.7101,
   yakiTileM: 0.72,
+} as const;
+
+const BELLART_MAPS = {
+  albedo: "textures/bellart-travertine/albedo.jpg",
+  normal: "textures/bellart-travertine/normal.png",
+  rough: "textures/bellart-travertine/roughness.jpg",
 } as const;
 
 /** Interior palette — 70 / 25 / 5 */
@@ -135,6 +147,8 @@ export const INTERIOR_WOOD_WALL_IDS = new Set<string>([
 ]);
 
 let _ready = false;
+/** True once the Bell Art files replaced the procedural stucco fallback. */
+let bellartFromFile = false;
 let stuccoAlbedo: THREE.Texture;
 let stuccoNormal: THREE.Texture;
 let stuccoRough: THREE.Texture;
@@ -181,6 +195,41 @@ function yieldToMain(): Promise<void> {
   });
 }
 
+function loadMap(
+  rel: string,
+  colorSpace: THREE.ColorSpace,
+): Promise<THREE.Texture> {
+  const url = `${import.meta.env.BASE_URL}${rel}`;
+  return new Promise((resolve, reject) => {
+    new THREE.TextureLoader().load(
+      url,
+      (tex) => {
+        tex.colorSpace = colorSpace;
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.anisotropy = 16;
+        tex.needsUpdate = true;
+        resolve(tex);
+      },
+      undefined,
+      () => reject(new Error(`bellart map failed: ${rel}`)),
+    );
+  });
+}
+
+/** Bell Art トラバーチン AC-2166. Falls back to the procedural maps on failure. */
+async function loadBellartMaps(): Promise<void> {
+  const [albedo, normal, rough] = await Promise.all([
+    loadMap(BELLART_MAPS.albedo, THREE.SRGBColorSpace),
+    loadMap(BELLART_MAPS.normal, THREE.NoColorSpace),
+    loadMap(BELLART_MAPS.rough, THREE.NoColorSpace),
+  ]);
+  stuccoAlbedo = albedo;
+  stuccoNormal = normal;
+  stuccoRough = rough;
+  bellartFromFile = true;
+}
+
 /** Weighted steps for real progress (yaki 1024 is heaviest). */
 function textureBuildSteps(): { weight: number; step: string; run: () => void }[] {
   return [
@@ -188,21 +237,21 @@ function textureBuildSteps(): { weight: number; step: string; run: () => void }[
       weight: 6,
       step: "外牆塗料（albedo）…",
       run: () => {
-        stuccoAlbedo = createStuccoAlbedoMap(512);
+        if (!bellartFromFile) stuccoAlbedo = createStuccoAlbedoMap(512);
       },
     },
     {
       weight: 10,
       step: "外牆塗料（法線 grit）…",
       run: () => {
-        stuccoNormal = createStuccoNormalMap(512);
+        if (!bellartFromFile) stuccoNormal = createStuccoNormalMap(512);
       },
     },
     {
       weight: 4,
       step: "外牆塗料（roughness）…",
       run: () => {
-        stuccoRough = createStuccoRoughnessMap(256);
+        if (!bellartFromFile) stuccoRough = createStuccoRoughnessMap(256);
       },
     },
     {
@@ -422,6 +471,13 @@ export async function preloadFaçadeTextures(
   if (_ready) {
     onProgress?.({ progress: 1, step: "材質已就緒" });
     return;
+  }
+
+  onProgress?.({ progress: 0.02, step: "外牆ベルアート（トラバーチン）…" });
+  try {
+    await loadBellartMaps();
+  } catch (err) {
+    console.warn(err);
   }
 
   const steps = textureBuildSteps();
@@ -899,6 +955,38 @@ export function createBathHexEastMaterial(
 }
 
 /**
+ * Bell Art shell. `spanU` / `spanV` are the face sizes in meters
+ * (wall: horizontal run, height; soffit: the two plan spans).
+ */
+export function createStuccoMaterial(
+  spanU: number,
+  spanV: number,
+): THREE.MeshStandardMaterial {
+  ensureFaçadeTextures();
+  if (!_ready || !stuccoAlbedo || !stuccoNormal || !stuccoRough) {
+    return new THREE.MeshStandardMaterial({
+      color: FAÇADE.stucco,
+      roughness: 0.93,
+      metalness: 0,
+    });
+  }
+  const repU = Math.max(spanU / FAÇADE.stuccoTileU, 0.5);
+  const repV = Math.max(spanV / FAÇADE.stuccoTileV, 0.5);
+  const maps = cloneMaps(stuccoAlbedo, stuccoNormal, stuccoRough, repU, repV);
+  return new THREE.MeshStandardMaterial({
+    // Albedo already is AC-2166. A tint here would push it darker.
+    color: FAÇADE.stuccoTint,
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new THREE.Vector2(0.85, 0.85),
+    roughnessMap: maps.roughnessMap ?? undefined,
+    roughness: 1,
+    metalness: 0,
+    envMapIntensity: 0.1,
+  });
+}
+
+/**
  * Material for a wall box piece.
  */
 export function createWallMaterial(
@@ -921,20 +1009,8 @@ export function createWallMaterial(
     return createBathWallMaterial(along, up);
   }
 
-  if (f === "stucco" && _ready) {
-    const repU = Math.max(along / FAÇADE.stuccoTileM, 0.5);
-    const repV = Math.max(up / FAÇADE.stuccoTileM, 0.5);
-    const maps = cloneMaps(stuccoAlbedo, stuccoNormal, stuccoRough, repU, repV);
-    return new THREE.MeshStandardMaterial({
-      color: FAÇADE.stuccoTint,
-      map: maps.map,
-      normalMap: maps.normalMap,
-      normalScale: new THREE.Vector2(0.62, 0.62),
-      roughnessMap: maps.roughnessMap ?? undefined,
-      roughness: 1,
-      metalness: 0.0,
-      envMapIntensity: 0.12,
-    });
+  if (f === "stucco") {
+    return createStuccoMaterial(along, up);
   }
 
   if (f === "interiorWood") {
