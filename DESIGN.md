@@ -224,14 +224,15 @@ When the object is a **toilet / basin** (fixed wet room fixture):
 
 - **Placement / orientation locked** by plan unless owner says otherwise  
 - **Readable porcelain form** — Lathe bowl, rounded tank, seat ring, lid, base skirt; **never** two bare boxes  
-- **Continuous curvature** (basin / tub / toilet bowl): **Path B** — `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:dokodemo-wash` / `bake:ub-bath` / `bake:amage-toilet` write `public/props/…` or `public/models/hero/*.glb`; runtime `useGLTF`. Do not reconstruct the cavity from stacked `ExtrudeGeometry`. Process: `docs/cinematic-path-b.md`  
+- **Continuous curvature** (basin / tub / toilet bowl): **Path B** — `npm run bake:senmen-basin` / `bake:senmen-piara` / `bake:dokodemo-wash` / `bake:ub-bath` / `bake:amage-toilet` / `bake:ub-louver` write `public/props/…` or `public/models/hero/*.glb`; runtime `useGLTF`. Do not reconstruct the cavity from stacked `ExtrudeGeometry`. Process: `docs/cinematic-path-b.md`  
 - Boutique hotel soft rounding OK; warm ivory glaze; optional thin wood endscape  
 - Lid ajar optional for life; single flush button; one weak warm key  
 - Reference: `ToiletDisplay.tsx` + `PROP_1F_TOILET` / `PROP_2F_TOILET`  
 - **1F/2F sit toilet:** Amage シャワートイレ *inspired* (no trademarks). Path B `public/models/hero/amage-toilet.glb`. Skirted one-piece + tank-top 手洗い + washlet lid. Envelope **760 × 416 mm**, sit **400 mm**, 手洗い rim **800 mm** (faucet ~1000 mm). **Click lid / seat** to lift. Shared `SIT_TOILET`. `AmageToilet.tsx` + `docs/amage-toilet.md`. `npm run bake:amage-toilet` / `test:toilet`  
 - **2F wash:** wall counter inspired by SMA-300NT (600) + tall single-lever. Path B `public/models/hero/dokodemo-wash.glb`. Wood deck (dielectric), ceramic vessel, chrome mixer / trap (metalness 1) so the scene HDR reads on the metal. Click the mixer for a stream. No brand marks. `DokodemoWash.tsx`.
 - **1F senmen vanity:** Piara-inspired **75 cm** 引出化粧台 (left drawers + right door, ひろびろ ceramic bowl, wall mixer) + **3-panel full-storage mirror cabinet** (slim LED). Path B `public/models/hero/senmen-piara.glb`. **Click** drawers / cab door / three mirror leaves; **click faucet** for stream; CubeCamera glass (same contract as before). No LIXIL / ピアラ marks. `SenmenPiara.tsx` + `docs/senmen-vanity.md`. The hinoki `SenmenVanity` basin stays in the repo for that Path B asset; 2F wash no longer mounts it.  
-- **1F UB unit bath:** LIXIL リデア Mタイプ / BDUS-1616LBM-A+H **inspired** (no trademarks). Path B hero `public/models/hero/ub-bath.glb`. Visual lock: `docs/refs/images/bath_tank.jpg` + inner fill `bath_tank-1.png` / `bath_tank-2.png`. Apron tub against **east** wall (NS **W1200**, depth ~700 mm, inner lip **40 mm**); **click chrome mixer**; **NW-deck chrome button** opens/closes the **bottom plug**. East **TW FIX 特注 W1200×H1200** window above the tub. `TubDisplay.tsx` + `docs/ub-tub.md`  
+- **1F UB unit bath:** LIXIL リデア Mタイプ / BDUS-1616LBM-A+H **inspired** (no trademarks). Path B hero `public/models/hero/ub-bath.glb`. Visual lock: `docs/refs/images/bath_tank.jpg` + inner fill `bath_tank-1.png` / `bath_tank-2.png`. Apron tub against **east** wall (NS **W1200**, depth ~700 mm, inner lip **40 mm**); **click chrome mixer**; **NW-deck chrome button** opens/closes the **bottom plug**. East window is the 目隠し可動ルーバー Path B (`ub-louver.glb`). `TubDisplay.tsx` + `docs/ub-tub.md`  
+- **1F UB east window:** LIXIL 目隠し可動ルーバー *inspired* (no trademarks). Path B `public/models/hero/ub-louver.glb`. シャイングレー satin aluminium, 16 rounded blades, interior 引き違い sash. Click to open (88°) / close (8° rain-shed). Visual lock: `docs/refs/images/window-1.jpg` + `window-lixil-shine-grey.jpg`. `UbLouver.tsx` + `docs/ub-louver.md`. `npm run bake:ub-louver` / `test:ub-louver`  
 - **UB room finishes:** cream tile liner (N/E/W) + charcoal textured shower wall (S, right of the east window); beige **anti-slip grid** floor; white window reveal; chrome column shower + inner I-bar grab. Exterior stucco kept (liner sits inside the shell). Dropped hex-cyan / smoke-marble / goose-yellow diatom / wool mat.
 
 ### Sliding wet door variant (淋浴拉門)
@@ -258,7 +259,8 @@ When a door must **not** swing into UB / 洗面 (or other tight wet rooms):
 | `hero-2f-mono` | 2F 物入 x 2.73–3.23 — 開東檜木格架 | `tokonoma-card` (收納) | **Done** |
 | `slide-ub-shower` | 1F UB｜洗面 — 雙片西向疊加淋浴拉門 | `tokonoma-card` (拉門) | **Done** |
 | `hero-1f-ub-tub` | 1F UB 東牆 — Type-M 大內盆＋西北角甲板鉻鈕開底部塞 | `tokonoma-card` (潔具 / Path B GLB) | **Done** |
-| `ub-bath-finish` | 1F UB Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東窗 1.20×1.20 | `tokonoma-card` (濕區) | **Done** |
+| `ub-bath-finish` | 1F UB Type-M 內襯：奶油磁磚／炭灰淋浴牆／米色防滑地；東窗 1.20×1.20 目隠し可動ルーバー | `tokonoma-card` (濕區) | **Done** |
+| `hero-1f-ub-louver` | 1F UB 東窗 — 目隠し可動ルーバー Path B（シャイングレー、可點開合） | `tokonoma-card` (建具) | **Done** |
 | `hero-1f-ub-bathmat` | （已撤）羊毛腳踏不符 Type-M 洗い場 | — | **Retired** |
 | `hero-1f-toilet-curtain` | 1F トイレ通道上 1/3 粉紅短簾（左吉娃娃／右博美） | `tokonoma-card` (布藝) | **Done** |
 | `hero-1f-ldk-kitchen` | 1F LDK 壁付 I 型（x=2.175 裝飾牆 75 cm；南 IH＋抽油煙機、中烘碗機、北水槽抽屜）Path B GLB | `tokonoma-card` (廚房) | **Done** |
@@ -415,6 +417,7 @@ When changing look, verify in first-person:
 | 2026-09-28 | Under-stair closet x 5.46–6.37, z 5.46–6.37, PH on the south. LDK door: north hinge, 85° west. 2F NE door: south hinge, 85° east. NE closet bifold stacks on the north |
 | 2026-09-28 | PH balcony north leg is x 2.73–4.55, z 3.64–6.37. No PH floor on x 0–2.73, z 3.64–6.37. Sloped roofs removed from the deck. x 1.82–2.73, z 3.64–6.37 is a flat 1F roof at 2F level |
 | 2026-10-02 | Exterior shell → SK Kaken Bell Art トラバーチン AC-2166 (`#8e7363`). Soffit and fascia share it. Interior oat, roofs, yaki hang-points, glass, and doors stay |
+| 2026-10-03 | 1F UB east window → 目隠し可動ルーバー Path B `ub-louver.glb` (シャイングレー, 16 blades, click open). Opening stays 1.20×1.20 |
 
 ---
 
@@ -427,6 +430,8 @@ When changing look, verify in first-person:
 | `public/textures/bellart-travertine/` | Exterior albedo / normal / roughness (AC-2166) |
 | `tools/dcc/build_bellart_travertine.py` | Tile baker (`npm run bake:bellart`) |
 | `docs/bellart-travertine.md` | Exterior coating spec |
+| `public/models/hero/ub-louver.glb` | 1F UB east 目隠し可動ルーバー |
+| `docs/ub-louver.md` | Louver assignment, click, bake |
 | `src/components/house/Walls.tsx` | Applies finishes to wall meshes |
 | `src/data/dimensions.ts` | `COLORS`, `LIGHTING`, geometry, `SIT_TOILET` |
 | `src/lib/sitToilet.ts` | Sit-toilet envelope packing (tank back → bowl front) |

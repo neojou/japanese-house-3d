@@ -916,6 +916,7 @@ function FoldDoor({ def }: { def: FoldDoorDef }) {
 
 const SKIP_OPENING_IDS = new Set([
   "1f-door-genkan-main", // GenkanEntry
+  "1f-win-ub-e", // UbLouver Path B
   ...SWING_DOORS.map((d) => d.openingId),
   ...SLIDE_DOORS.map((d) => d.openingId),
   ...FOLD_DOORS.map((d) => d.openingId),
@@ -925,7 +926,7 @@ export function Doors() {
   const windows: { wall: WallSegment; opening: Opening }[] = [];
   for (const wall of WALLS) {
     for (const opening of wall.openings ?? []) {
-      if (opening.type === "window") {
+      if (opening.type === "window" && !SKIP_OPENING_IDS.has(opening.id)) {
         windows.push({ wall, opening });
       }
     }

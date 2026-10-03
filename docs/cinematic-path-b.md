@@ -70,6 +70,17 @@ UB Type-M liner (same idea):
 6. Visual gate: /japanese-house-3d/?pose=tub
 ```
 
+UB east 目隠し可動ルーバー (same idea; Blender required):
+
+```text
+1. Edit PROP_1F_UB_LOUVER / UB_EAST_WINDOW in dimensions.ts
+2. Keep tools/dcc/build_ub_louver.py numbers in sync
+3. npm run bake:ub-louver
+4. npm run test:ub-louver
+5. npx tsc --noEmit
+6. Visual gate: /japanese-house-3d/?pose=ub-window  and  ?pose=ub-window-out&louver=open
+```
+
 Do **not**:
 
 - Wait for the owner to open Blender
@@ -99,6 +110,8 @@ Do **not**:
 | `npm run bake:amage-toilet` | Amage-inspired skirted sit toilet + 手洗い (Blender boolean bowl) → `public/models/hero/amage-toilet.glb` |
 | `npm run test:toilet` | Envelope 760×416 + GLB names + 1F/2F loader + clickable lid |
 | `npm run test:basin` | Profile + mesh + glTF + loader contracts |
+| `npm run bake:ub-louver` | 目隠し可動ルーバー (Blender aluminium blades) → `public/models/hero/ub-louver.glb` |
+| `npm run test:ub-louver` | 16 blades + skip generic pane + no trademarks |
 | `npm run test:ub-bath` | UB GLB names + window 1.20 + push drain + overlay |
 | `npm run test:tub` | Fill / drain / wet-floor contracts |
 | `npm run test:mirror` | Unrelated; still required if you touch mirrors |
@@ -121,6 +134,9 @@ Bake is **not** a `dev` dependency of the walkthrough: the glTF is committed so 
 | `scripts/bake-senmen-piara.mjs` | Orchestrator (Blender required) |
 | `public/models/hero/senmen-piara.glb` | Runtime 1F vanity |
 | `src/components/house/SenmenPiara.tsx` | Drawers / doors / CubeCamera glass + `useGLTF` |
+| `tools/dcc/build_ub_louver.py` | 1F UB 目隠し可動ルーバー Blender baker |
+| `public/models/hero/ub-louver.glb` | Runtime east-window grille + sash |
+| `src/components/house/UbLouver.tsx` | Click-open blades + `useGLTF` |
 | `tools/dcc/build_amage_toilet.py` | Skirted sit toilet + 手洗い Blender baker |
 | `scripts/bake-amage-toilet.mjs` | Orchestrator (Blender required) |
 | `public/models/hero/amage-toilet.glb` | Runtime 1F/2F toilet |

@@ -144,7 +144,7 @@ High-level geometry locked with the owner; full decision log and acceptance crit
 
 **Code:** `houseMaterials.ts`, `surfaceTextures.ts`, `InteriorFinishes.tsx`; see **`DESIGN.md`**.
 
-**Hero prop style (M8):** **`tokonoma-card`** / 床の間卡 — **高貴典雅 · 細節優先** + **cinematic / 力求完美**: wood endscape + standoff + crafted form + weak key; not crude boxes. Continuous curvature uses **Path B** glTF (`docs/cinematic-path-b.md`). Spec: **DESIGN.md §2.7**. SCL vignette: trench + ivory getabako (`CoatDisplay` / `GetabakoDisplay`). 1F 洗面: Piara-inspired 75 cm vanity + 3-panel mirror (`SenmenPiara`, `?pose=senmen`).
+**Hero prop style (M8):** **`tokonoma-card`** / 床の間卡 — **高貴典雅 · 細節優先** + **cinematic / 力求完美**: wood endscape + standoff + crafted form + weak key; not crude boxes. Continuous curvature uses **Path B** glTF (`docs/cinematic-path-b.md`). Spec: **DESIGN.md §2.7**. SCL vignette: trench + ivory getabako (`CoatDisplay` / `GetabakoDisplay`). 1F 洗面: Piara-inspired 75 cm vanity + 3-panel mirror (`SenmenPiara`, `?pose=senmen`). 1F UB east: 目隠し可動ルーバー (`UbLouver`, `?pose=ub-window`).
 
 ---
 

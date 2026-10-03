@@ -122,6 +122,7 @@ Do **not** reintroduce Next.js APIs (`next/*`, `"use client"`, App Router).
 - Yaki-sugi only on listed hang-points (`YAKI_SUGI_WALL_IDS`); expand only with owner OK + DESIGN.md update
 - Hero displays: **`tokonoma-card`** only — cinematic / detail-first / noble elegant; never invent ad-hoc stacks or ship “組合木板／白長方體” as hero
 - Wet curvature (basin / Type-M tub / Piara vanity / 2F wall counter / Amage toilet): Path B glTF — `npm run bake:senmen-basin` + `npm run bake:senmen-piara` + `npm run bake:dokodemo-wash` + `npm run bake:ub-bath` + `npm run bake:amage-toilet`
+- 1F UB east window: 目隠し可動ルーバー Path B — `npm run bake:ub-louver` → `public/models/hero/ub-louver.glb`. シャイングレー, 16 blades, click open. Opening stays 1.20×1.20. Spec: `docs/ub-louver.md`
 - Interior room doors: Standard Label inspired Path B — `npm run bake:standard-label-doors` → `public/models/hero/standard-label-doors.glb`. LD 片開き (1F LDK), PA 引き戸 (1F 西北洋室) / PA 片開き (2F 三室), DC 片引き (1F 洗面), TA 片開き (1F/2F トイレ), PH 折れ戸 (SCL / 物入 / CL). No trademarks. Exterior glass sliders, genkan, 洗面 east grid, PH balcony stay as they are. Spec: `docs/standard-label-doors.md`
 - Light is layered (`blender.md` §3): R3F shell, dielectric PBR, local HDR IBL (`public/env/house-ibl.hdr`, intensity ~0.35), bloom **off** unless `?bloom=1`. A disabled bloom pass must not register `useFrame` priority > 0 (R3F then skips `gl.render` and the canvas stays black). Do not put IBL or bloom inside hero GLBs.
 

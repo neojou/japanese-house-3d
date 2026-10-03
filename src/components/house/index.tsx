@@ -16,6 +16,7 @@ import { GetabakoDisplay } from "./GetabakoDisplay";
 import { Toilet2FDisplay, ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
+import { UbLouver } from "./UbLouver";
 import { KitchenDisplay } from "./KitchenDisplay";
 import { Mono2FDisplay } from "./Mono2FDisplay";
 import { SenmenDisplay } from "./SenmenDisplay";
@@ -86,6 +87,7 @@ export {
   Toilet2FDisplay,
   ToiletCurtainDisplay,
   TubDisplay,
+  UbLouver,
   KitchenDisplay,
   SenmenDisplay,
   Wash2FDisplay,

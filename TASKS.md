@@ -116,6 +116,7 @@ Decisions locked in from plan reviews and “照建議” implementations. Chang
 | PH stair | Same L as 1F→2F; exit onto deck → corr → balcony |
 | PH balcony | 南 x **0–6.37** z **0–3.64**；L 北塊 x **2.73–4.55** z **3.64–6.37**。x **0–2.73**、z **3.64–6.37** 三樓無地板。x **1.82–2.73**、z **3.64–6.37** 是一樓西北室屋頂（二樓高度，平頂）。陽台範圍不再加斜屋頂。欄杆 **1.1 m**。梯間與東北室斜頂保留 |
 | Exterior paint | SK Kaken **Bell Art**，樣式 **トラバーチン**，色號 **AC-2166**（`#8e7363`）。外牆、女兒牆、陽台底板與封檐同塗。燒杉掛點、屋頂、室內燕麥、玻璃、門維持原樣。規格 `docs/bellart-travertine.md` |
+| 1F UB east window | **W1200×H1200 特注**。LIXIL 目隠し可動ルーバー *inspired*（シャイングレー、16 羽根、可點開合）。開口不變。規格 `docs/ub-louver.md` |
 
 ### Height sampling (`src/lib/height.ts`)
 
@@ -456,3 +457,4 @@ Every task also satisfies:
 | 2026-09-28 | 1F 樓梯下物入 x 5.46–6.37、z 5.46–6.37，南側 PH。LDK 門北軸向西 85°。2F 東北室門南軸向東 85°。東北 CL 折門收到北側 |
 | 2026-09-28 | PH 陽台：北塊改 x 2.73–4.55。x 0–2.73、z 3.64–6.37 無三樓地板。陽台範圍的斜屋頂移除。x 1.82–2.73、z 3.64–6.37 為一樓西北室平屋頂 |
 | 2026-10-02 | 外牆塗料 SK Kaken Bell Art トラバーチン AC-2166（`#8e7363`）。檐板與封檐同塗。室內燕麥、屋頂、燒杉掛點、玻璃、門不變。`bake:bellart` / `test:bellart` |
+| 2026-10-03 | 1F UB 東窗 目隠し可動ルーバー Path B `ub-louver.glb`（シャイングレー、16 羽根、點擊開合）。開口仍 1.20×1.20。`bake:ub-louver` / `test:ub-louver` |

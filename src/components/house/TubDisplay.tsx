@@ -127,6 +127,9 @@ function UbBathGltf({
       if (/Hero_UbDrainPlug$/i.test(o.name)) {
         plugRef.current = o;
       }
+      if (/Hero_UbWindowReveal_mullion/i.test(o.name)) {
+        o.visible = false;
+      }
     });
     return g;
   }, [gltf.scene, buttonRef, plugRef]);

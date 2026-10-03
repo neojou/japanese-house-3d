@@ -35,7 +35,7 @@ click chrome mixer  →  stream from north filler into the basin
 |-------|------|
 | Room | UB 1.82×1.83 outer; interior faces `UB_BATH.x0…x1`, `z0…z1` (~1.60×1.68, 1616-class) |
 | Tub | Apron against **east** wall. NS **1.20 m** (owner W1200). EW depth **0.70 m**. Rim **0.55 m**. Inner lip **40 mm** (~90% water fill). |
-| Window | East TW-FIX **W1200×H1200 特注** (`UB_EAST_WINDOW`). Catalog labels that size on the **window**, not the tub height. Sits above the tub. White frame, clear glass. |
+| Window | East **W1200×H1200 特注** (`UB_EAST_WINDOW`) above the tub. 目隠し可動ルーバー Path B (`ub-louver.glb`, シャイングレー). Spec: `docs/ub-louver.md`. |
 | Grab | Inner I-bar 600 mm (catalog 浴槽内握りバー), west inner wall. |
 | Drain | Chrome control on **NW deck**; basin-floor plug at the south inner (opens when the button is pressed). |
 | Floor | Beige anti-slip grid (洗い場). Square grate west of the tub. |

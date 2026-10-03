@@ -7,6 +7,7 @@ import { SenmenDisplay } from "./SenmenDisplay";
 import { Toilet2FDisplay, ToiletDisplay } from "./ToiletDisplay";
 import { ToiletCurtainDisplay } from "./ToiletCurtainDisplay";
 import { TubDisplay } from "./TubDisplay";
+import { UbLouver } from "./UbLouver";
 import { Wash2FDisplay } from "./Wash2FDisplay";
 
 /**
@@ -24,6 +25,7 @@ export function Props() {
       <CoatDisplay />
       <GetabakoDisplay />
       <TubDisplay />
+      <UbLouver />
       <KitchenDisplay />
       <SenmenDisplay />
     </group>

@@ -54,6 +54,27 @@ export function poseFromQuery(): DebugPose | null {
       pitch: -0.55,
     };
   }
+  if (id === "ub-window") {
+    const o = {
+      x: PROP_1F_UB_TUB.x - 0.55,
+      z: PROP_1F_UB_TUB.z,
+    };
+    return {
+      x: o.x,
+      z: o.z,
+      y: INTERIOR_FLOOR_Y,
+      yaw: Math.PI / 2,
+      pitch: 0.12,
+    };
+  }
+  if (id === "ub-window-out") {
+    return {
+      x: 10.92 + 1.55,
+      z: PROP_1F_UB_TUB.z,
+      yaw: -Math.PI / 2,
+      pitch: 0.06,
+    };
+  }
   if (id === "toilet" || id === "toilet1f") {
     const p = PROP_1F_TOILET;
     return {

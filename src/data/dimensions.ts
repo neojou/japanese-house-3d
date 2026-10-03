@@ -389,6 +389,26 @@ export const UB_EAST_WINDOW = {
   fromStart: 0.125,
 } as const;
 
+/**
+ * 1F UB east 目隠し可動ルーバー (LIXIL *inspired*, no trademarks).
+ * Path B hero `public/models/hero/ub-louver.glb`. Opening stays 1.20×1.20.
+ * Visual lock: `docs/refs/images/window-1.jpg` + シャイングレー product still.
+ */
+export const PROP_1F_UB_LOUVER = {
+  id: "hero-1f-ub-louver",
+  style: "tokonoma-card" as const,
+  openingId: "1f-win-ub-e",
+  gltf: "/models/hero/ub-louver.glb",
+  width: 1.2,
+  height: 1.2,
+  /** Louver grille is 20 mm larger each side so it sits on the stucco. */
+  grilleOver: 0.02,
+  bladeCount: 16,
+  /** Closed rain-shed (deg, around +Z). Open is nearly edge-on. */
+  closedDeg: 8,
+  openDeg: 88,
+} as const;
+
 // ─────────────────────────────────────────────────────────────
 // Parking + genkan entry (for GenkanEntry component)
 // ─────────────────────────────────────────────────────────────

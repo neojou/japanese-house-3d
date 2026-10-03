@@ -31,7 +31,9 @@
     "test:standard-label-doors": "node --experimental-strip-types scripts/verify-standard-label-doors.mjs",
     "test:ph-balcony": "node --experimental-strip-types scripts/verify-ph-balcony.mjs",
     "bake:bellart": "node scripts/bake-bellart.mjs",
-    "test:bellart": "node scripts/verify-bellart-travertine.mjs"
+    "test:bellart": "node scripts/verify-bellart-travertine.mjs",
+    "bake:ub-louver": "node scripts/bake-ub-louver.mjs",
+    "test:ub-louver": "node scripts/verify-ub-louver.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
