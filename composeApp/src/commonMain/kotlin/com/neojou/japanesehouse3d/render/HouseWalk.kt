@@ -63,7 +63,8 @@ class HouseWalk {
         lastX = x
         lastY = y
         val sens = PlayerDefaults.lookSensitivity
-        look(-dx * sens, -dy * sens)
+        // Screen-right is plan east after the render mirror, so +dx increases yaw.
+        look(dx * sens, -dy * sens)
     }
 
     fun look(dYaw: Double, dPitch: Double) {

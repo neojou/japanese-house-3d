@@ -18,7 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -48,7 +52,6 @@ fun App() {
     val walk = remember { HouseWalk() }
     LaunchedEffect(walk) { scheduleFrameCapture(walk) }
     var hud by remember { mutableStateOf(walk.state) }
-    var fps by remember { mutableStateOf(0f) }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -58,7 +61,6 @@ fun App() {
         while (true) {
             withFrameNanos {
                 hud = walk.state
-                fps = walk.fps
             }
         }
     }
@@ -87,7 +89,7 @@ fun App() {
                     change.consume()
                     val sens = PlayerDefaults.lookSensitivity
                     walk.look(
-                        dYaw = -dragAmount.x * sens,
+                        dYaw = dragAmount.x * sens,
                         dPitch = -dragAmount.y * sens,
                     )
                 }
@@ -116,20 +118,43 @@ fun App() {
         }
 
         Text(
-            text = "KMP · W/S 移動 · A/D 轉向 · 拖曳視角\n" +
-                "X ${hud.x.fmt(2)}  Z ${hud.z.fmt(2)}  Y ${hud.eyeY.fmt(2)}  ${fps.toInt()} fps",
-            color = Color(0xEEFFFFFF),
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(color = Color(0x73FFFFFF))) { append("m  ") }
+                withStyle(SpanStyle(color = Color(0xE6FDA4AF))) { append("X ") }
+                withStyle(SpanStyle(color = Color(0xE6FFFFFF))) { append(hud.x.fmt2()) }
+                append("   ")
+                withStyle(SpanStyle(color = Color(0xE67DD3FC))) { append("Z ") }
+                withStyle(SpanStyle(color = Color(0xE6FFFFFF))) { append(hud.z.fmt2()) }
+                append("   ")
+                withStyle(SpanStyle(color = Color(0xE66EE7B7))) { append("Y ") }
+                withStyle(SpanStyle(color = Color(0xE6FFFFFF))) { append(hud.eyeY.fmt2()) }
+            },
             fontSize = 12.sp,
             fontFamily = FontFamily.Monospace,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(12.dp),
+                .padding(12.dp)
+                .background(Color(0x66000000), RoundedCornerShape(8.dp))
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+        )
+        Text(
+            text = "W/S 移動 · A/D 轉向 · 拖曳視角",
+            color = Color(0xBFFFFFFF),
+            fontSize = 12.sp,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(12.dp)
+                .background(Color(0x66000000), RoundedCornerShape(8.dp))
+                .padding(horizontal = 8.dp, vertical = 6.dp),
         )
     }
 }
 
-private fun Double.fmt(n: Int): String {
-    var p = 1.0
-    repeat(n) { p *= 10.0 }
-    return (round(this * p) / p).toString()
+/** Two decimal places, matching the npm coordinate chip. */
+private fun Double.fmt2(): String {
+    val scaled = round(this * 100.0).toLong()
+    val sign = if (scaled < 0) "-" else ""
+    val abs = kotlin.math.abs(scaled)
+    val frac = (abs % 100).toString().padStart(2, '0')
+    return "$sign${abs / 100}.$frac"
 }
