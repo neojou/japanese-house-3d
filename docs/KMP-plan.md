@@ -2,7 +2,7 @@
 
 > **現況（2026-10）：** Desktop + Wasm 以 Korender 0.7 畫匯出的 `HouseSpec`（殼、樓梯、單坡屋面切片、ベルアート、靜態英雄）。macOS 桌面用建置期補丁要 OpenGL 4.1 core（上游 jar 的 3.3 compatibility 在 Apple 上會掉成 2.1）。npm 仍是可玩的產品真相來源。本文件不授權改寫 npm 主路徑。
 >
-> 下面章節保留當初的里程碑推理。K-S1 已選定 Korender，K3–K8 的幾何與走位已接上匯出規格。門仍不可互動。Filament 仍禁止。
+> 下面章節保留當初的里程碑推理。K-S1 已選定 Korender，K3–K8 的幾何與走位已接上匯出規格。桌面可點門、水龍頭與浴缸水。Filament、Rapier、正交視圖與後處理在 KMP 上若有助品質可以採用；這次沒有改渲染器。
 
 > **角色：** PM / 架構規劃  
 > **目標：** 說明若要以 **Kotlin Multiplatform（Desktop + Wasm）** 達到目前 **npm + Vite + React + R3F/three.js** 日本住宅 3D 導覽的**同等產品效果**，應如何切 milestone、風險與決策門檻。

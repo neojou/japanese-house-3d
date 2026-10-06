@@ -20,6 +20,7 @@ import kotlin.math.PI
  * by semicolons. Feet snap to the floor. Absent env vars do nothing.
  */
 internal actual fun scheduleFrameCapture(walk: HouseWalk) {
+    if (System.getenv("HOUSE_DEMO") == "1") walk.fixtures.presetDemo()
     val base = System.getenv("HOUSE_CAPTURE") ?: return
     val poses = parsePoses(System.getenv("HOUSE_POSES"))
     var index = 0
@@ -43,6 +44,12 @@ internal actual fun scheduleFrameCapture(walk: HouseWalk) {
                 return@Timer
             }
             walk.debugTeleport(poses[index].state)
+            val placed = walk.state
+            println(
+                "pose ${poses[index].name} x=${"%.2f".format(placed.x)} z=${"%.2f".format(placed.z)} " +
+                    "feet=${"%.3f".format(placed.feetY)} yawDeg=${"%.1f".format(placed.yaw * 180.0 / PI)} " +
+                    "pitchDeg=${"%.1f".format(placed.pitch * 180.0 / PI)}",
+            )
             armed = true
             return@Timer
         }
@@ -110,14 +117,14 @@ private fun writeFrontBuffer(canvas: AWTGLCanvas, path: String, name: String): B
     return wrote
 }
 
-private fun findCanvas(): AWTGLCanvas? {
+internal fun findCanvas(): AWTGLCanvas? {
     for (window in Window.getWindows()) {
         findCanvas(window)?.let { return it }
     }
     return null
 }
 
-private fun findCanvas(component: Component): AWTGLCanvas? {
+internal fun findCanvas(component: Component): AWTGLCanvas? {
     if (component is AWTGLCanvas) return component
     if (component is Container) {
         for (child in component.components) {

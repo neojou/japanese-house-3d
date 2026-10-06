@@ -23,7 +23,7 @@ Grok Build is the only agent host. Plan detail stays in `TASKS.md`. Look and mat
 
 ## Premises
 
-- Korender 0.7 draws the KMP house. On macOS the desktop jar is patched at build time to an OpenGL 4.1 core context; Wasm stays WebGL2. `SoftRenderer` stays in the tree and is not the live path. No Filament. The KMP glTF loader must not replace Vite's. KMP doors are not interactive.
+- Korender 0.7 draws the KMP house. On macOS the desktop jar is patched at build time to an OpenGL 4.1 core context; Wasm stays WebGL2. `SoftRenderer` stays in the tree and is not the live path. Desktop doors, faucets, and tub water are clickable. Filament, Rapier, an orthographic view, and post-processing are allowed on KMP when they improve quality; this pass did not switch to them. The KMP glTF loader must not replace Vite's.
 - Heroes use Path B: scripted DCC → `public/props/` glTF (`docs/cinematic-path-b.md`, `DESIGN.md` §2.7). Forbid stacked extrudes. Forbid a lumber stack or a white box (組合木板 / 白長方體) as a hero. The first GLB pass is still chamfered boxes; a direct material swap can look worse than the R3F material it replaces.
 - Façade, materials, and yaki-sugi hang-points follow `DESIGN.md` and `YAKI_SUGI_WALL_IDS`.
 - Do not build what `TASKS.md` has not reopened (`.grok/rules/cancelled-features.md`). No Next.js (`.grok/rules/no-next.md`).

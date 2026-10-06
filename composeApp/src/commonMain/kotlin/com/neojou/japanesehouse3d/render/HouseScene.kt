@@ -1,5 +1,6 @@
 package com.neojou.japanesehouse3d.render
 
+import com.neojou.japanesehouse3d.domain.HouseInteract
 import com.neojou.japanesehouse3d.domain.HouseSpec
 import com.neojou.japanesehouse3d.domain.PlayerSim
 import com.neojou.japanesehouse3d.domain.PlayerState
@@ -21,7 +22,7 @@ private const val BELL_NORMAL = "textures/bellart-travertine/normal.png"
  * puts LDK on the left and the genkan on the right. Sun stays in npm world
  * space. Bell Art albedo is already #8e7363; the stucco tint stays white.
  */
-fun FrameScope.drawHouse(player: PlayerState) {
+fun FrameScope.drawHouse(player: PlayerState, fixtures: HouseFixtures) {
     val (dx, dy, dz) = PlayerSim.lookDirection(player)
     camera = camera(
         Vec3(worldX(player.x), player.eyeY.toFloat(), player.z.toFloat()),
@@ -80,6 +81,7 @@ fun FrameScope.drawHouse(player: PlayerState) {
     val unit = cube(0.5f)
     val materials = HashMap<String, Material>()
     for (box in HouseSpec.boxes) {
+        if (box.id in HouseInteract.animatedBoxIds) continue
         val glass = box.finish == "glass"
         val material = materials.getOrPut(materialKey(box)) {
             base {
@@ -108,15 +110,19 @@ fun FrameScope.drawHouse(player: PlayerState) {
         }
         Renderable(material, unit, boxTransform(box), transparent = glass)
     }
-    for (hero in HouseSpec.heroes) {
-        Model(hero.file, heroTransform(hero))
-    }
+    drawDoors(fixtures)
+    drawHeroes(fixtures)
+    drawWater(fixtures)
     drawCompass()
     PostProcess(fog(density = 0.008f, color = ColorRGB(0xC5D0DC)))
 }
 
 /** npm `planToWorldX`: house group is scale(-1,1,1) then translate(width, 0, 0). */
-private fun worldX(planX: Double): Float = (HouseSpec.width - planX).toFloat()
+internal fun worldX(planX: Double): Float = (HouseSpec.width - planX).toFloat()
+
+/** Plan transform first, then the same X mirror as [worldX]. */
+internal fun planToWorld(plan: Transform): Transform =
+    plan.scale(-1f, 1f, 1f).translate(HouseSpec.width.toFloat(), 0f, 0f)
 
 /**
  * East-lawn compass, same placement as npm Compass: plan X just past the
@@ -151,7 +157,7 @@ private fun FrameScope.drawCompass() {
 private fun materialKey(box: HouseSpec.Box): String =
     "${box.finish}|${box.r}|${box.g}|${box.b}|${box.rough}|${box.metal}"
 
-private fun boxTransform(box: HouseSpec.Box): Transform {
+internal fun boxTransform(box: HouseSpec.Box): Transform {
     // A centered box is symmetric under X reflection, so negated yaw is enough.
     var t = Transform.scale(box.sx.toFloat(), box.sy.toFloat(), box.sz.toFloat())
     if (box.yaw > 1e-6 || box.yaw < -1e-6) {
@@ -160,7 +166,7 @@ private fun boxTransform(box: HouseSpec.Box): Transform {
     return t.translate(worldX(box.x), box.y.toFloat(), box.z.toFloat())
 }
 
-private fun heroTransform(hero: HouseSpec.Hero): Transform {
+internal fun heroTransform(hero: HouseSpec.Hero): Transform {
     // Group mirror is a reflection: scale X by -1, then the reflected yaw.
     var t = Transform.scale(-1f, 1f, 1f)
     if (hero.yaw > 1e-6 || hero.yaw < -1e-6) {
