@@ -1,4 +1,4 @@
-# KMP agents — roles, loop, status (through K2)
+# KMP agents — roles, loop, status
 
 > Cross-role communication board. Update when a milestone gate closes.  
 > Plan: `docs/KMP-plan.md` · Run: `docs/KMP.md` · Route lock: `docs/KMP-spike-notes.md`
@@ -9,11 +9,11 @@
 
 | Role | Owns | Must not |
 |------|------|----------|
-| **PM** | Scope K-S0→K2, DoD, no npm breakage | Scope creep to K3+ doors/props |
-| **Architect** | Module split, render strategy (route B light) | Native GL without spike re-open |
-| **Domain eng** | `shared` coords/height/player tests | Compose UI code in shared |
-| **Graphics eng** | Canvas FP renderer + 1F shell boxes | Tokonoma props, mirrors |
-| **QA** | `./gradlew` compile + unit tests + manual walk script | Skip Desktop verify |
+| **PM** | KMP scope, no npm breakage | Filament, interactive doors, replacing the SPA |
+| **Architect** | Korender scene + generated `HouseSpec` | A second hand-written size table |
+| **Domain eng** | `shared` height/player tests against npm samples | Compose UI code in shared |
+| **Graphics eng** | Korender house, lights, static heroes | Physics, bloom, mirror FBO |
+| **QA** | `./gradlew` compile + unit tests + desktop smoke | Skip Desktop verify |
 
 ---
 
@@ -25,27 +25,28 @@ Plan (docs) → Implement → Unit tests / compile → Critique (this file §Cri
 
 | Gate | Command / check | Status |
 |------|-----------------|--------|
-| K-S0 | Route B locked in spike notes | **done** (Compose Canvas soft 3D, commonMain) |
-| K0 | `:shared` + `:composeApp` compile desktop+wasm | **done** |
-| K1 | `./gradlew :shared:jvmTest` (or allTests) green | **done** |
-| K2 | Desktop run: walk outdoor→genkan→LDK; not black; light ok | **done** (code); owner visual optional |
+| K-S0 | Route B locked in spike notes | **done** (superseded by K-S1) |
+| K-S1 | Korender 0.7 on Desktop + Wasm | **done** (see spike notes) |
+| K1 | `./gradlew :shared:jvmTest` matches npm height samples | **done** with `HouseSpec` |
+| K2 | Walk outdoor→genkan→LDK | **done** on the Korender scene |
+| K3–K8 | Partitions, stairs, roofs, lights, HUD, static heroes | **done** in the exporter + Korender scene |
 
 ---
 
 ## Critique log (self cross-review)
 
 ### Architect vs Graphics
-- **Chose** pure Kotlin **perspective box renderer** on Compose `Canvas` (Desktop + Wasm same code).  
-- **Rejected** LWJGL/Filament for K2 (time + Wasm gap). Fits plan route **B light**: Desktop full path = this renderer; Wasm same stack (no dual engine yet).  
-- **Tradeoff:** Not three.js PBR; meets K2 “recognizable massing + walkable”.
+- **Chose** Korender 0.7 for Desktop OpenGL and Wasm WebGL2.  
+- **Rejected** Filament. `SoftRenderer` stays unused.  
+- **Tradeoff:** GPU PBR and stable shadows, not a pixel copy of three.js. Shed roofs are stacked boxes. Interior doors are closed boxes, not the multi-leaf GLB.
 
 ### Domain vs npm
-- K1 constants are a **subset** of `dimensions.ts` (BUILDING, floors, spawn, 1F shell rects).  
-- Full wall export deferred. Tests lock numbers against TS values.
+- `tools/kmp/export-spec.mjs` writes `HouseSpec`. Tests compare `Height.groundY` to samples taken from the TypeScript function.
 
 ### QA vs PM
 - No physics/collision (matches npm). Height sampling only (slabs + grade).  
 - No doors (K3). Genkan opening is a **gap** in south wall segment.
+- **2026-10-06:** Apple M4 desktop context is `4.1 Metal`. Front-buffer grabs show the south façade, genkan door, LDK kitchen, and UB bath. `:shared:jvmTest` and `:composeApp:compileKotlinWasmJs` succeeded. `npm run dev` answered 200 at `/japanese-house-3d/` on `[::1]:5173`. Wasm was not opened in a browser. Keyboard walk was not re-driven; poses used `debugTeleport`.
 
 ---
 

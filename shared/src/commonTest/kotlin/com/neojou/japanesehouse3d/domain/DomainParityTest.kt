@@ -1,5 +1,6 @@
 package com.neojou.japanesehouse3d.domain
 
+import kotlin.math.PI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -11,10 +12,11 @@ class DomainParityTest {
         assertEquals(10.92, Building.width, 1e-9)
         assertEquals(6.37, Building.depth, 1e-9)
         assertEquals(0.15, Building.wallThickness, 1e-9)
-        assertEquals(2.5, Building.wallHeight, 1e-9)
-        assertEquals(2.7, FloorLevels.story2f, 1e-9)
-        assertEquals(5.4, FloorLevels.ph, 1e-9)
-        assertEquals(0.5, FloorLevels.interior1f, 1e-9)
+        assertEquals(3.309, Building.wallHeight, 1e-9)
+        assertEquals(2.9, Building.floorHeight, 1e-9)
+        assertEquals(3.509, FloorLevels.story2f, 1e-9)
+        assertEquals(6.309, FloorLevels.ph, 1e-9)
+        assertEquals(0.609, FloorLevels.interior1f, 1e-9)
     }
 
     @Test
@@ -47,9 +49,33 @@ class DomainParityTest {
     }
 
     @Test
-    fun heightInteriorRaised() {
-        val y = Height.groundY(3.0, 3.0, 0.5)
-        assertEquals(0.5, y, 1e-9)
+    fun heightMatchesNpmSamples() {
+        for (s in HouseSpec.heightSamples) {
+            assertEquals(s.y, Height.groundY(s.x, s.z, s.feet), 1e-4, s.name)
+        }
+    }
+
+    @Test
+    fun lookYawZeroIsNorth() {
+        val (x, y, z) = PlayerSim.lookDirection(PlayerState(yaw = 0.0, pitch = 0.0))
+        assertEquals(0.0, x, 1e-9)
+        assertEquals(0.0, y, 1e-9)
+        assertEquals(1.0, z, 1e-9)
+    }
+
+    @Test
+    fun lookYawHalfPiIsEast() {
+        val (x, _, z) = PlayerSim.lookDirection(PlayerState(yaw = PI / 2.0, pitch = 0.0))
+        assertEquals(1.0, x, 1e-9)
+        assertEquals(0.0, z, 1e-9)
+    }
+
+    @Test
+    fun pitchDoesNotSteerFeet() {
+        val s0 = PlayerState(yaw = 0.0, pitch = 0.8).withGround()
+        val s1 = PlayerSim.stepMove(s0, forward = 1.0, dt = 1.0, speed = 2.0)
+        assertEquals(s0.x, s1.x, 1e-6)
+        assertTrue(s1.z > s0.z)
     }
 
     @Test

@@ -2,6 +2,7 @@
 
 # grok
 mygrok
+.grok/
 
 # Floor plans — personal / private; do not upload to GitHub
 /docs/refs/

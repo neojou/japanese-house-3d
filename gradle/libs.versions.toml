@@ -1,6 +1,6 @@
 [versions]
-kotlin = "2.3.0"
-compose-plugin = "1.10.0"
+kotlin = "2.4.20"
+compose-plugin = "1.12.1"
 
 [libraries]
 

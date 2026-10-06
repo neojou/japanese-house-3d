@@ -1,6 +1,5 @@
 package com.neojou.japanesehouse3d
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -30,61 +28,37 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.neojou.japanesehouse3d.domain.PlayerDefaults
-import com.neojou.japanesehouse3d.domain.PlayerSim
-import com.neojou.japanesehouse3d.domain.PlayerState
-import com.neojou.japanesehouse3d.domain.Shell1F
-import com.neojou.japanesehouse3d.render.GlbRenderer
-import com.neojou.japanesehouse3d.render.HouseGlbAsset
-import com.neojou.japanesehouse3d.render.GlbTri
-import com.neojou.japanesehouse3d.render.parseHouseGlb
-import com.neojou.japanesehouse3d.render.SoftRenderer
+import com.neojou.japanesehouse3d.render.HouseWalk
+import com.neojou.japanesehouse3d.render.drawHouse
+import com.neojou.japanesehouse3d.render.loadPublicBytes
+import com.neojou.japanesehouse3d.render.scheduleFrameCapture
+import com.zakgof.korender.KeyEvent
+import com.zakgof.korender.Korender
+import com.zakgof.korender.TouchEvent
 import kotlin.math.round
 
 /**
- * K2 walkable 1F shell — first-person soft renderer + domain height.
+ * KMP first-person house. Korender draws [com.neojou.japanesehouse3d.domain.HouseSpec].
+ * SoftRenderer remains in the tree and is not on this path.
  *
  * Controls: W/S move · A/D turn 10° · arrows · drag look.
  */
 @Composable
 fun App() {
-    var player by remember { mutableStateOf(PlayerState().withGround()) }
-    val keys = remember { mutableSetOf<Key>() }
+    val walk = remember { HouseWalk() }
+    LaunchedEffect(walk) { scheduleFrameCapture(walk) }
+    var hud by remember { mutableStateOf(walk.state) }
+    var fps by remember { mutableStateOf(0f) }
     val focusRequester = remember { FocusRequester() }
-    val boxes = remember { Shell1F.boxes() }
-    val glbTris = remember {
-        val bytes = HouseGlbAsset.loadOrNull()
-        if (bytes == null) {
-            emptyList()
-        } else {
-            try {
-                parseHouseGlb(bytes)
-            } catch (_: Throwable) {
-                emptyList<GlbTri>()
-            }
-        }
-    }
-    val useGlb = glbTris.isNotEmpty()
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
-
     LaunchedEffect(Unit) {
-        var last = 0L
         while (true) {
-            withFrameNanos { now ->
-                if (last == 0L) {
-                    last = now
-                    return@withFrameNanos
-                }
-                val dt = ((now - last) / 1_000_000_000.0).coerceIn(0.0, 0.05)
-                last = now
-                var forward = 0.0
-                if (Key.W in keys || Key.DirectionUp in keys) forward += 1.0
-                if (Key.S in keys || Key.DirectionDown in keys) forward -= 1.0
-                if (forward != 0.0) {
-                    player = PlayerSim.stepMove(player, forward, dt)
-                }
+            withFrameNanos {
+                hud = walk.state
+                fps = walk.fps
             }
         }
     }
@@ -98,28 +72,11 @@ fun App() {
             .onKeyEvent { e ->
                 when (e.type) {
                     KeyEventType.KeyDown -> {
-                        keys.add(e.key)
-                        when (e.key) {
-                            // yaw: 0 = +Z north; +yaw → +X east = right when facing north
-                            // A / ← = turn left (−yaw); D / → = turn right (+yaw)
-                            Key.A, Key.DirectionLeft -> {
-                                player = PlayerSim.turnDegrees(
-                                    player,
-                                    -PlayerDefaults.turnDegrees,
-                                )
-                            }
-                            Key.D, Key.DirectionRight -> {
-                                player = PlayerSim.turnDegrees(
-                                    player,
-                                    PlayerDefaults.turnDegrees,
-                                )
-                            }
-                            else -> {}
-                        }
+                        walk.onKey(true, e.key)
                         true
                     }
                     KeyEventType.KeyUp -> {
-                        keys.remove(e.key)
+                        walk.onKey(false, e.key)
                         true
                     }
                     else -> false
@@ -129,26 +86,38 @@ fun App() {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
                     val sens = PlayerDefaults.lookSensitivity
-                    player = PlayerSim.stepLook(
-                        player,
+                    walk.look(
                         dYaw = -dragAmount.x * sens,
                         dPitch = -dragAmount.y * sens,
                     )
                 }
             },
     ) {
-        Canvas(Modifier.fillMaxSize()) {
-            if (useGlb) {
-                GlbRenderer.drawScene(this, player, glbTris)
-            } else {
-                SoftRenderer.drawScene(this, player, boxes)
+        Korender(resourceLoader = { loadPublicBytes(it) }, vSync = true) {
+            OnKey { e ->
+                if (e.type == KeyEvent.Type.DOWN || e.type == KeyEvent.Type.UP) {
+                    walk.onKey(e.type == KeyEvent.Type.DOWN, e.composeKey)
+                }
+            }
+            OnTouch { e ->
+                when (e.type) {
+                    TouchEvent.Type.DOWN ->
+                        if (e.button == TouchEvent.Button.LEFT || e.button == TouchEvent.Button.NONE) {
+                            walk.pointerDown(e.x, e.y)
+                        }
+                    TouchEvent.Type.UP -> walk.pointerUp()
+                    TouchEvent.Type.MOVE -> walk.pointerMove(e.x, e.y)
+                }
+            }
+            Frame {
+                walk.tick(frameInfo.dt, frameInfo.avgFps)
+                drawHouse(walk.state)
             }
         }
 
         Text(
-            text = (if (useGlb) "GLB house · " else "SoftRenderer fallback · ") +
-                "W/S move · A/D turn · drag look\n" +
-                "X ${player.x.fmt(2)}  Z ${player.z.fmt(2)}  Y ${player.eyeY.fmt(2)}",
+            text = "KMP · W/S 移動 · A/D 轉向 · 拖曳視角\n" +
+                "X ${hud.x.fmt(2)}  Z ${hud.z.fmt(2)}  Y ${hud.eyeY.fmt(2)}  ${fps.toInt()} fps",
             color = Color(0xEEFFFFFF),
             fontSize = 12.sp,
             fontFamily = FontFamily.Monospace,

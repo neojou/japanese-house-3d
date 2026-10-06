@@ -5,18 +5,18 @@ package com.neojou.japanesehouse3d.domain
  * Numbers must stay aligned with TS tests in DomainParityTest.
  */
 object Building {
-    const val width = 10.92
-    const val depth = 6.37
-    const val wallThickness = 0.15
-    const val wallHeight = 2.5
-    const val floorHeight = 2.7
+    const val width = HouseSpec.width
+    const val depth = HouseSpec.depth
+    const val wallThickness = HouseSpec.wallThickness
+    const val wallHeight = HouseSpec.wallHeight
+    const val floorHeight = HouseSpec.floorHeight
 }
 
 object FloorLevels {
-    const val grade = 0.0
-    const val interior1f = 0.5
-    const val story2f = Building.floorHeight // 2.7
-    const val ph = Building.floorHeight * 2 // 5.4
+    const val grade = HouseSpec.grade
+    const val interior1f = HouseSpec.interior1f
+    const val story2f = HouseSpec.story2f
+    const val ph = HouseSpec.ph
 }
 
 /** South façade breaks (west → east), meters. */
@@ -30,19 +30,19 @@ object SouthFacade {
 
 object PlanX {
     const val west = 0.0
-    const val ldkE = SouthFacade.ldkA + SouthFacade.ldkB // 6.37 genkan W
-    const val genkanE = ldkE + SouthFacade.genkanDoor // 7.89
-    const val sclE = genkanE + SouthFacade.sclSouth // 9.10
+    const val ldkE = HouseSpec.ldkE
+    const val genkanE = HouseSpec.genkanE
+    const val sclE = HouseSpec.sclE
     const val east = Building.width // 10.92
 }
 
 object PlanZ {
     const val south = 0.0
     /** Genkan / SCL south plane */
-    const val recess = 2.83
+    const val recess = HouseSpec.recessZ
     const val wetS = 4.55
     const val north = Building.depth // 6.37
-    const val ubSouth = 2.72
+    const val ubSouth = HouseSpec.ubSouthZ
 }
 
 object Genkan {
@@ -56,15 +56,15 @@ object Genkan {
 }
 
 object PlayerDefaults {
-    const val eyeHeight = 1.5
-    const val moveSpeed = 2.0
-    const val turnDegrees = 10.0
-    const val lookSensitivity = 0.002
+    const val eyeHeight = HouseSpec.eyeHeight
+    const val moveSpeed = HouseSpec.moveSpeed
+    const val turnDegrees = HouseSpec.turnDegrees
+    const val lookSensitivity = HouseSpec.lookSensitivity
     const val pitchLimitDeg = 85.0
     /** Plan-space spawn (npm PLAYER.spawn) */
-    const val spawnX = (PlanX.ldkE + PlanX.genkanE) / 2.0
+    const val spawnX = HouseSpec.spawnX
     const val spawnY = FloorLevels.grade
-    const val spawnZ = -2.8
+    const val spawnZ = HouseSpec.spawnZ
     /** Looking north (+Z) */
     const val spawnYaw = 0.0
 }

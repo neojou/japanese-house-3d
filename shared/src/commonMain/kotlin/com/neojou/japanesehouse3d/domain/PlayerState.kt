@@ -25,6 +25,21 @@ data class PlayerState(
 object PlayerSim {
     private val pitchLimit = PlayerDefaults.pitchLimitDeg * PI / 180.0
 
+    /**
+     * View direction in plan space. yaw 0, pitch 0 is +Z (north).
+     * +yaw turns toward +X (east). +pitch looks up.
+     */
+    fun lookDirection(state: PlayerState): Triple<Double, Double, Double> {
+        val cp = cos(state.pitch)
+        return Triple(sin(state.yaw) * cp, sin(state.pitch), cos(state.yaw) * cp)
+    }
+
+    /** Horizontal travel. Pitch does not steer the feet; yaw matches [lookDirection]. */
+    fun forwardPlan(state: PlayerState): Pair<Double, Double> {
+        val (x, _, z) = lookDirection(state.copy(pitch = 0.0))
+        return x to z
+    }
+
     fun stepMove(
         state: PlayerState,
         forward: Double,
@@ -33,8 +48,9 @@ object PlayerSim {
     ): PlayerState {
         if (forward == 0.0 || dt <= 0.0) return state.withGround()
         val dist = forward * speed * dt
-        val nx = state.x + sin(state.yaw) * dist
-        val nz = state.z + cos(state.yaw) * dist
+        val (fx, fz) = forwardPlan(state)
+        val nx = state.x + fx * dist
+        val nz = state.z + fz * dist
         return state.copy(x = nx, z = nz).withGround()
     }
 
