@@ -10,13 +10,16 @@ import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
 import { MobileDpad } from "@/components/ui/MobileDpad";
 import { LightingStatus } from "@/components/ui/LightingStatus";
 import { PositionHud } from "@/components/ui/PositionHud";
-import { BUILDING, LIGHTING, PLAYER } from "@/data/dimensions";
+import { BUILDER_FIXTURE_DEFAULTS, BUILDING, LIGHTING, PLAYER } from "@/data/dimensions";
+import { useLightingStore } from "@/store/useLightingStore";
 import { planToWorldX } from "@/lib/coords";
 import { isCoarsePointer } from "@/lib/input";
 
 function Lights() {
   const sun = LIGHTING.sun;
   const genkan = LIGHTING.genkanRecess;
+  const builder = useLightingStore((s) => s.mode) === "builder";
+  const fillScale = builder ? BUILDER_FIXTURE_DEFAULTS.builderFillScale : 1;
   return (
     <>
       <ambientLight intensity={LIGHTING.ambient} />
@@ -47,7 +50,7 @@ function Lights() {
           <pointLight
             key={f.id}
             position={f.position}
-            intensity={f.intensity}
+            intensity={f.intensity * fillScale}
             distance={f.distance}
             decay={2}
             color={f.color}

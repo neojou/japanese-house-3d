@@ -4,6 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PLAYER } from "@/data/dimensions";
 import { planToWorldX, worldToPlanX } from "@/lib/coords";
+import { floorFromEyeY } from "@/lib/fixtures/logic";
 import { poseFromQuery } from "@/lib/debugPose";
 import { getGroundHeight } from "@/lib/height";
 import { getInputAxes, isCoarsePointer } from "@/lib/input";
@@ -97,6 +98,7 @@ export function FirstPersonCamera() {
       y: eyeY,
       z: planZ,
     });
+    useViewerStore.getState().setActiveFloor(floorFromEyeY(eyeY));
   }, [camera, setPosition]);
 
   // Pointer lock (desktop) + touch drag look (coarse)

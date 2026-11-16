@@ -4,6 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PLAYER } from "@/data/dimensions";
 import { worldToPlanX } from "@/lib/coords";
+import { floorFromEyeY } from "@/lib/fixtures/logic";
 import { getGroundHeight } from "@/lib/height";
 import { getInputAxes, resetInput, setKeyboardMove } from "@/lib/input";
 import { useViewerStore } from "@/store/useViewerStore";
@@ -80,6 +81,10 @@ export function Player() {
       y: camera.position.y,
       z: camera.position.z,
     });
+    const floor = floorFromEyeY(camera.position.y);
+    if (useViewerStore.getState().activeFloor !== floor) {
+      useViewerStore.getState().setActiveFloor(floor);
+    }
   });
 
   return null;

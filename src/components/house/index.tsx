@@ -23,6 +23,7 @@ import { SenmenDisplay } from "./SenmenDisplay";
 import { Wash2FDisplay } from "./Wash2FDisplay";
 import { BathFinishes } from "./BathFinishes";
 import { HouseGltf } from "./HouseGltf";
+import { BuilderFixtures } from "./BuilderFixtures";
 import { BUILDING, COLORS, MATERIAL_PRESETS } from "@/data/dimensions";
 import { useGltfHouse } from "@/lib/houseGltfFlag";
 
@@ -66,6 +67,7 @@ export function House() {
       <BathFinishes />
       <Props />
       <PlanLabels />
+      <BuilderFixtures />
     </group>
   );
 }
