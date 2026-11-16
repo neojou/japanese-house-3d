@@ -8,6 +8,7 @@ import { Compass, House } from "@/components/house";
 import { Player } from "@/components/Player";
 import { FirstPersonCamera } from "@/components/cameras/FirstPersonCamera";
 import { MobileDpad } from "@/components/ui/MobileDpad";
+import { LightingStatus } from "@/components/ui/LightingStatus";
 import { PositionHud } from "@/components/ui/PositionHud";
 import { BUILDING, LIGHTING, PLAYER } from "@/data/dimensions";
 import { planToWorldX } from "@/lib/coords";
@@ -142,8 +143,9 @@ function HelpOverlay() {
 
   return (
     <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-3 sm:p-4">
-      <header className="flex justify-end">
+      <header className="flex flex-col items-end gap-1">
         <PositionHud />
+        <LightingStatus />
       </header>
 
       {desktopHelp && (

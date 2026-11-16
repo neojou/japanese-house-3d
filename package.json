@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test:fixtures": "node --experimental-strip-types scripts/verify-fixtures.mjs",
+    "test:fixtures-privacy": "node scripts/verify-fixtures-privacy.mjs",
     "test:mirror": "node scripts/verify-mirror-math.mjs && node scripts/verify-mirror-source.mjs && node scripts/verify-senmen-mirror.mjs",
     "bake:senmen-basin": "node --experimental-strip-types scripts/bake-senmen-basin.mjs",
     "test:basin": "node --experimental-strip-types scripts/verify-senmen-basin.mjs",
