@@ -7,6 +7,9 @@ mygrok
 # Floor plans — personal / private; do not upload to GitHub
 /docs/refs/
 
+# Builder fixtures — real design data, local only
+src/data/fixtures.local.ts
+
 # dependencies
 /node_modules
 /.pnp

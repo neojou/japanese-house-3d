@@ -232,6 +232,21 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 ---
 
+#### T-302 · Builder lighting / switches / outlets · `todo` · M7
+
+**Goal:** First-person tour can show builder fixtures from a local, gitignored module: ceiling, wall, recessed, outdoor, and fan marks, grouped by circuit. Switches toggle a circuit, including both ends of a three-way. Outlet, LAN, TV, intercom, and remote marks are a layer you can show or hide. Default stays the current art lighting. A production build does not bundle the local module. No geometry change. No Track B.
+
+**DoD**
+
+- [ ] Local fixture file is gitignored before it exists
+- [ ] Missing local data: `npm run dev` and `npm run build` keep today's art lighting
+- [ ] Production `dist/` (default build) has no local fixture payload
+- [ ] Builder mode: fixtures, clickable switches (three-way toggles one circuit), outlet layer
+- [ ] Art mode unchanged: same fills, same prop lights, bloom still off unless `?bloom=1`
+- [ ] No new major dependency. No camera mode, no top-down, no post-processing default
+
+---
+
 #### T-301 · Basic materials + lighting · `done` · M7
 
 **DoD:** Distinct floor/wall/stair materials; readable interior light; still simple (no heavy post).
