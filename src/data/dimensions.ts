@@ -4095,6 +4095,58 @@ export const LIGHTING = {
   },
 } as const;
 
+/**
+ * Sizes for builder-mode fixtures. Real coordinates stay out of this file.
+ * Porch recessed lights reuse the balcony-soffit formula (2F floor − slab − ceilingGap).
+ */
+export const BUILDER_FIXTURE_DEFAULTS = {
+  switchHeight: 1.2,
+  outletHeight: 0.25,
+  acOutletHeight: 2,
+  switchPlate: { width: 0.07, height: 0.12, depth: 0.01 },
+  outletPlate: 0.07,
+  outletDepth: 0.01,
+  outletGap: 0.01,
+  /** Sit this far off the wall so the plate does not z-fight. */
+  proud: 0.012,
+  ceilingGap: 0.02,
+  /** Wall-mounted lamps clamp to this far under the soffit. */
+  belowCeiling: 0.15,
+  /** Feet this far below the next story still count as the lower floor. */
+  floorMargin: 0.35,
+  lightPool: 8,
+  /** Multiply LIGHTING.interiorFills by this in builder mode only. */
+  builderFillScale: 0.25,
+  ceilingDiscRadius: 0.16,
+  ceilingDiscThickness: 0.03,
+  downlightRadius: 0.06,
+  wallBox: { width: 0.12, height: 0.22, depth: 0.08 },
+  fanSize: 0.22,
+  fanThickness: 0.02,
+  emissiveOn: 2.2,
+  emissiveOff: 0.05,
+  pointIntensity: 3,
+  pointDistance: 6,
+  warm: "#fff0d8",
+  daylight: "#f3f7ff",
+  fixtureBody: "#2c2824",
+  switchBody: "#f3efe6",
+  switchOn: "#c4a574",
+  outletColors: {
+    W: "#d9d3c5",
+    E: "#c5d0dc",
+    "専": "#e7d7a8",
+    AC100: "#f0e6d8",
+    AC200: "#e8c4b8",
+    VP: "#c9d6c5",
+    LAN: "#b7c7e3",
+    TV: "#d5c6de",
+    IP: "#e6d2c4",
+    "床": "#d7c4a3",
+    "給": "#c5ddd6",
+  },
+} as const;
+
 /** Ground markers for plan comparison (world positions). */
 export const PLAN_LABELS = [
   {
