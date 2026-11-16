@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
-import type { PointLight } from "three";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
+import { CanvasTexture, type PointLight } from "three";
 import { BUILDER_FIXTURE_DEFAULTS } from "@/data/dimensions";
 import {
   assignLightPool,
@@ -8,8 +8,10 @@ import {
   faceYaw,
   fixtureEmitColor,
   fixtureWorldY,
+  gangOffsetY,
+  switchWorldY,
 } from "@/lib/fixtures/logic";
-import type { Fixture } from "@/lib/fixtures/types";
+import type { Fixture, SwitchGang, SwitchPlate } from "@/lib/fixtures/types";
 import { useLightingStore } from "@/store/useLightingStore";
 import { useViewerStore } from "@/store/useViewerStore";
 
@@ -83,6 +85,7 @@ function BuilderBodies() {
   const data = useLightingStore((s) => s.data);
   const mode = useLightingStore((s) => s.mode);
   const circuitOn = useLightingStore((s) => s.circuitOn);
+  const showSwitches = useLightingStore((s) => s.showSwitches);
   if (!data || mode !== "builder") return null;
   return (
     <group name="builder-fixtures">
@@ -93,6 +96,8 @@ function BuilderBodies() {
           on={circuitOn[fixture.circuit] === true}
         />
       ))}
+      {showSwitches &&
+        data.switches.map((plate) => <SwitchPlateMesh key={plate.id} plate={plate} />)}
     </group>
   );
 }
@@ -155,6 +160,111 @@ function LampMesh({ fixture, on }: { fixture: Fixture; on: boolean }) {
       {material}
     </mesh>
   );
+}
+
+const pointer = {
+  onPointerOver: (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    document.body.style.cursor = "pointer";
+  },
+  onPointerOut: () => {
+    document.body.style.cursor = "auto";
+  },
+};
+
+function SwitchPlateMesh({ plate }: { plate: SwitchPlate }) {
+  const plateSize = BUILDER_FIXTURE_DEFAULTS.switchPlate;
+  const [ox, oz] = faceOffset(
+    plate.face,
+    BUILDER_FIXTURE_DEFAULTS.proud + plateSize.depth / 2,
+  );
+  return (
+    <group
+      name={plate.id}
+      position={[plate.x + ox, switchWorldY(plate), plate.z + oz]}
+      rotation={[0, faceYaw(plate.face), 0]}
+    >
+      <mesh castShadow={false} receiveShadow={false}>
+        <boxGeometry args={[plateSize.width, plateSize.height, plateSize.depth]} />
+        <meshStandardMaterial
+          color={BUILDER_FIXTURE_DEFAULTS.switchBody}
+          roughness={0.65}
+          metalness={0}
+        />
+      </mesh>
+      {plate.gangs.map((gang, index) => (
+        <SwitchGangMesh
+          key={`${plate.id}-${index}`}
+          gang={gang}
+          index={index}
+          count={plate.gangs.length}
+        />
+      ))}
+    </group>
+  );
+}
+
+function SwitchGangMesh({
+  gang,
+  index,
+  count,
+}: {
+  gang: SwitchGang;
+  index: number;
+  count: number;
+}) {
+  const on = useLightingStore((s) => s.circuitOn[gang.circuit] === true);
+  const plate = BUILDER_FIXTURE_DEFAULTS.switchPlate;
+  const y = gangOffsetY(index, count, plate.height);
+  const buttonH = Math.min(plate.height * 0.34, (plate.height * 0.7) / count);
+  const mark = gang.threeWay ? threeMarkTexture() : null;
+  return (
+    <group position={[0, y, plate.depth / 2 + plate.depth * 0.15]}>
+      <mesh
+        castShadow={false}
+        userData={{ interactable: "switch" }}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          useLightingStore.getState().toggleCircuit(gang.circuit);
+        }}
+        {...pointer}
+      >
+        <boxGeometry args={[plate.width * 0.72, buttonH, plate.depth * 0.4]} />
+        <meshStandardMaterial
+          color={on ? BUILDER_FIXTURE_DEFAULTS.switchOn : "#d7d0c4"}
+          roughness={0.5}
+          metalness={0}
+        />
+      </mesh>
+      {mark && (
+        <mesh position={[plate.width * 0.22, 0, plate.depth * 0.4]} renderOrder={1}>
+          <planeGeometry args={[plate.width * 0.22, plate.width * 0.22]} />
+          <meshBasicMaterial map={mark} transparent toneMapped={false} />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
+let threeMark: CanvasTexture | null = null;
+
+function threeMarkTexture(): CanvasTexture | null {
+  if (threeMark) return threeMark;
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const g = canvas.getContext("2d");
+  if (!g) return null;
+  g.clearRect(0, 0, 64, 64);
+  g.fillStyle = "#1c1916";
+  g.font = "bold 46px sans-serif";
+  g.textAlign = "center";
+  g.textBaseline = "middle";
+  g.fillText("3", 32, 34);
+  threeMark = new CanvasTexture(canvas);
+  threeMark.needsUpdate = true;
+  return threeMark;
 }
 
 function FanMark({ on }: { on: boolean }) {
