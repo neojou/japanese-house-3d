@@ -305,6 +305,7 @@ Palette: `INTERIOR` / `FAÇADE` in `houseMaterials.ts`; `COLORS`, `LIGHTING` in 
 - Warm-ish background / fog—avoid blue hospital atmosphere.
 - ACES tone mapping. Exposure stays **1.12**. The taupe shell is the finish; do not raise exposure to chase the old ivory midtone. If bloom fights ACES, keep ACES.
 - **Bloom default off.** Optional `?bloom=1`: three.js WebGL `EffectComposer` only, high threshold, low strength, emissive lamps / shoji only. The pass must not mount a positive-priority `useFrame` while disabled — R3F then skips the main `gl.render` and the canvas stays black. No full-wall haze. No `@react-three/postprocessing`. Planar FBO mirrors remain forbidden.
+- **Builder fixtures** are a second path, off unless a local module is present and the tour is switched to it (`L`, or `?lighting=builder`). Art mode keeps this section: sun, IBL, fills, prop lights, exposure 1.12, bloom still opt-in. Builder mode only dims the interior fills so the switched lamps can read. The fixed lamp pool stays mounted at intensity 0 in art mode so the light count does not change when you toggle.
 
 ### 4.1 Why yaki looked “flat black” (and fix)
 

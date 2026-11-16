@@ -232,18 +232,18 @@ Phases map to milestones; **do not skip ahead** without owner request.
 
 ---
 
-#### T-302 · Builder lighting / switches / outlets · `todo` · M7
+#### T-302 · Builder lighting / switches / outlets · `done` · M7
 
 **Goal:** First-person tour can show builder fixtures from a local, gitignored module: ceiling, wall, recessed, outdoor, and fan marks, grouped by circuit. Switches toggle a circuit, including both ends of a three-way. Outlet, LAN, TV, intercom, and remote marks are a layer you can show or hide. Default stays the current art lighting. A production build does not bundle the local module. No geometry change. No Track B.
 
 **DoD**
 
-- [ ] Local fixture file is gitignored before it exists
-- [ ] Missing local data: `npm run dev` and `npm run build` keep today's art lighting
-- [ ] Production `dist/` (default build) has no local fixture payload
-- [ ] Builder mode: fixtures, clickable switches (three-way toggles one circuit), outlet layer
-- [ ] Art mode unchanged: same fills, same prop lights, bloom still off unless `?bloom=1`
-- [ ] No new major dependency. No camera mode, no top-down, no post-processing default
+- [x] Local fixture file is gitignored before it exists
+- [x] Missing local data: `npm run dev` and `npm run build` keep today's art lighting
+- [x] Production `dist/` (default build) has no local fixture payload
+- [x] Builder mode: fixtures, clickable switches (three-way toggles one circuit), outlet layer
+- [x] Art mode unchanged: same fills, same prop lights, bloom still off unless `?bloom=1`
+- [x] No new major dependency. No camera mode, no top-down, no post-processing default
 
 ---
 
@@ -392,6 +392,7 @@ Every task also satisfies:
 | 2026-08-01 | SCL+玄関 NS **1.72** (z 2.83–4.55); 北貼洗面南; EW 1.21; 西通道 0.9; wetS=stairS=4.55 |
 | 2026-08-01 | L1 façade: procedural ivory stucco (albedo/normal/rough) + yaki-sugi on `1f-jog-ldk-east` only |
 | 2026-08-01 | DESIGN.md added (aesthetics); AGENTS/README/TASKS point agents to it for look work |
+| 2026-11-17 | T-302 done: builder lighting, switches, and an outlet layer. Default stays art. Local fixture data stays untracked |
 | 2026-08-01 | Genkan: flush yaki-sugi door+portal (L/R/top), matte-black vertical handle; plan walls unchanged |
 | 2026-08-01 | 2F NE balcony dual slabs (W 2.73×1.11 / E 1.82×0.91); soffit 3× downlight + genkan-east sconce |
 | 2026-08-01 | Interior finishes: oat main / warm-gray secondary / charcoal accent; shadow-gaps; wood endscape |
