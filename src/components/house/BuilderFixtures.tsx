@@ -9,9 +9,11 @@ import {
   fixtureEmitColor,
   fixtureWorldY,
   gangOffsetY,
+  outletWorldY,
+  repeatOffset,
   switchWorldY,
 } from "@/lib/fixtures/logic";
-import type { Fixture, SwitchGang, SwitchPlate } from "@/lib/fixtures/types";
+import type { Fixture, Outlet, SwitchGang, SwitchPlate } from "@/lib/fixtures/types";
 import { useLightingStore } from "@/store/useLightingStore";
 import { useViewerStore } from "@/store/useViewerStore";
 
@@ -86,18 +88,25 @@ function BuilderBodies() {
   const mode = useLightingStore((s) => s.mode);
   const circuitOn = useLightingStore((s) => s.circuitOn);
   const showSwitches = useLightingStore((s) => s.showSwitches);
-  if (!data || mode !== "builder") return null;
+  const showOutlets = useLightingStore((s) => s.showOutlets);
+  if (!data) return null;
+  const builder = mode === "builder";
+  if (!builder && !showOutlets) return null;
   return (
     <group name="builder-fixtures">
-      {data.fixtures.map((fixture) => (
-        <FixtureMesh
-          key={fixture.id}
-          fixture={fixture}
-          on={circuitOn[fixture.circuit] === true}
-        />
-      ))}
-      {showSwitches &&
+      {builder &&
+        data.fixtures.map((fixture) => (
+          <FixtureMesh
+            key={fixture.id}
+            fixture={fixture}
+            on={circuitOn[fixture.circuit] === true}
+          />
+        ))}
+      {builder &&
+        showSwitches &&
         data.switches.map((plate) => <SwitchPlateMesh key={plate.id} plate={plate} />)}
+      {showOutlets &&
+        data.outlets.map((outlet) => <OutletMesh key={outlet.id} outlet={outlet} />)}
     </group>
   );
 }
@@ -242,6 +251,67 @@ function SwitchGangMesh({
           <meshBasicMaterial map={mark} transparent toneMapped={false} />
         </mesh>
       )}
+    </group>
+  );
+}
+
+const outletTextures = new Map<string, CanvasTexture>();
+
+function outletTexture(kind: string, hex: string): CanvasTexture | null {
+  const key = `${kind}|${hex}`;
+  const cached = outletTextures.get(key);
+  if (cached) return cached;
+  if (typeof document === "undefined") return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 128;
+  const g = canvas.getContext("2d");
+  if (!g) return null;
+  g.fillStyle = hex;
+  g.fillRect(0, 0, 128, 128);
+  g.fillStyle = "#1c1916";
+  g.font = kind.length > 2 ? "bold 36px sans-serif" : "bold 56px sans-serif";
+  g.textAlign = "center";
+  g.textBaseline = "middle";
+  g.fillText(kind, 64, 68);
+  const tex = new CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  outletTextures.set(key, tex);
+  return tex;
+}
+
+function OutletMesh({ outlet }: { outlet: Outlet }) {
+  const plate = BUILDER_FIXTURE_DEFAULTS.outletPlate;
+  const depth = BUILDER_FIXTURE_DEFAULTS.outletDepth;
+  const hex = BUILDER_FIXTURE_DEFAULTS.outletColors[outlet.kind];
+  const map = outletTexture(outlet.kind, hex);
+  const free = outlet.face == null;
+  const [ox, oz] = faceOffset(
+    outlet.face,
+    free ? 0 : BUILDER_FIXTURE_DEFAULTS.proud + depth / 2,
+  );
+  const count = Math.max(1, Math.floor(outlet.count));
+  return (
+    <group
+      name={outlet.id}
+      position={[outlet.x + ox, outletWorldY(outlet), outlet.z + oz]}
+      rotation={[0, faceYaw(outlet.face), 0]}
+    >
+      {Array.from({ length: count }, (_, index) => (
+        <mesh
+          key={index}
+          position={[
+            repeatOffset(index, count, plate, BUILDER_FIXTURE_DEFAULTS.outletGap),
+            0,
+            0,
+          ]}
+          castShadow={false}
+          receiveShadow={false}
+        >
+          <boxGeometry args={free ? [plate, plate, plate] : [plate, plate, depth]} />
+          <meshStandardMaterial color={hex} map={map ?? undefined} roughness={0.7} metalness={0} />
+        </mesh>
+      ))}
     </group>
   );
 }
