@@ -43,6 +43,7 @@ export interface SwitchPlate {
   face: Face | null;
   heightAboveFloor: number;
   gangs: SwitchGang[];
+  note?: string;
 }
 
 export type OutletKind =
