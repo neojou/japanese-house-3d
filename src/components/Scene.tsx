@@ -160,6 +160,10 @@ function HelpOverlay() {
               <kbd className="rounded bg-white/15 px-1">Esc</kbd> 解鎖 ·{" "}
               <strong>點門／龍頭／塞子</strong>：開關
             </li>
+            <li>
+              <kbd className="rounded bg-white/15 px-1">L</kbd> 美術/建商照明 ·{" "}
+              <kbd className="rounded bg-white/15 px-1">O</kbd> 插座圖層
+            </li>
           </ul>
         </div>
       )}
